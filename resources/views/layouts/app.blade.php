@@ -228,7 +228,7 @@
                                 <li><a href="{{ route('lokasi') }}" class="nav-link {{ Request::is('lokasi') ? 'active' : '' }}">Lokasi</a></li>
                                 <li><a href="{{ route('kontraktor') }}" class="nav-link {{ Request::is('kontraktor') ? 'active' : '' }}">Kontraktor</a></li>
                                 <li><a href="{{ route('contact') }}" class="nav-link {{ Request::is('contact') ? 'active' : '' }}">Kontak</a></li>
-                                <li><a href="{{ route('login') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">Login</a></li>
+                                <li><a href="{{ route('login.index') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">Login</a></li>
 
                             </ul>
 

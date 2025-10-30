@@ -147,19 +147,19 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login.post') }}">
                 @csrf
                 
                 <div class="mb-3">
-                    <label for="username" class="form-label">
-                        <i class="fas fa-user me-2"></i>Username
+                    <label for="email" class="form-label">
+                        <i class="fas fa-user me-2"></i>Email
                     </label>
                     <input type="text" 
                            class="form-control" 
-                           id="username" 
-                           name="username" 
-                           value="{{ old('username') }}" 
-                           placeholder="Masukkan username anda"
+                           id="email" 
+                           name="email" 
+                           value="{{ old('email') }}" 
+                           placeholder="Masukkan email anda"
                            required
                            autofocus>
                 </div>
@@ -199,12 +199,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
-                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 
-                if (!username || !password) {
+                if (!email || !password) {
                     e.preventDefault();
-                    alert('Username dan password wajib diisi');
+                    alert('Email dan password wajib diisi');
                     return;
                 }
 
