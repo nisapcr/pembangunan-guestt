@@ -17,13 +17,13 @@
 
     <!-- Sweet Alert -->
     <link type="text/css" href="{{ asset('assets-admin/vendor/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet">
-    
+
     <!-- Notyf -->
     <link type="text/css" href="{{ asset('assets-admin/vendor/notyf/notyf.min.css') }}" rel="stylesheet">
-    
+
     <!-- Volt CSS -->
     <link type="text/css" href="{{ asset('assets-admin/css/volt.css') }}" rel="stylesheet">
-    
+
     <!-- NOTICE: You can use the _analytics.html partial to include production code specific code & trackers -->
     <!-- End CSS -->
 
@@ -139,6 +139,100 @@
             padding: 35px 0;
         }
 
+        /* ======== About Page Styles ======== */
+        .about-section {
+            padding: 60px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            height: 100%;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #0d6efd 0%, #4dabf7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon i {
+            font-size: 30px;
+            color: white;
+        }
+
+        .process-step {
+            text-align: center;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            font-size: 1.2rem;
+        }
+
+        .module-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .team-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #0d6efd 0%, #4dabf7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 2.5rem;
+        }
+
         /* ======== Footer ======== */
         footer {
             background: #ffffff;
@@ -158,6 +252,52 @@
 
         footer a:hover {
             text-decoration: underline;
+        }
+
+        /* ======== Floating WhatsApp Button ======== */
+        .floating-wa {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+        }
+
+        .wa-float {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            animation: pulse-wa 2s infinite;
+        }
+
+        .wa-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+            animation: none; /* Stop pulse on hover */
+        }
+
+        .wa-float i {
+            font-size: 32px;
+            color: white;
+        }
+
+        /* Pulse animation untuk WhatsApp */
+        @keyframes pulse-wa {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
         }
 
         /* ======== Animation ======== */
@@ -187,7 +327,7 @@
                 font-size: 0.85rem;
                 margin: 0 4px;
             }
-            
+
             .navbar-brand h1 {
                 font-size: 1.5rem;
             }
@@ -197,19 +337,19 @@
             .navbar-nav {
                 padding: 8px 0;
             }
-            
+
             .nav-link {
                 margin: 4px 0 !important;
                 padding: 8px 12px !important;
                 font-size: 0.9rem;
             }
-            
+
             .dropdown-menu {
-                border: none;   
+                border: none;
                 box-shadow: none;
                 background-color: transparent;
             }
-            
+
             .dropdown-item {
                 padding-left: 35px;
                 font-size: 0.9rem;
@@ -220,13 +360,27 @@
             .navbar-brand h1 {
                 font-size: 1.4rem;
             }
-            
+
             .hero h1 {
                 font-size: 1.8rem;
             }
-            
+
             .hero p {
                 font-size: 0.9rem;
+            }
+
+            .floating-wa {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .wa-float {
+                width: 55px;
+                height: 55px;
+            }
+
+            .wa-float i {
+                font-size: 28px;
             }
         }
     </style>
@@ -258,7 +412,7 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-0">
             <!-- Main content area -->
             <div class="container-fluid p-0">
-                
+
                 <!-- NAVBAR UTAMA -->
                 <nav class="navbar navbar-expand-lg sticky-top main-navbar">
                     <div class="container">
@@ -278,22 +432,25 @@
                                 <li><a href="{{ route('progres') }}" class="nav-link {{ Request::is('progres') ? 'active' : '' }}">Progres</a></li>
                                 <li><a href="{{ route('lokasi') }}" class="nav-link {{ Request::is('lokasi') ? 'active' : '' }}">Lokasi</a></li>
                                 <li><a href="{{ route('kontraktor') }}" class="nav-link {{ Request::is('kontraktor') ? 'active' : '' }}">Kontraktor</a></li>
-                                
+
+                                <!-- MENU BARU: TENTANG -->
+                                <li><a href="{{ route('tentang') }}" class="nav-link {{ Request::is('tentang') ? 'active' : '' }}">Tentang</a></li>
+
                                 <!-- DROPDOWN DATA WARGA -->
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle {{ Request::is('warga*') ? 'active' : '' }}" 
+                                    <a class="nav-link dropdown-toggle {{ Request::is('warga*') ? 'active' : '' }}"
                                        href="#" role="button" data-bs-toggle="dropdown">
                                         <i class="fas fa-users me-1"></i>Data Warga
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item {{ Request::is('warga') ? 'active' : '' }}" 
+                                            <a class="dropdown-item {{ Request::is('warga') ? 'active' : '' }}"
                                                href="{{ route('warga.index') }}">
                                                 <i class="fas fa-list"></i>Daftar Warga
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item {{ Request::is('warga/create') ? 'active' : '' }}" 
+                                            <a class="dropdown-item {{ Request::is('warga/create') ? 'active' : '' }}"
                                                href="{{ route('warga.create') }}">
                                                 <i class="fas fa-user-plus"></i>Tambah Warga
                                             </a>
@@ -301,7 +458,6 @@
                                     </ul>
                                 </li>
 
-                                
                                 <li><a href="{{ route('login') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">Login</a></li>
                             </ul>
                         </div>
@@ -356,15 +512,26 @@
         </div>
     </footer>
 
+    <!-- Floating WhatsApp Button -->
+    <!-- GANTI NOMOR 6281234567890 DENGAN NOMOR ADMIN YANG BENAR -->
+    <div class="floating-wa">
+        <a href="https://wa.me/6285263992821?text=Halo,%20saya%20ingin%20konsultasi%20tentang%20proyek%20pembangunan%20di%20PembangunanProyek"
+           target="_blank"
+           class="wa-float"
+           title="Konsultasi via WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Sweet Alert -->
     <script src="{{ asset('assets-admin/vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
-    
+
     <!-- Notyf -->
     <script src="{{ asset('assets-admin/vendor/notyf/notyf.min.js') }}"></script>
-    
+
     <!-- Volt JS -->
     <script src="{{ asset('assets-admin/js/volt.js') }}"></script>
 
@@ -394,4 +561,4 @@
 
     @stack('scripts')
 </body>
-</html> 
+</html>

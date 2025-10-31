@@ -52,9 +52,9 @@ class ProyekController extends Controller
         // }
 
         Proyek::create($validated);
-        
+
         // --- PERBAIKAN PENTING DI BARIS INI ---
-        // Mengubah redirect dari 'proyek.index' menjadi 'home', 
+        // Mengubah redirect dari 'proyek.index' menjadi 'home',
         // karena rute utama yang menampilkan index proyek diberi nama 'home'.
         return redirect()->route('home')->with('success', 'Proyek berhasil ditambahkan');
     }
@@ -87,7 +87,7 @@ class ProyekController extends Controller
     public function update(Request $request, Proyek $proyek)
     {
         // ... (Kode update dan validasi Anda di sini) ...
-        
+
         // Contoh validasi dasar untuk update
         $validated = $request->validate([
             'nama_proyek' => 'required',
@@ -108,32 +108,41 @@ class ProyekController extends Controller
     public function destroy(Proyek $proyek)
     {
         $proyek->delete();
-        
+
         // Redirect kembali ke halaman utama
         return redirect()->route('home')->with('success', 'Proyek berhasil dihapus');
     }
 
     // --- METHOD KUSTOM YANG ADA DI ROUTE ANDA ---
-    
-    public function tahapan() 
+
+    public function tahapan()
     {
-        return view('pages.tahapan', ['title' => 'TahapanProyek']);
+        return view('pages.tahapan', ['title' => 'Tahapan Proyek']);
     }
 
-    public function progres() 
+    public function progres()
     {
         return view('pages.progres', ['title' => 'Progres Proyek']);
     }
 
-    public function lokasi() 
+    public function lokasi()
     {
         return view('pages.lokasi', ['title' => 'Lokasi Proyek']);
     }
 
-    public function kontraktor() 
+    public function kontraktor()
     {
         return view('pages.kontraktor', ['title' => 'Daftar Kontraktor']);
     }
 
+    public function contact()
+    {
+        return view('pages.contact', ['title' => 'Hubungi Kami']);
+    }
 
+    // --- METHOD BARU UNTUK HALAMAN TENTANG ---
+    public function tentang()
+    {
+        return view('pages.tentang', ['title' => 'Tentang Kami']);
+    }
 }

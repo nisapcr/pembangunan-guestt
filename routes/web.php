@@ -9,11 +9,10 @@ use App\Http\Controllers\WargaController;
 // --- GUEST ONLY (Non-Authenticated Users) ---
 Route::middleware('guest')->group(function () {
     // FIX 1: Rute GET Login HARUS bernama 'login' agar middleware 'auth' bekerja
-    Route::get('/login', [AuthController::class, 'index'])->name('login'); 
-    
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
+
     // Rute POST Login
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
 
     // Rute Register
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -22,15 +21,15 @@ Route::middleware('guest')->group(function () {
 
 // --- AUTHENTICATED USERS ONLY ---
 Route::middleware('auth')->group(function () {
-    
+
     // 1. Rute Beranda/Home
     Route::get('/', [ProyekController::class, 'index'])->name('home');
-    
+
     // 2. FIX 2: RESOURCE ROUTE untuk Proyek
     // Ini membuat rute 'proyek.create', 'proyek.store', dll. yang dibutuhkan view.
     // except(['index']) digunakan karena rute index sudah ditangani oleh rute '/' di atas.
     Route::resource('proyek', ProyekController::class)->except(['index']);
-    
+
     // 3. Rute kustom Proyek lainnya
     Route::get('/tahapan', [ProyekController::class, 'tahapan'])->name('tahapan');
     Route::get('/progres', [ProyekController::class, 'progres'])->name('progres');
@@ -38,10 +37,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/kontraktor', [ProyekController::class, 'kontraktor'])->name('kontraktor');
     Route::get('/contact', [ProyekController::class, 'contact'])->name('contact');
 
-    // 4. Rute Dashboard & Logout
+    // 4. RUTE BARU: Halaman Tentang
+    Route::get('/tentang', [ProyekController::class, 'tentang'])->name('tentang');
+
+    // 5. Rute Dashboard & Logout
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // 5. Resource Warga
+    // 6. Resource Warga
     Route::resource('warga', WargaController::class);
 });
