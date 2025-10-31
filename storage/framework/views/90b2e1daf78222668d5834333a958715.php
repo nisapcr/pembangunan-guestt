@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -346,7 +347,7 @@ unset($__errorArgs, $__bag); ?>
             </form>
 
             <div class="text-center mt-4">
-                <small>Sudah punya akun? <a href="<?php echo e(route('login.index')); ?>" class="login-link">Masuk di sini</a></small>
+                <small>Sudah punya akun? <a href="<?php echo e(route('login')); ?>" class="login-link">Masuk di sini</a></small>
             </div>
         </div>
     </div>

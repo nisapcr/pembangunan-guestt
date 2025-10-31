@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -304,7 +305,7 @@
             </form>
 
             <div class="text-center mt-4">
-                <small>Sudah punya akun? <a href="{{ route('login.index') }}" class="login-link">Masuk di sini</a></small>
+                <small>Sudah punya akun? <a href="{{ route('login') }}" class="login-link">Masuk di sini</a></small>
             </div>
         </div>
     </div>

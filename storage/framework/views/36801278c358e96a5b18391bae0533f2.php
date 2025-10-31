@@ -189,7 +189,7 @@
 
         <div class="login-footer">
             <p class="mb-0">
-                Belum punya akun? <a href="<?php echo e(route('register.index')); ?>">Daftar di sini</a>
+                Belum punya akun? <a href="<?php echo e(route('register')); ?>">Daftar di sini</a>
             </p>
         </div>
     </div>

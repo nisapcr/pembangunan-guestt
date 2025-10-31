@@ -51,12 +51,12 @@
         .main-navbar {
             background: #ffffff !important;
             box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-            padding: 12px 0;
+            padding: 10px 0;
             margin: 0;
         }
 
         .navbar-brand h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: #0d6efd;
             margin: 0;
@@ -65,21 +65,50 @@
         .main-navbar .nav-link {
             color: #333 !important;
             font-weight: 500;
-            margin: 0 10px;
-            border-bottom: 3px solid transparent;
+            font-size: 0.9rem;
+            margin: 0 6px;
+            border-bottom: 2px solid transparent;
             transition: all 0.25s ease;
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
 
         .main-navbar .nav-link:hover {
             color: #0d6efd !important;
-            border-bottom: 3px solid #adb5bd;
+            border-bottom: 2px solid #adb5bd;
         }
 
         .main-navbar .nav-link.active {
             color: #0d6efd !important;
-            border-bottom: 3px solid #0d6efd;
+            border-bottom: 2px solid #0d6efd;
             font-weight: 600;
+        }
+
+        /* ======== Dropdown Menu ======== */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 8px 0;
+            font-size: 0.85rem;
+        }
+
+        .dropdown-item {
+            padding: 6px 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            margin-right: 8px;
+            color: #6c757d;
+            font-size: 0.8rem;
         }
 
         /* ======== Hero Section ======== */
@@ -87,75 +116,48 @@
             background: linear-gradient(135deg, #0d6efd 0%, #4dabf7 100%);
             color: #fff;
             text-align: center;
-            padding: 90px 20px 100px;
-            border-radius: 0 0 35px 35px;
+            padding: 80px 20px 90px;
+            border-radius: 0 0 30px 30px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-top: 0;
         }
 
         .hero h1 {
-            font-size: 2.6rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .hero p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
         }
 
         /* ======== Main Content ======== */
         .main-content {
             min-height: 70vh;
-            padding: 40px 0;
+            padding: 35px 0;
         }
 
         /* ======== Footer ======== */
         footer {
             background: #ffffff;
             box-shadow: 0 -3px 10px rgba(0,0,0,0.05);
-            padding: 25px 0;
+            padding: 20px 0;
             text-align: center;
             color: #6c757d;
-            font-size: 14px;
+            font-size: 0.85rem;
             margin-top: 0;
         }
 
         footer a {
             color: #0d6efd;
             font-weight: 500;
+            font-size: 0.85rem;
         }
 
         footer a:hover {
             text-decoration: underline;
-        }
-
-        /* ======== Modal Search ======== */
-        .modal-content {
-            border-radius: 16px;
-            border: none;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-        }
-
-        .modal-body input {
-            border-radius: 10px;
-            padding: 14px 18px;
-        }
-
-        /* ======== Buttons ======== */
-        .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-            border-radius: 8px;
-        }
-
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: scale(0.97);
         }
 
         /* ======== Animation ======== */
@@ -177,6 +179,55 @@
         .py-4 {
             padding-top: 0 !important;
             padding-bottom: 0 !important;
+        }
+
+        /* ======== Mobile Responsive ======== */
+        @media (max-width: 1199.98px) {
+            .main-navbar .nav-link {
+                font-size: 0.85rem;
+                margin: 0 4px;
+            }
+            
+            .navbar-brand h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                padding: 8px 0;
+            }
+            
+            .nav-link {
+                margin: 4px 0 !important;
+                padding: 8px 12px !important;
+                font-size: 0.9rem;
+            }
+            
+            .dropdown-menu {
+                border: none;   
+                box-shadow: none;
+                background-color: transparent;
+            }
+            
+            .dropdown-item {
+                padding-left: 35px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .navbar-brand h1 {
+                font-size: 1.4rem;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 0.9rem;
+            }
         }
     </style>
 
@@ -227,16 +278,32 @@
                                 <li><a href="{{ route('progres') }}" class="nav-link {{ Request::is('progres') ? 'active' : '' }}">Progres</a></li>
                                 <li><a href="{{ route('lokasi') }}" class="nav-link {{ Request::is('lokasi') ? 'active' : '' }}">Lokasi</a></li>
                                 <li><a href="{{ route('kontraktor') }}" class="nav-link {{ Request::is('kontraktor') ? 'active' : '' }}">Kontraktor</a></li>
-                                <li><a href="{{ route('contact') }}" class="nav-link {{ Request::is('contact') ? 'active' : '' }}">Kontak</a></li>
-                                <li><a href="{{ route('login.index') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">Login</a></li>
+                                
+                                <!-- DROPDOWN DATA WARGA -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle {{ Request::is('warga*') ? 'active' : '' }}" 
+                                       href="#" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-users me-1"></i>Data Warga
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item {{ Request::is('warga') ? 'active' : '' }}" 
+                                               href="{{ route('warga.index') }}">
+                                                <i class="fas fa-list"></i>Daftar Warga
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item {{ Request::is('warga/create') ? 'active' : '' }}" 
+                                               href="{{ route('warga.create') }}">
+                                                <i class="fas fa-user-plus"></i>Tambah Warga
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
 
+                                
+                                <li><a href="{{ route('login') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">Login</a></li>
                             </ul>
-
-                            <div class="d-flex align-items-center ms-lg-3">
-                                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#searchModal">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </nav>
@@ -250,6 +317,23 @@
                 <!-- Main Content -->
                 <div class="main-content fade-in">
                     <div class="container">
+                        <!-- Alert Notifications -->
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
+                        @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
                         @yield('content')
                     </div>
                 </div>
@@ -266,27 +350,11 @@
             <p>© {{ date('Y') }} <strong>PembangunanProyek</strong>. Semua Hak Dilindungi.</p>
             <p>
                 <a href="{{ route('contact') }}">Hubungi Kami</a> •
-                <a href="{{ route('tahapan') }}">Tahapan Proyek</a>
+                <a href="{{ route('tahapan') }}">Tahapan Proyek</a> •
+                <a href="{{ route('warga.index') }}">Data Warga</a>
             </p>
         </div>
     </footer>
-
-    <!-- Search Modal -->
-    <div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-3">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title"><i class="fas fa-search me-2 text-primary"></i>Cari Sesuatu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <input type="text" class="form-control form-control-lg" placeholder="Masukkan kata kunci...">
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -300,6 +368,30 @@
     <!-- Volt JS -->
     <script src="{{ asset('assets-admin/js/volt.js') }}"></script>
 
+    <script>
+        // Auto-hide alerts setelah 5 detik
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+
+        // Smooth dropdown animation
+        document.querySelectorAll('.dropdown-toggle').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (window.innerWidth < 992) {
+                    e.preventDefault();
+                    const dropdown = this.nextElementSibling;
+                    dropdown.classList.toggle('show');
+                }
+            });
+        });
+    </script>
+
     @stack('scripts')
 </body>
-</html>
+</html> 
