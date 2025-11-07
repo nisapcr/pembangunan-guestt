@@ -67,7 +67,7 @@
                         <p class="text-secondary mb-4">
                             Menyediakan fasilitas belajar dan beasiswa bagi siswa berprestasi di daerah terpencil.
                         </p>
-                        
+
                         <div class="program-stats mb-4">
                             <div class="row text-center">
                                 <div class="col-4">
@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="d-grid gap-2">
                             <a href="#" class="btn btn-primary rounded-pill py-2 fw-semibold">
                                 <i class="fas fa-file-pdf me-2"></i>Lihat Dokumen
@@ -123,7 +123,7 @@
                         <p class="text-secondary mb-4">
                             Pembangunan jalan desa dan jembatan kecil untuk meningkatkan konektivitas antarwilayah.
                         </p>
-                        
+
                         <div class="program-stats mb-4">
                             <div class="row text-center">
                                 <div class="col-4">
@@ -140,7 +140,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="d-grid gap-2">
                             <a href="#" class="btn btn-primary rounded-pill py-2 fw-semibold">
                                 <i class="fas fa-file-pdf me-2"></i>Lihat Dokumen
@@ -179,7 +179,7 @@
                         <p class="text-secondary mb-4">
                             Penyediaan layanan kesehatan gratis dan sosialisasi gizi bagi masyarakat kurang mampu.
                         </p>
-                        
+
                         <div class="program-stats mb-4">
                             <div class="row text-center">
                                 <div class="col-4">
@@ -196,7 +196,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="d-grid gap-2">
                             <a href="#" class="btn btn-primary rounded-pill py-2 fw-semibold">
                                 <i class="fas fa-file-pdf me-2"></i>Lihat Dokumen
@@ -235,6 +235,7 @@
     </div>
 </section>
 
+{{-- css --}}
 <style>
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -333,17 +334,19 @@
     .hero-section .display-5 {
         font-size: 2rem;
     }
-    
+
     .program-stats .stat-number {
         font-size: 1rem;
     }
-    
+
     .card-header-gradient {
         padding: 1.5rem 1rem 1rem;
     }
 }
 </style>
+{{-- end css --}}
 
+{{-- js --}}
 <script>
 // Add some interactive features
 document.addEventListener('DOMContentLoaded', function() {
@@ -370,4 +373,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+{{-- end js --}}
 @endsection

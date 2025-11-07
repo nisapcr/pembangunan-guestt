@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WargaController;
+use App\Http\Controllers\ProyekController;
+use App\Http\Controllers\DashboardController;
 
 // --- GUEST ONLY (Non-Authenticated Users) ---
 Route::middleware('guest')->group(function () {
@@ -23,7 +24,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
 
     // 1. Rute Beranda/Home
-    Route::get('/', [ProyekController::class, 'index'])->name('home');
+    Route::get('/daftarProyek', [ProyekController::class, 'index'])->name('home');
 
     // 2. FIX 2: RESOURCE ROUTE untuk Proyek
     // Ini membuat rute 'proyek.create', 'proyek.store', dll. yang dibutuhkan view.
@@ -41,9 +42,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/tentang', [ProyekController::class, 'tentang'])->name('tentang');
 
     // 5. Rute Dashboard & Logout
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // 6. Resource Warga
     Route::resource('warga', WargaController::class);
+
+    Route::resource('users', UserController::class);
+     Route::get('/users', [UserController::class, 'index'])->name('users.index');
 });
+

@@ -347,6 +347,7 @@
     </div>
 </div>
 
+{{-- css --}}
 <style>
 .contractor-card {
     transition: all 0.3s ease;
@@ -369,4 +370,5 @@
     border-radius: 50%;
 }
 </style>
+{{-- end css --}}
 @endsection

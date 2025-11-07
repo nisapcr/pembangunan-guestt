@@ -108,7 +108,7 @@
                         <div class="position-relative w-100 h-100">
                             {{-- Background grid --}}
                             <div class="position-absolute w-100 h-100" style="background-image: linear-gradient(#e0e0e0 1px, transparent 1px), linear-gradient(90deg, #e0e0e0 1px, transparent 1px); background-size: 20px 20px;"></div>
-                            
+
                             {{-- Markers --}}
                             <div class="position-absolute" style="top: 30%; left: 25%;">
                                                 <div class="map-marker bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 50px; height: 50px; cursor: pointer;" data-bs-toggle="tooltip" title="Proyek A - Jakarta Pusat">
@@ -233,6 +233,7 @@
     </div>
 </div>
 
+{{-- css --}}
 <style>
 .project-item {
     transition: all 0.3s ease;
@@ -256,7 +257,10 @@
     min-height: auto;
 }
 </style>
+{{-- end css --}}
 
+
+{{-- js --}}
 <script>
 // Initialize tooltips
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -264,4 +268,5 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
 });
 </script>
+{{-- end js --}}
 @endsection

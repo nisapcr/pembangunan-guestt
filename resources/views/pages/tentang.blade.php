@@ -301,6 +301,8 @@
     </div>
 </div>
 
+
+{{-- css --}}
 <style>
     .hero-image img {
         max-height: 300px;
@@ -329,4 +331,5 @@
         border: 3px solid #0d6efd;
     }
 </style>
+{{-- end css --}}
 @endsection

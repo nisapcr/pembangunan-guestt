@@ -344,6 +344,7 @@
     </div>
 </div>
 
+{{-- css --}}
 <style>
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -426,17 +427,19 @@
     .table-responsive {
         font-size: 0.875rem;
     }
-    
+
     .btn-group .btn {
         padding: 0.25rem 0.5rem;
     }
-    
+
     .stage-icon {
         display: none;
     }
 }
 </style>
+{{-- end css --}}
 
+{{-- js --}}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // View Mode Toggle
@@ -487,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Timeline View Loader
     function loadTimelineView() {
         const timelineContainer = document.getElementById('timelineContainer');
-        
+
         // Simulate loading
         setTimeout(() => {
             timelineContainer.innerHTML = `
@@ -600,4 +603,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+{{-- end js --}}
 @endsection

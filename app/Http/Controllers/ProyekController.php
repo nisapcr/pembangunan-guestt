@@ -6,6 +6,7 @@ use App\Models\Proyek; // Pastikan model Proyek di-import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log; // Digunakan untuk logging jika diperlukan
 
+
 class ProyekController extends Controller
 {
     /**
@@ -14,7 +15,7 @@ class ProyekController extends Controller
     public function index()
     {
         $proyek = Proyek::all();
-        return view('proyek.index', compact('proyek'));
+        return view('pages.proyek.index', compact('proyek'));
     }
 
     /**
@@ -22,7 +23,7 @@ class ProyekController extends Controller
      */
     public function create()
     {
-        return view('proyek.create', [
+        return view('pages.proyek.create', [
             'title' => 'Tambah Proyek Baru'
         ]);
     }
@@ -64,7 +65,7 @@ class ProyekController extends Controller
      */
     public function show(Proyek $proyek)
     {
-        return view('proyek.show', [
+        return view('pages.proyek.show', [
             'proyek' => $proyek,
             'title' => 'Detail Proyek'
         ]);
@@ -75,7 +76,7 @@ class ProyekController extends Controller
      */
     public function edit(Proyek $proyek)
     {
-        return view('proyek.edit', [
+        return view('pages.proyek.edit', [
             'proyek' => $proyek,
             'title' => 'Edit Proyek'
         ]);

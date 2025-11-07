@@ -16,7 +16,7 @@ class AuthController extends Controller
      */
     public function index()
     {
-        return view('pages.login');
+        return view('pages.Auth.login');
     }
 
     /**
@@ -39,7 +39,7 @@ class AuthController extends Controller
 
     public function showRegister()
     {
-        return view('pages.register');
+        return view('pages.Auth.register');
     }
 
     // proses registrasi

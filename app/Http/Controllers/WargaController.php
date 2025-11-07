@@ -11,12 +11,12 @@ class WargaController extends Controller
     public function index()
     {
         $warga = Warga::all();
-        return view('warga.index', compact('warga'));
+        return view('pages.warga.index', compact('warga'));
     }
 
     public function create()
     {
-        return view('warga.create');
+        return view('pages.warga.create');
     }
 
     public function store(Request $request)
@@ -80,7 +80,7 @@ class WargaController extends Controller
     {
         try {
             $warga = Warga::findOrFail($id);
-            
+
             $request->validate([
                 'no_ktp' => 'required|size:16|unique:warga,no_ktp,' . $warga->warga_id . ',warga_id',
                 'nama' => 'required|max:100',

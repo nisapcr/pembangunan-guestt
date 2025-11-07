@@ -465,6 +465,7 @@
     </div>
 </div>
 
+{{-- css --}}
 <style>
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -613,18 +614,20 @@
     .progress-timeline-item {
         padding-left: 2rem;
     }
-    
+
     .timeline-marker {
         width: 2rem;
         height: 2rem;
         top: 1.5rem;
     }
-    
+
     .progress-icon {
         display: none;
     }
 }
 </style>
+{{-- end css --}}
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -667,7 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Animate progress circles on scroll
     const progressCircles = document.querySelectorAll('.progress-circle');
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
