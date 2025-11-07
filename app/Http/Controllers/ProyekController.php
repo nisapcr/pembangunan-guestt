@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Proyek; // Pastikan model Proyek di-import
+use App\Models\Proyek;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log; // Digunakan untuk logging jika diperlukan
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProyekController extends Controller
 {
@@ -42,21 +42,17 @@ class ProyekController extends Controller
             'anggaran' => 'required|numeric',
             'sumber_dana' => 'required',
             'deskripsi' => 'nullable',
-            // Pastikan Anda menangani upload file dokumen di sini jika file diisi
             'dokumen' => 'nullable|file|max:2048' // Max 2MB
         ]);
 
-        // Jika Anda ingin menangani upload file:
-        // if ($request->hasFile('dokumen')) {
-        //     $path = $request->file('dokumen')->store('dokumen-proyek', 'public');
-        //     $validated['dokumen'] = $path;
-        // }
+        // Handle upload file dokumen
+        if ($request->hasFile('dokumen')) {
+            $path = $request->file('dokumen')->store('dokumen-proyek', 'public');
+            $validated['dokumen'] = $path;
+        }
 
         Proyek::create($validated);
 
-        // --- PERBAIKAN PENTING DI BARIS INI ---
-        // Mengubah redirect dari 'proyek.index' menjadi 'home',
-        // karena rute utama yang menampilkan index proyek diberi nama 'home'.
         return redirect()->route('home')->with('success', 'Proyek berhasil ditambahkan');
     }
 
@@ -87,19 +83,34 @@ class ProyekController extends Controller
      */
     public function update(Request $request, Proyek $proyek)
     {
-        // ... (Kode update dan validasi Anda di sini) ...
-
-        // Contoh validasi dasar untuk update
+        // Validasi data input untuk update
         $validated = $request->validate([
+            'kode_proyek' => 'required|unique:proyek,kode_proyek,' . $proyek->proyek_id . ',proyek_id',
             'nama_proyek' => 'required',
             'tahun' => 'required|integer',
             'lokasi' => 'required',
-            // ... validasi lainnya
+            'anggaran' => 'required|numeric',
+            'sumber_dana' => 'required',
+            'deskripsi' => 'nullable',
+            'dokumen' => 'nullable|file|max:2048'
         ]);
+
+        // Handle upload file dokumen jika ada file baru
+        if ($request->hasFile('dokumen')) {
+            // Hapus file lama jika ada
+            if ($proyek->dokumen && Storage::disk('public')->exists($proyek->dokumen)) {
+                Storage::disk('public')->delete($proyek->dokumen);
+            }
+            
+            $path = $request->file('dokumen')->store('dokumen-proyek', 'public');
+            $validated['dokumen'] = $path;
+        } else {
+            // Jika tidak ada file baru, pertahankan file lama
+            $validated['dokumen'] = $proyek->dokumen;
+        }
 
         $proyek->update($validated);
 
-        // Redirect ke detail proyek atau kembali ke halaman utama
         return redirect()->route('home')->with('success', 'Proyek berhasil diperbarui');
     }
 
@@ -108,9 +119,13 @@ class ProyekController extends Controller
      */
     public function destroy(Proyek $proyek)
     {
+        // Hapus file dokumen jika ada
+        if ($proyek->dokumen && Storage::disk('public')->exists($proyek->dokumen)) {
+            Storage::disk('public')->delete($proyek->dokumen);
+        }
+
         $proyek->delete();
 
-        // Redirect kembali ke halaman utama
         return redirect()->route('home')->with('success', 'Proyek berhasil dihapus');
     }
 
@@ -141,7 +156,9 @@ class ProyekController extends Controller
         return view('pages.contact', ['title' => 'Hubungi Kami']);
     }
 
-    // --- METHOD BARU UNTUK HALAMAN TENTANG ---
+    /**
+     * Method untuk halaman tentang kami.
+     */
     public function tentang()
     {
         return view('pages.tentang', ['title' => 'Tentang Kami']);

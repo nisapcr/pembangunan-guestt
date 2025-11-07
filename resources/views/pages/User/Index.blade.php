@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container mt-5">
-    <h2 class="mb-4">Daftar Pengguna</h2>
+@section('title', 'Daftar Data Pengguna')
 
+@section('content')
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif

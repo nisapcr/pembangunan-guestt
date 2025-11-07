@@ -1,10 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Data Warga - PembangunanProyek')
+@section('title', 'Edit Data Pengguna')
 
 @section('content')
-<div class="container mt-5">
-    <h2 class="mb-4">Edit Data Pengguna</h2>
 
     <form action="{{ route('users.update', $user->id) }}" method="POST">
         @csrf

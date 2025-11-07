@@ -440,7 +440,7 @@
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle {{ Request::is('warga*') ? 'active' : '' }}"
                                        href="#" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-users me-1"></i>Data Warga
+                                        <i class="fas fa-users me-1"></i>Data
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li>
@@ -450,9 +450,9 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item {{ Request::is('warga/create') ? 'active' : '' }}"
-                                               href="{{ route('warga.create') }}">
-                                                <i class="fas fa-user-plus"></i>Tambah Warga
+                                            <a class="dropdown-item {{ Request::is('User') ? 'active' : '' }}"
+                                               href="{{ route('users.index') }}">
+                                                <i class="fas fa-user-plus"></i>Daftar pengguna
                                             </a>
                                         </li>
                                     </ul>
