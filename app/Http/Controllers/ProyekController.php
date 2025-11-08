@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class ProyekController extends Controller
 {
     /**
-     * Menampilkan daftar semua proyek (Ini dipanggil oleh rute '/' yang bernama 'home').
+     * Menampilkan daftar semua proyek.
      */
     public function index()
     {
@@ -53,7 +53,7 @@ class ProyekController extends Controller
 
         Proyek::create($validated);
 
-        return redirect()->route('home')->with('success', 'Proyek berhasil ditambahkan');
+        return redirect()->route('proyek.index')->with('success', 'Proyek berhasil ditambahkan');
     }
 
     /**
@@ -111,7 +111,7 @@ class ProyekController extends Controller
 
         $proyek->update($validated);
 
-        return redirect()->route('home')->with('success', 'Proyek berhasil diperbarui');
+        return redirect()->route('proyek.index')->with('success', 'Proyek berhasil diperbarui');
     }
 
     /**
@@ -126,7 +126,7 @@ class ProyekController extends Controller
 
         $proyek->delete();
 
-        return redirect()->route('home')->with('success', 'Proyek berhasil dihapus');
+        return redirect()->route('proyek.index')->with('success', 'Proyek berhasil dihapus');
     }
 
     // --- METHOD KUSTOM YANG ADA DI ROUTE ANDA ---
@@ -151,6 +151,9 @@ class ProyekController extends Controller
         return view('pages.kontraktor', ['title' => 'Daftar Kontraktor']);
     }
 
+    /**
+     * Method untuk halaman contact.
+     */
     public function contact()
     {
         return view('pages.contact', ['title' => 'Hubungi Kami']);
