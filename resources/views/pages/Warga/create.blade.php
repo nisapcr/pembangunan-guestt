@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('layouts.guest.app')
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -12,7 +11,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="no_ktp" class="form-label">No KTP *</label>
-                        <input type="text" class="form-control @error('no_ktp') is-invalid @enderror" 
+                        <input type="text" class="form-control @error('no_ktp') is-invalid @enderror"
                             id="no_ktp" name="no_ktp" value="{{ old('no_ktp') }}" maxlength="16" required>
                         @error('no_ktp')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -21,7 +20,7 @@
 
                     <div class="mb-3">
                         <label for="nama" class="form-label">Nama Lengkap *</label>
-                        <input type="text" class="form-control @error('nama') is-invalid @enderror" 
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror"
                             id="nama" name="nama" value="{{ old('nama') }}" required>
                         @error('nama')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -30,7 +29,7 @@
 
                     <div class="mb-3">
                         <label for="jenis_kelamin" class="form-label">Jenis Kelamin *</label>
-                        <select class="form-select @error('jenis_kelamin') is-invalid @enderror" 
+                        <select class="form-select @error('jenis_kelamin') is-invalid @enderror"
                             id="jenis_kelamin" name="jenis_kelamin" required>
                             <option value="">Pilih Jenis Kelamin</option>
                             <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
@@ -43,7 +42,7 @@
 
                     <div class="mb-3">
                         <label for="agama" class="form-label">Agama *</label>
-                        <input type="text" class="form-control @error('agama') is-invalid @enderror" 
+                        <input type="text" class="form-control @error('agama') is-invalid @enderror"
                             id="agama" name="agama" value="{{ old('agama') }}" required>
                         @error('agama')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -54,7 +53,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="pekerjaan" class="form-label">Pekerjaan *</label>
-                        <input type="text" class="form-control @error('pekerjaan') is-invalid @enderror" 
+                        <input type="text" class="form-control @error('pekerjaan') is-invalid @enderror"
                             id="pekerjaan" name="pekerjaan" value="{{ old('pekerjaan') }}" required>
                         @error('pekerjaan')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -63,7 +62,7 @@
 
                     <div class="mb-3">
                         <label for="telp" class="form-label">Telepon *</label>
-                        <input type="text" class="form-control @error('telp') is-invalid @enderror" 
+                        <input type="text" class="form-control @error('telp') is-invalid @enderror"
                             id="telp" name="telp" value="{{ old('telp') }}" required>
                         @error('telp')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -72,7 +71,7 @@
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                        <input type="email" class="form-control @error('email') is-invalid @enderror"
                             id="email" name="email" value="{{ old('email') }}">
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>

@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('layouts.guest.app')
 @section('title', 'Daftar Data Proyek')
 
 @section('content')
@@ -85,7 +84,7 @@
                         <form action="{{ route('proyek.destroy', $item->proyek_id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" 
+                            <button type="submit" class="btn btn-danger btn-sm"
                                     onclick="return confirm('Apakah Anda yakin ingin menghapus proyek {{ $item->nama_proyek }}?')">
                                 <i class="fas fa-trash"></i>
                             </button>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.guest.app')
 
 @section('title', 'Daftar Data Pengguna')
 
@@ -27,11 +27,22 @@
                     <td>
                         <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm">Lihat</a>
                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                        </form>
+
+                        @if(auth()->check() && auth()->id() == $user->id)
+                            {{-- Tombol Hapus dinonaktifkan untuk user yang sedang login --}}
+                            <button class="btn btn-danger btn-sm" disabled title="Tidak dapat menghapus akun sendiri">
+                                Hapus
+                            </button>
+                        @else
+                            {{-- Tombol Hapus normal untuk user lain --}}
+                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">
+                                    Hapus
+                                </button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
             @empty

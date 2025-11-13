@@ -1,6 +1,5 @@
 <!-- resources/views/pages/tentang.blade.php -->
-@extends('layouts.app')
-
+@extends('layouts.guest.app')
 @section('title', 'Tentang Kami')
 
 @section('content')

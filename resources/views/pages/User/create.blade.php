@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('layouts.guest.app')
 @section('title', 'Tambah Pengguna')
 
 @section('content')

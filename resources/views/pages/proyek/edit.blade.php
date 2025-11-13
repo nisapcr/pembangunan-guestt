@@ -1,6 +1,5 @@
 {{-- resources/views/pages/proyek/edit.blade.php --}}
-@extends('layouts.app')
-
+@extends('layouts.guest.app')
 @section('title', 'Edit Proyek')
 
 @section('content')
@@ -34,13 +33,13 @@
                     <form action="{{ route('proyek.update', $proyek->proyek_id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="kode_proyek" class="form-label">Kode Proyek <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('kode_proyek') is-invalid @enderror" 
-                                       id="kode_proyek" name="kode_proyek" 
-                                       value="{{ old('kode_proyek', $proyek->kode_proyek) }}" 
+                                <input type="text" class="form-control @error('kode_proyek') is-invalid @enderror"
+                                       id="kode_proyek" name="kode_proyek"
+                                       value="{{ old('kode_proyek', $proyek->kode_proyek) }}"
                                        placeholder="Masukkan kode proyek" required>
                                 @error('kode_proyek')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -49,9 +48,9 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="nama_proyek" class="form-label">Nama Proyek <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nama_proyek') is-invalid @enderror" 
-                                       id="nama_proyek" name="nama_proyek" 
-                                       value="{{ old('nama_proyek', $proyek->nama_proyek) }}" 
+                                <input type="text" class="form-control @error('nama_proyek') is-invalid @enderror"
+                                       id="nama_proyek" name="nama_proyek"
+                                       value="{{ old('nama_proyek', $proyek->nama_proyek) }}"
                                        placeholder="Masukkan nama proyek" required>
                                 @error('nama_proyek')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -62,11 +61,11 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="tahun" class="form-label">Tahun <span class="text-danger">*</span></label>
-                                <select class="form-select @error('tahun') is-invalid @enderror" 
+                                <select class="form-select @error('tahun') is-invalid @enderror"
                                         id="tahun" name="tahun" required>
                                     <option value="">Pilih Tahun</option>
                                     @for($year = date('Y'); $year >= 2000; $year--)
-                                        <option value="{{ $year }}" 
+                                        <option value="{{ $year }}"
                                             {{ old('tahun', $proyek->tahun) == $year ? 'selected' : '' }}>
                                             {{ $year }}
                                         </option>
@@ -79,9 +78,9 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="lokasi" class="form-label">Lokasi <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('lokasi') is-invalid @enderror" 
-                                       id="lokasi" name="lokasi" 
-                                       value="{{ old('lokasi', $proyek->lokasi) }}" 
+                                <input type="text" class="form-control @error('lokasi') is-invalid @enderror"
+                                       id="lokasi" name="lokasi"
+                                       value="{{ old('lokasi', $proyek->lokasi) }}"
                                        placeholder="Masukkan lokasi proyek" required>
                                 @error('lokasi')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -94,9 +93,9 @@
                                 <label for="anggaran" class="form-label">Anggaran (Rp) <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
-                                    <input type="number" step="0.01" class="form-control @error('anggaran') is-invalid @enderror" 
-                                           id="anggaran" name="anggaran" 
-                                           value="{{ old('anggaran', $proyek->anggaran) }}" 
+                                    <input type="number" step="0.01" class="form-control @error('anggaran') is-invalid @enderror"
+                                           id="anggaran" name="anggaran"
+                                           value="{{ old('anggaran', $proyek->anggaran) }}"
                                            placeholder="0.00" required>
                                 </div>
                                 @error('anggaran')
@@ -106,7 +105,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="sumber_dana" class="form-label">Sumber Dana <span class="text-danger">*</span></label>
-                                <select class="form-select @error('sumber_dana') is-invalid @enderror" 
+                                <select class="form-select @error('sumber_dana') is-invalid @enderror"
                                         id="sumber_dana" name="sumber_dana" required>
                                     <option value="">Pilih Sumber Dana</option>
                                     <option value="APBD" {{ old('sumber_dana', $proyek->sumber_dana) == 'APBD' ? 'selected' : '' }}>APBD</option>
@@ -124,9 +123,9 @@
 
                         <div class="mb-3">
                             <label for="deskripsi" class="form-label">Deskripsi Proyek</label>
-                            <textarea class="form-control @error('deskripsi') is-invalid @enderror" 
-                                      id="deskripsi" name="deskripsi" 
-                                      rows="4" 
+                            <textarea class="form-control @error('deskripsi') is-invalid @enderror"
+                                      id="deskripsi" name="deskripsi"
+                                      rows="4"
                                       placeholder="Masukkan deskripsi proyek (opsional)">{{ old('deskripsi', $proyek->deskripsi) }}</textarea>
                             @error('deskripsi')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -135,7 +134,7 @@
 
                         <div class="mb-4">
                             <label for="dokumen" class="form-label">Dokumen Proyek</label>
-                            
+
                             {{-- Tampilkan dokumen saat ini jika ada --}}
                             @if($proyek->dokumen)
                                 <div class="alert alert-info py-2">
@@ -143,8 +142,8 @@
                                         <div>
                                             <i class="fas fa-file-pdf text-danger me-2"></i>
                                             <span class="fw-medium">Dokumen saat ini:</span>
-                                            <a href="{{ Storage::url($proyek->dokumen) }}" 
-                                               target="_blank" 
+                                            <a href="{{ Storage::url($proyek->dokumen) }}"
+                                               target="_blank"
                                                class="text-primary ms-2">
                                                 {{ basename($proyek->dokumen) }}
                                             </a>
@@ -161,9 +160,9 @@
                                     Tidak ada dokumen yang diupload
                                 </div>
                             @endif
-                            
-                            <input type="file" class="form-control @error('dokumen') is-invalid @enderror" 
-                                   id="dokumen" name="dokumen" 
+
+                            <input type="file" class="form-control @error('dokumen') is-invalid @enderror"
+                                   id="dokumen" name="dokumen"
                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
                             <div class="form-text">
                                 <i class="fas fa-info-circle me-1"></i>

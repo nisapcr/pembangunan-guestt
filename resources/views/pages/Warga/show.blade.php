@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('layouts.guest.app')
 @section('title', 'Detail Data Warga - PembangunanProyek')
 
 @section('content')

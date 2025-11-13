@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('layouts.guest.app')
 @section('title', 'Daftar Data Warga')
 
 @section('content')
@@ -87,7 +86,7 @@
                     <form action="{{ route('warga.destroy', $item->warga_id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" 
+                        <button type="submit" class="btn btn-danger btn-sm"
                                 onclick="return confirm('Apakah Anda yakin ingin menghapus data warga {{ $item->nama }}?')">
                             <i class="fas fa-trash"></i>
                         </button>
