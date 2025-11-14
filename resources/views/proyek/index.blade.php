@@ -11,15 +11,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
-        body { 
+        body {
             background-color: #f4f7f6; /* Warna latar belakang lebih lembut */
             font-family: 'Poppins', sans-serif; /* Asumsi font yang lebih modern */
         }
         .container {
             max-width: 1300px;
         }
-        .card { 
-            border-radius: 12px; 
+        .card {
+            border-radius: 12px;
             border: none;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); /* Shadow lebih menonjol */
         }
@@ -78,7 +78,7 @@
 <body>
 
 <div class="container py-5">
-    
+
     <div class="text-center mb-5">
         <h2 class="fw-bold text-dark mb-2">
             <i class="fas fa-hammer me-2 text-primary"></i> Monitoring Proyek

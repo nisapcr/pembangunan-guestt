@@ -12,10 +12,10 @@ class Proyek extends Model
 
     protected $table = 'proyek';
     protected $primaryKey = 'proyek_id';
-    
+
     protected $fillable = [
         'kode_proyek',
-        'nama_proyek', 
+        'nama_proyek',
         'tahun',
         'lokasi',
         'anggaran',

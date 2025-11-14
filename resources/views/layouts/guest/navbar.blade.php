@@ -14,7 +14,7 @@
 
                 <li><a href="{{ route('proyek.index') }}"
                         class="nav-link {{ Request::is('proyek*') ? 'active' : '' }}">Proyek</a></li>
-                <li><a href="{{ route('tahapan') }}"
+                <li><a href="{{ route('tahapan.index') }}"
                         class="nav-link {{ Request::is('tahapan*') ? 'active' : '' }}">Tahapan</a></li>
                 <li><a href="{{ route('progres') }}"
                         class="nav-link {{ Request::is('progres*') ? 'active' : '' }}">Progres</a></li>

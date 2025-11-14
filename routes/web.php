@@ -7,6 +7,7 @@ use App\Http\Controllers\WargaController;
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TahapanProyekController;
 
 // --- RUTE BERANDA (Bisa diakses oleh semua pengguna) ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -21,24 +22,28 @@ Route::middleware('guest')->group(function () {
 
 // --- AUTHENTICATED USERS ONLY ---
 Route::middleware('auth')->group(function () {
-    // 1. Resource Proyek (SUDAH TERMASUK proyek.index, create, store, show, edit, update, destroy)
+    // 1. Resource Proyek
     Route::resource('proyek', ProyekController::class);
 
-    // 2. Rute kustom Proyek lainnya
-    Route::get('/tahapan', [ProyekController::class, 'tahapan'])->name('tahapan');
+    // 2. Resource Tahapan Proyek
+    Route::resource('tahapan', \App\Http\Controllers\TahapanProyekController::class);
+
+
+    // 3. Rute kustom Proyek lainnya
+
     Route::get('/progres', [ProyekController::class, 'progres'])->name('progres');
     Route::get('/lokasi', [ProyekController::class, 'lokasi'])->name('lokasi');
     Route::get('/kontraktor', [ProyekController::class, 'kontraktor'])->name('kontraktor');
     Route::get('/contact', [ProyekController::class, 'contact'])->name('contact');
     Route::get('/tentang', [ProyekController::class, 'tentang'])->name('tentang');
 
-    // 3. Rute Dashboard & Logout
+    // 4. Rute Dashboard & Logout
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // 4. Resource Warga
+    // 5. Resource Warga
     Route::resource('warga', WargaController::class);
 
-    // 5. Resource Users
+    // 6. Resource Users
     Route::resource('users', UserController::class);
 });
