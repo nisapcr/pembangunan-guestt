@@ -15,7 +15,7 @@ class TahapanStoreRequest extends FormRequest
     {
         return [
             'proyek_id' => 'required|exists:proyek,proyek_id',
-            'nama_tahapan' => 'required|string|max:255',
+            'nama_tahap' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'target_persen' => 'required|integer|min:0|max:100',
             'tanggal_mulai' => 'required|date',
