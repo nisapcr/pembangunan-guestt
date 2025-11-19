@@ -101,7 +101,7 @@ class ProyekController extends Controller
             if ($proyek->dokumen && Storage::disk('public')->exists($proyek->dokumen)) {
                 Storage::disk('public')->delete($proyek->dokumen);
             }
-            
+
             $path = $request->file('dokumen')->store('dokumen-proyek', 'public');
             $validated['dokumen'] = $path;
         } else {
