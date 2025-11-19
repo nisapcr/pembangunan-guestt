@@ -11,7 +11,20 @@ class TahapanProyekController extends Controller
     public function index()
     {
         $tahapans = TahapanProyek::with('proyek')->latest()->get();
-        return view('pages.tahapan.index', compact('tahapans'));
+
+        // TAMBAHKAN INI: Hitung statistik untuk card
+        $totalTahapan = TahapanProyek::count();
+        $tahapanSelesai = TahapanProyek::where('status', 'completed')->count();
+        $tahapanPending = TahapanProyek::where('status', 'pending')->count();
+        $tahapanInProgress = TahapanProyek::where('status', 'in_progress')->count();
+
+        return view('pages.tahapan.index', compact(
+            'tahapans',
+            'totalTahapan',
+            'tahapanSelesai',
+            'tahapanPending',
+            'tahapanInProgress'
+        ));
     }
 
     public function create()

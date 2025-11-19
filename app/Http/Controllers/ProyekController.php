@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proyek;
+use App\Models\TahapanProyek;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,29 @@ class ProyekController extends Controller
     public function index()
     {
         $proyek = Proyek::all();
-        return view('pages.proyek.index', compact('proyek'));
+
+        // TAMBAHKAN STATISTIK PROYEK
+        $totalProyek = Proyek::count();
+        $totalAnggaran = Proyek::sum('anggaran');
+
+        // Hitung proyek berdasarkan tahun
+        $proyekAktif = Proyek::where('tahun', '>=', date('Y') - 1)->count();
+        $proyekSelesai = Proyek::where('tahun', '<', date('Y') - 1)->count();
+
+        // Hitung berdasarkan sumber dana
+        $sumberDanaCount = Proyek::select('sumber_dana')
+            ->selectRaw('COUNT(*) as count')
+            ->groupBy('sumber_dana')
+            ->get();
+
+        return view('pages.proyek.index', compact(
+            'proyek',
+            'totalProyek',
+            'totalAnggaran',
+            'proyekAktif',
+            'proyekSelesai',
+            'sumberDanaCount'
+        ));
     }
 
     /**
@@ -129,7 +152,6 @@ class ProyekController extends Controller
         return redirect()->route('proyek.index')->with('success', 'Proyek berhasil dihapus');
     }
 
-    // --- METHOD KUSTOM YANG ADA DI ROUTE ANDA ---
 
     public function tahapan()
     {

@@ -47,15 +47,7 @@
                 </div>
 
                 {{-- DESKRIPSI --}}
-                <div class="mb-3">
-                    <label class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi"
-                              rows="3"
-                              class="form-control @error('deskripsi') is-invalid @enderror">{{ old('deskripsi', $tahapan->deskripsi) }}</textarea>
-                    @error('deskripsi')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+
 
                 {{-- TARGET PROGRES --}}
                 <div class="mb-3">
