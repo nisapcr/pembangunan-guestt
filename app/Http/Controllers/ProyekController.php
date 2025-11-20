@@ -15,7 +15,7 @@ class ProyekController extends Controller
      */
     public function index()
     {
-        $proyek = Proyek::all();
+       $proyek = \App\Models\Proyek::all();
 
         // TAMBAHKAN STATISTIK PROYEK
         $totalProyek = Proyek::count();
