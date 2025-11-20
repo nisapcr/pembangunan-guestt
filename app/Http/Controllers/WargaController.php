@@ -51,7 +51,7 @@ class WargaController extends Controller
 
             return redirect()->route('warga.index')
                 ->with('success', 'Data warga berhasil ditambahkan!');
-                
+
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal menambah data: ' . $e->getMessage())
@@ -109,7 +109,7 @@ class WargaController extends Controller
 
             return redirect()->route('warga.index')
                 ->with('success', 'Data warga berhasil diupdate!');
-                
+
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal mengupdate data: ' . $e->getMessage())
@@ -128,7 +128,7 @@ class WargaController extends Controller
 
             return redirect()->route('warga.index')
                 ->with('success', 'Data warga berhasil dihapus!');
-                
+
         } catch (\Exception $e) {
             return redirect()->route('warga.index')
                 ->with('error', 'Gagal menghapus data: ' . $e->getMessage());

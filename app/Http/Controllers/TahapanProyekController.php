@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TahapanProyek;
-use App\Models\Proyek;
+use App\Models\proyek;
 use Illuminate\Http\Request;
 
 class TahapanProyekController extends Controller

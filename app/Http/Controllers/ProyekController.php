@@ -153,39 +153,5 @@ class ProyekController extends Controller
     }
 
 
-    public function tahapan()
-    {
-        return view('pages.tahapan', ['title' => 'Tahapan Proyek']);
-    }
-
-    public function progres()
-    {
-        return view('pages.progres', ['title' => 'Progres Proyek']);
-    }
-
-    public function lokasi()
-    {
-        return view('pages.lokasi', ['title' => 'Lokasi Proyek']);
-    }
-
-    public function kontraktor()
-    {
-        return view('pages.kontraktor', ['title' => 'Daftar Kontraktor']);
-    }
-
-    /**
-     * Method untuk halaman contact.
-     */
-    public function contact()
-    {
-        return view('pages.contact', ['title' => 'Hubungi Kami']);
-    }
-
-    /**
-     * Method untuk halaman tentang kami.
-     */
-    public function tentang()
-    {
-        return view('pages.tentang', ['title' => 'Tentang Kami']);
-    }
 }
+
