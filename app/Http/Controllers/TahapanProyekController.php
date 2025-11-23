@@ -3,29 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Models\TahapanProyek;
-use App\Models\proyek;
+use App\Models\Proyek;
 use Illuminate\Http\Request;
 
 class TahapanProyekController extends Controller
 {
-    public function index()
-    {
-        $tahapans = TahapanProyek::with('proyek')->latest()->get();
+public function index(Request $request)
+{
+    try {
+        // Kolom yang bisa di-filter
+        $filterableColumns = ['status', 'proyek_id'];
 
-        // TAMBAHKAN INI: Hitung statistik untuk card
-        $totalTahapan = TahapanProyek::count();
-        $tahapanSelesai = TahapanProyek::where('status', 'completed')->count();
-        $tahapanPending = TahapanProyek::where('status', 'pending')->count();
-        $tahapanInProgress = TahapanProyek::where('status', 'in_progress')->count();
+        // Kolom yang bisa dicari
+        $searchableColumns = ['nama_tahapan', 'deskripsi'];
+
+        // Query dengan pagination, search, dan filter
+        $tahapans = TahapanProyek::with('proyek')
+                    ->filter($request, $filterableColumns)
+                    ->search($request, $searchableColumns)
+                    ->latest()
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->onEachSide(2);
+
+        // HITUNG STATISTIK DENGAN QUERY YANG SAMA (termasuk filter dan search)
+        $baseQuery = TahapanProyek::filter($request, $filterableColumns)
+                        ->search($request, $searchableColumns);
+
+        $totalTahapan = $baseQuery->count();
+        $tahapanSelesai = (clone $baseQuery)->where('status', 'completed')->count();
+        $tahapanPending = (clone $baseQuery)->where('status', 'pending')->count();
+        $tahapanInProgress = (clone $baseQuery)->where('status', 'in_progress')->count();
+
+        // Ambil data proyek untuk filter
+        $proyeks = Proyek::all();
 
         return view('pages.tahapan.index', compact(
             'tahapans',
             'totalTahapan',
             'tahapanSelesai',
             'tahapanPending',
-            'tahapanInProgress'
+            'tahapanInProgress',
+            'proyeks'
         ));
+
+    } catch (\Exception $e) {
+        // Debug error
+        // dd($e->getMessage());
+        return redirect()->back()
+            ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
     }
+}
 
     public function create()
     {

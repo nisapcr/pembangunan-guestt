@@ -11,12 +11,23 @@ class UserController extends Controller
     /**
      * Tampilkan daftar semua user.
      */
-    public function index()
-    {
-        $users = User::all();
-        return view('pages.User.index', compact('users'));
-    }
+public function index(Request $request)
+{
+    // Kolom yang bisa di-filter
+    $filterableColumns = [];
 
+    // Kolom yang bisa dicari
+    $searchableColumns = ['name', 'email'];
+
+    // Query dengan pagination, search, dan filter + onEachSide(2)
+    $users = User::filter($request, $filterableColumns)
+                ->search($request, $searchableColumns)
+                ->paginate(10)
+                ->withQueryString()
+                ->onEachSide(2);
+
+    return view('pages.User.index', compact('users'));
+}
     /**
      * Tampilkan form untuk menambah user baru.
      */
@@ -96,6 +107,12 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
+
+        // Cegah user menghapus akun sendiri
+        if (auth()->check() && auth()->id() == $user->id) {
+            return redirect()->route('users.index')->with('error', 'Tidak dapat menghapus akun sendiri.');
+        }
+
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');

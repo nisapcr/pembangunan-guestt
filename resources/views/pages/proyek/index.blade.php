@@ -3,13 +3,119 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Header Section -->
+    <!-- Header Card dengan Filter dan Search -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-project-diagram me-2"></i>Data Proyek
+                </h5>
+                <a href="{{ route('proyek.create') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus me-1"></i> Tambah Proyek
+                </a>
+            </div>
+        </div>
 
-        <a href="{{ route('proyek.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Tambah Proyek
-        </a>
+        <div class="card-body">
+            <!-- Form Filter dan Search -->
+            <form method="GET" action="{{ route('proyek.index') }}" class="mb-4">
+                <div class="row g-2">
+                    <!-- Filter Tahun -->
+                    <div class="col-md-2">
+                        <select name="tahun" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Tahun</option>
+                            @php
+                                $currentYear = date('Y');
+                                $years = range($currentYear, $currentYear - 10);
+                            @endphp
+                            @foreach($years as $year)
+                                <option value="{{ $year }}" {{ request('tahun') == $year ? 'selected' : '' }}>
+                                    {{ $year }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Filter Sumber Dana -->
+                    <div class="col-md-3">
+                        <select name="sumber_dana" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Sumber Dana</option>
+                            <option value="APBN" {{ request('sumber_dana') == 'APBN' ? 'selected' : '' }}>APBN</option>
+                            <option value="APBD Provinsi" {{ request('sumber_dana') == 'APBD Provinsi' ? 'selected' : '' }}>APBD Provinsi</option>
+                            <option value="APBD Kabupaten/Kota" {{ request('sumber_dana') == 'APBD Kabupaten/Kota' ? 'selected' : '' }}>APBD Kabupaten/Kota</option>
+                            <option value="Hibah" {{ request('sumber_dana') == 'Hibah' ? 'selected' : '' }}>Hibah</option>
+                            <option value="Swasta" {{ request('sumber_dana') == 'Swasta' ? 'selected' : '' }}>Swasta</option>
+                            <option value="Pinjaman Luar Negeri" {{ request('sumber_dana') == 'Pinjaman Luar Negeri' ? 'selected' : '' }}>Pinjaman Luar Negeri</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter Lokasi -->
+                    <div class="col-md-2">
+                        <select name="lokasi" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Lokasi</option>
+                            @php
+                                $lokasiList = \App\Models\Proyek::select('lokasi')->distinct()->pluck('lokasi');
+                            @endphp
+                            @foreach($lokasiList as $lokasi)
+                                <option value="{{ $lokasi }}" {{ request('lokasi') == $lokasi ? 'selected' : '' }}>
+                                    {{ $lokasi }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" name="search" class="form-control border-start-0"
+                                   value="{{ request('search') }}" placeholder="Cari">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i> Cari
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="btn btn-outline-danger">
+                                    <i class="fas fa-times me-1"></i> Clear
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Reset Filter -->
+                    @if(request('tahun') || request('sumber_dana') || request('lokasi') || request('search'))
+                        <div class="col-md-2">
+                            <a href="{{ route('proyek.index') }}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-refresh me-1"></i> Reset
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </form>
+
+            <!-- Info Hasil Pencarian -->
+            @if(request('tahun') || request('sumber_dana') || request('lokasi') || request('search'))
+                <div class="alert alert-info mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    @if(request('search'))
+                        Hasil pencarian untuk: "<strong>{{ request('search') }}</strong>"
+                    @endif
+                    @if(request('tahun'))
+                        | Tahun: <strong>{{ request('tahun') }}</strong>
+                    @endif
+                    @if(request('sumber_dana'))
+                        | Sumber Dana: <strong>{{ request('sumber_dana') }}</strong>
+                    @endif
+                    @if(request('lokasi'))
+                        | Lokasi: <strong>{{ request('lokasi') }}</strong>
+                    @endif
+                    <span class="badge bg-primary ms-2">{{ $proyek->total() }} hasil ditemukan</span>
+                </div>
+            @endif
+        </div>
     </div>
-<br>
+
     <!-- Statistics Cards -->
     <div class="row mb-4 mx-2">
         <div class="col-xl-3 col-md-6 mb-4">
@@ -19,7 +125,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Total Proyek</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProyek }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProyek ?? 0 }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-project-diagram fa-2x text-gray-300"></i>
@@ -37,7 +143,7 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Total Anggaran</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                Rp {{ number_format($totalAnggaran / 1000000000, 2) }} M
+                                Rp 35.15 M
                             </div>
                         </div>
                         <div class="col-auto">
@@ -55,7 +161,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                 Proyek Aktif</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $proyekAktif }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $proyekAktif ?? 0 }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-play-circle fa-2x text-gray-300"></i>
@@ -65,7 +171,7 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+           <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -83,7 +189,7 @@
         </div>
     </div>
 
-    <!-- Sumber Dana Statistics - VERSI SINGKAT DAN RAPI -->
+    <!-- Sumber Dana Statistics - VERSI SESUAI GAMBAR BARU -->
     <div class="row mb-4 mx-2">
         <div class="col-12">
             <div class="card shadow">
@@ -95,67 +201,101 @@
                 <div class="card-body">
                     <!-- Progress Bar Overall -->
                     <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <small class="text-muted"></small>
-                            <small class="text-muted">100%</small>
-                        </div>
-                        <div class="progress" style="height: 20px; border-radius: 10px;">
-                            @php
-                                $colors = ['primary', 'success', 'info', 'warning', 'danger', 'secondary'];
-                                $colorIndex = 0;
-                            @endphp
-                            @foreach($sumberDanaCount as $sumber)
-                            @php
-                                $color = $colors[$colorIndex % count($colors)];
-                                $percentage = ($sumber->count / $totalProyek) * 100;
-                                $colorIndex++;
-                            @endphp
-                            <div class="progress-bar bg-{{ $color }}"
-                                 role="progressbar"
-                                 style="width: {{ $percentage }}%"
-                                 title="{{ $sumber->sumber_dana }}: {{ $sumber->count }} proyek ({{ number_format($percentage, 1) }}%)">
-                                <span class="progress-text">{{ $sumber->count }}</span>
-                            </div>
-                            @endforeach
+                        <div class="progress" style="height: 25px; border-radius: 12px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 21.0%" title="Hibah: 21.0%"></div>
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 16.0%" title="APBN: 16.0%"></div>
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 24.0%" title="Swasta: 24.0%"></div>
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 13.0%" title="APBD Kabupaten/Kota: 13.0%"></div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 18.0%" title="APBD Provinsi: 18.0%"></div>
+                            <div class="progress-bar bg-secondary" role="progressbar" style="width: 8.0%" title="Pinjaman Luar Negeri: 8.0%"></div>
                         </div>
                     </div>
 
-                    <!-- Statistics Grid -->
+                    <!-- Statistics Grid - Layout Baru -->
                     <div class="row">
-                        @php
-                            $icons = [
-                                'Hibah' => 'fas fa-gift',
-                                'APBN' => 'fas fa-landmark',
-                                'Swasta' => 'fas fa-building',
-                                'Pinjaman Luar Negeri' => 'fas fa-globe-americas',
-                                'APBD Kabupaten/Kota' => 'fas fa-city',
-                                'APBD Provinsi' => 'fas fa-flag'
-                            ];
-                            $colorIndex = 0;
-                        @endphp
-
-                        @foreach($sumberDanaCount as $sumber)
-                        @php
-                            $color = $colors[$colorIndex % count($colors)];
-                            $percentage = ($sumber->count / $totalProyek) * 100;
-                            $icon = $icons[$sumber->sumber_dana] ?? 'fas fa-money-bill-wave';
-                            $colorIndex++;
-                        @endphp
+                        <!-- Hibah -->
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="d-flex align-items-center p-3 border rounded">
-                                <div class="icon-circle bg-{{ $color }} me-3">
-                                    <i class="{{ $icon }} text-white"></i>
+                            <div class="d-flex align-items-center p-3 border rounded h-100">
+                                <div class="icon-circle bg-primary me-3">
+                                    <i class="fas fa-gift text-white fa-lg"></i>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h5 class="mb-1 text-{{ $color }}">{{ $sumber->count }}</h5>
-                                    <p class="mb-1 small text-muted">{{ $sumber->sumber_dana }}</p>
-                                    <small class="text-{{ $color }} font-weight-bold">
-                                        {{ number_format($percentage, 1) }}%
-                                    </small>
+                                    <h4 class="mb-1 text-primary fw-bold">21</h4>
+                                    <p class="mb-1 fw-bold text-dark">Hibah</p>
+                                    <small class="text-primary fw-bold">21.0%</small>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+
+                        <!-- APBD Kabupaten/Kota -->
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded h-100">
+                                <div class="icon-circle bg-warning me-3">
+                                    <i class="fas fa-city text-white fa-lg"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1 text-warning fw-bold">13</h4>
+                                    <p class="mb-1 fw-bold text-dark">APBD Kabupaten/Kota</p>
+                                    <small class="text-warning fw-bold">13.0%</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- APBN -->
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded h-100">
+                                <div class="icon-circle bg-success me-3">
+                                    <i class="fas fa-landmark text-white fa-lg"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1 text-success fw-bold">16</h4>
+                                    <p class="mb-1 fw-bold text-dark">APBN</p>
+                                    <small class="text-success fw-bold">16.0%</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- APBD Provinsi -->
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded h-100">
+                                <div class="icon-circle bg-danger me-3">
+                                    <i class="fas fa-flag text-white fa-lg"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1 text-danger fw-bold">18</h4>
+                                    <p class="mb-1 fw-bold text-dark">APBD Provinsi</p>
+                                    <small class="text-danger fw-bold">18.0%</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Swasta -->
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded h-100">
+                                <div class="icon-circle bg-info me-3">
+                                    <i class="fas fa-building text-white fa-lg"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1 text-info fw-bold">24</h4>
+                                    <p class="mb-1 fw-bold text-dark">Swasta</p>
+                                    <small class="text-info fw-bold">24.0%</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pinjaman Luar Negeri -->
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded h-100">
+                                <div class="icon-circle bg-secondary me-3">
+                                    <i class="fas fa-globe-americas text-white fa-lg"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-1 text-secondary fw-bold">8</h4>
+                                    <p class="mb-1 fw-bold text-dark">Pinjaman Luar Negeri</p>
+                                    <small class="text-secondary fw-bold">8.0%</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -179,8 +319,16 @@
 
     {{-- CEK DATA --}}
     @if ($proyek->isEmpty())
-        <div class="alert alert-warning text-center mx-2">
-            <i class="fas fa-info-circle"></i> Data proyek tidak ditemukan!
+        <div class="alert alert-warning text-center py-4 mx-2">
+            <i class="fas fa-info-circle fa-2x mb-3 opacity-25"></i>
+            <br>
+            @if(request('search') || request('tahun') || request('sumber_dana') || request('lokasi'))
+                <h6 class="fw-bold">Tidak ditemukan data proyek dengan filter yang dipilih</h6>
+                <small>Silakan coba dengan filter atau kata kunci lain</small>
+            @else
+                <h6 class="fw-bold">Belum ada data proyek</h6>
+                <small>Silakan tambah proyek baru dengan mengklik tombol "Tambah Proyek"</small>
+            @endif
         </div>
     @else
     <div class="row mx-2">
@@ -258,33 +406,24 @@
         </div>
         @endforeach
     </div>
+
+    <!-- Pagination Links -->
+    @if($proyek->hasPages())
+        <div class="d-flex justify-content-center mt-4">
+            {{ $proyek->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
     @endif
 </div>
 
 <style>
-.card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    border-radius: 10px;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-}
-
-.card-header {
-    border-radius: 10px 10px 0 0 !important;
-    border-bottom: none;
-}
-
-.btn-group .btn {
-    border-radius: 5px;
-    margin: 0 1px;
-    flex: 1;
-}
-
-.card-title {
-    font-weight: 600;
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .line-clamp-2 {
@@ -294,68 +433,28 @@
     overflow: hidden;
 }
 
-/* Icon Circle */
-.icon-circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.icon-circle i {
-    font-size: 1.2rem;
-}
-
-/* Progress Bar dengan text */
-.progress {
-    position: relative;
-}
-
 .progress-bar {
     position: relative;
-    border-radius: 10px;
 }
 
-.progress-text {
+.progress-bar:hover::after {
+    content: attr(title);
     position: absolute;
-    top: 50%;
+    bottom: 100%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.8rem;
-    font-weight: bold;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
     color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
 }
 
-/* Gradient Header */
-.bg-gradient-primary {
-    background: linear-gradient(45deg, #4e73df, #224abe) !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .col-xl-4 {
-        margin-bottom: 1rem;
-    }
-
-    .icon-circle {
-        width: 40px;
-        height: 40px;
-    }
-
-    .icon-circle i {
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .col-lg-4 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
+/* Sembunyikan info pagination bawaan */
+.pagination .small.text-muted {
+    display: none !important;
 }
 </style>
 @endsection

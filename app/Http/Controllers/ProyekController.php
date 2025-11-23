@@ -13,20 +13,35 @@ class ProyekController extends Controller
     /**
      * Menampilkan daftar semua proyek.
      */
-    public function index()
+    public function index(Request $request)
     {
-       $proyek = \App\Models\Proyek::all();
+        // Kolom yang bisa di-filter
+        $filterableColumns = ['tahun', 'sumber_dana', 'lokasi'];
 
-        // TAMBAHKAN STATISTIK PROYEK
-        $totalProyek = Proyek::count();
-        $totalAnggaran = Proyek::sum('anggaran');
+        // Kolom yang bisa dicari
+        $searchableColumns = ['nama_proyek', 'kode_proyek', 'deskripsi', 'lokasi'];
+
+        // Query dengan pagination, search, dan filter
+        $proyek = Proyek::filter($request, $filterableColumns)
+                    ->search($request, $searchableColumns)
+                    ->latest()
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->onEachSide(2);
+
+        // HITUNG STATISTIK DENGAN QUERY YANG SAMA (termasuk filter dan search)
+        $baseQuery = Proyek::filter($request, $filterableColumns)
+                        ->search($request, $searchableColumns);
+
+        $totalProyek = $baseQuery->count();
+        $totalAnggaran = $baseQuery->sum('anggaran');
 
         // Hitung proyek berdasarkan tahun
-        $proyekAktif = Proyek::where('tahun', '>=', date('Y') - 1)->count();
-        $proyekSelesai = Proyek::where('tahun', '<', date('Y') - 1)->count();
+        $proyekAktif = (clone $baseQuery)->where('tahun', '>=', date('Y') - 1)->count();
+        $proyekSelesai = (clone $baseQuery)->where('tahun', '<', date('Y') - 1)->count();
 
         // Hitung berdasarkan sumber dana
-        $sumberDanaCount = Proyek::select('sumber_dana')
+        $sumberDanaCount = (clone $baseQuery)->select('sumber_dana')
             ->selectRaw('COUNT(*) as count')
             ->groupBy('sumber_dana')
             ->get();
@@ -152,6 +167,26 @@ class ProyekController extends Controller
         return redirect()->route('proyek.index')->with('success', 'Proyek berhasil dihapus');
     }
 
+    /**
+     * Method untuk halaman tentang kami.
+     */
+    public function tentang()
+    {
+        return view('pages.tentang', ['title' => 'Tentang Kami']);
+    }
 
+    public function kontraktor()
+    {
+        return view('pages.kontraktor', ['title' => 'Daftar Kontraktor']);
+    }
+
+    public function lokasi()
+    {
+        return view('pages.lokasi', ['title' => 'Lokasi Proyek']);
+    }
+
+    public function progres()
+    {
+        return view('pages.progres', ['title' => 'Progres Proyek']);
+    }
 }
-

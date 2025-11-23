@@ -36,7 +36,7 @@ class ProyekSeeder extends Seeder
         DB::table('proyek')->delete();
 
         $data = [];
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $data[] = [
                 'kode_proyek' => 'PRJ-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT) . '-' . rand(100, 999),
                 'nama_proyek' => $faker->randomElement(['Pembangunan', 'Renovasi', 'Pemeliharaan']) . ' ' .
