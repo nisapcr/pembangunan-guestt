@@ -174,12 +174,10 @@ class ProyekController extends Controller
     {
         return view('pages.tentang', ['title' => 'Tentang Kami']);
     }
-
     public function kontraktor()
     {
         return view('pages.kontraktor', ['title' => 'Daftar Kontraktor']);
     }
-
     public function lokasi()
     {
         return view('pages.lokasi', ['title' => 'Lokasi Proyek']);

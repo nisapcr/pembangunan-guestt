@@ -30,7 +30,6 @@ Route::middleware('auth')->group(function () {
 
 
     // 3. Rute kustom Proyek lainnya
-
     Route::get('/progres', [ProyekController::class, 'progres'])->name('progres');
     Route::get('/lokasi', [ProyekController::class, 'lokasi'])->name('lokasi');
     Route::get('/kontraktor', [ProyekController::class, 'kontraktor'])->name('kontraktor');

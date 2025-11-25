@@ -409,7 +409,7 @@
 
     <!-- Pagination Links -->
     @if($proyek->hasPages())
-        <div class="d-flex justify-content-center mt-4">
+        <div>
             {{ $proyek->links('pagination::bootstrap-5') }}
         </div>
     @endif
