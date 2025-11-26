@@ -42,7 +42,7 @@
                                 <i class="fas fa-search text-muted"></i>
                             </span>
                             <input type="text" name="search" class="form-control border-start-0"
-                                   value="{{ request('search') }}" placeholder="Cari">
+                                   value="{{ request('search') }}" placeholder="Cari nama atau email pengguna...">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-search me-1"></i> Cari
                             </button>
@@ -74,96 +74,101 @@
                 </div>
             @endif
 
-            <!-- Tabel Users -->
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th width="5%" class="text-center">No</th>
-                            <th width="25%">Nama</th>
-                            <th width="30%">Email</th>
-                            <th width="20%">Tanggal Dibuat</th>
-                            <th width="20%" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($users as $user)
-                            <tr>
-                                <td class="text-center">{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
-                                <td class="fw-semibold">{{ $user->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>
-                                    <span class="badge bg-light text-dark">
-                                        <i class="fas fa-calendar me-1"></i>
-                                        {{ $user->created_at->format('d/m/Y') }}
-                                    </span>
-                                    <small class="text-muted d-block">
-                                        {{ $user->created_at->format('H:i') }}
-                                    </small>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-1">
-                                        <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm"
-                                           data-bs-toggle="tooltip" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm"
-                                           data-bs-toggle="tooltip" title="Edit Data">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
+            <!-- Card Users -->
+            @if($users->count() > 0)
+                <div class="row g-3">
+                    @foreach ($users as $user)
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card user-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="user-avatar me-3">
+                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1 fw-bold text-truncate">{{ $user->name }}</h6>
+                                            <p class="card-text text-muted small mb-2 text-truncate">
+                                                <i class="fas fa-envelope me-1"></i>{{ $user->email }}
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                        @if(auth()->check() && auth()->id() == $user->id)
-                                            <button class="btn btn-danger btn-sm" disabled
-                                                    data-bs-toggle="tooltip" title="Tidak dapat menghapus akun sendiri">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        @else
-                                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('Yakin ingin menghapus user {{ $user->name }}?')"
-                                                        data-bs-toggle="tooltip" title="Hapus User">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-light text-dark">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                Bergabung: {{ $user->created_at->format('d/m/Y') }}
+                                            </span>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-user me-1"></i>
+                                                Aktif
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            ID: {{ $user->id }}
+                                        </small>
+                                        <div class="btn-group">
+                                            <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm"
+                                               data-bs-toggle="tooltip" title="Lihat Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm"
+                                               data-bs-toggle="tooltip" title="Edit Data">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            @if(auth()->check() && auth()->id() == $user->id)
+                                                <button class="btn btn-danger btn-sm" disabled
+                                                        data-bs-toggle="tooltip" title="Tidak dapat menghapus akun sendiri">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                            </form>
-                                        @endif
+                                            @else
+                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Yakin ingin menghapus user {{ $user->name }}?')"
+                                                            data-bs-toggle="tooltip" title="Hapus User">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="fas fa-users fa-3x mb-3 opacity-25"></i>
-                                        <br>
-                                        @if(request('search'))
-                                            <h6 class="fw-bold">Tidak ditemukan user dengan kata kunci "{{ request('search') }}"</h6>
-                                            <small>Silakan coba dengan kata kunci lain</small>
-                                        @else
-                                            <h6 class="fw-bold">Belum ada data pengguna</h6>
-                                            <small>Klik tombol "Tambah Pengguna" untuk menambah data</small>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination dan Info -->
-
-
-                    <!-- Pagination Links -->
-                    @if($users->hasPages())
-                        <div >
-                            {{ $users->links('pagination::bootstrap-5') }}
+                                </div>
+                            </div>
                         </div>
+                    @endforeach
+                </div>
+            @else
+                <!-- Empty State -->
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    @if(request('search'))
+                        <h5 class="fw-bold text-muted">Tidak ditemukan pengguna</h5>
+                        <p class="text-muted">Tidak ada pengguna yang sesuai dengan pencarian "<strong>{{ request('search') }}</strong>"</p>
+                        <a href="{{ route('users.index') }}" class="btn btn-primary mt-2">
+                            <i class="fas fa-refresh me-1"></i> Tampilkan Semua Pengguna
+                        </a>
+                    @else
+                        <h5 class="fw-bold text-muted">Belum ada data pengguna</h5>
+                        <p class="text-muted">Mulai dengan menambahkan pengguna pertama Anda</p>
+                        <a href="{{ route('users.create') }}" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus me-1"></i> Tambah Pengguna Pertama
+                        </a>
+                    @endif
+                </div>
+            @endif
 
-
-                    <!-- Empty space for alignment -->
-                    <div style="width: 200px;"></div>
+            <!-- Pagination -->
+            @if($users->hasPages())
+               
+                    <div>
+                        {{ $users->links('pagination::bootstrap-5') }}
+                    </div>
                 </div>
             @endif
         </div>
@@ -184,43 +189,38 @@
 
 @section('styles')
 <style>
-    .table th {
-        font-weight: 600;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+    .user-card {
+        border-left: 4px solid #0d6efd;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .table td {
-        vertical-align: middle;
+    .user-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+    }
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+    .empty-state i {
+        opacity: 0.3;
+    }
+    .card-title {
+        font-size: 1rem;
     }
     .btn-group .btn {
-        margin-right: 0.25rem;
-    }
-    .btn-group form {
-        display: inline;
-    }
-    .card {
-        border: none;
-        border-radius: 0.5rem;
-    }
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-    .badge {
-        font-size: 0.75rem;
-    }
-    /* Sembunyikan info pagination bawaan */
-    .pagination .small.text-muted {
-        display: none !important;
-    }
-    /* Style untuk tombol primary yang konsisten */
-    .btn-primary {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-    .btn-primary:hover {
-        background-color: #0b5ed7;
-        border-color: #0a58ca;
+        padding: 0.25rem 0.5rem;
     }
 </style>
 @endsection
