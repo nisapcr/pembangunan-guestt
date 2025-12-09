@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profile_picture', // TAMBAHKAN INI
     ];
 
     /**
@@ -73,5 +74,24 @@ class User extends Authenticatable
             });
         }
         return $query;
+    }
+
+    /**
+     * Get profile picture URL
+     */
+    public function getProfilePictureUrlAttribute()
+    {
+        return $this->profile_picture ? asset('storage/' . $this->profile_picture) : null;
+    }
+
+    /**
+     * Get profile picture or default avatar
+     */
+    public function getAvatarAttribute()
+    {
+        if ($this->profile_picture) {
+            return asset('storage/' . $this->profile_picture);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
 }

@@ -40,12 +40,14 @@
                     <div class="col-md-3">
                         <select name="sumber_dana" class="form-select" onchange="this.form.submit()">
                             <option value="">Semua Sumber Dana</option>
-                            <option value="APBN" {{ request('sumber_dana') == 'APBN' ? 'selected' : '' }}>APBN</option>
-                            <option value="APBD Provinsi" {{ request('sumber_dana') == 'APBD Provinsi' ? 'selected' : '' }}>APBD Provinsi</option>
-                            <option value="APBD Kabupaten/Kota" {{ request('sumber_dana') == 'APBD Kabupaten/Kota' ? 'selected' : '' }}>APBD Kabupaten/Kota</option>
-                            <option value="Hibah" {{ request('sumber_dana') == 'Hibah' ? 'selected' : '' }}>Hibah</option>
-                            <option value="Swasta" {{ request('sumber_dana') == 'Swasta' ? 'selected' : '' }}>Swasta</option>
-                            <option value="Pinjaman Luar Negeri" {{ request('sumber_dana') == 'Pinjaman Luar Negeri' ? 'selected' : '' }}>Pinjaman Luar Negeri</option>
+                            @php
+                                $sumberDanaList = \App\Models\Proyek::select('sumber_dana')->distinct()->pluck('sumber_dana');
+                            @endphp
+                            @foreach($sumberDanaList as $sumber)
+                                <option value="{{ $sumber }}" {{ request('sumber_dana') == $sumber ? 'selected' : '' }}>
+                                    {{ $sumber }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -125,7 +127,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Total Proyek</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProyek ?? 0 }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProyek }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-project-diagram fa-2x text-gray-300"></i>
@@ -143,7 +145,7 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Total Anggaran</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                Rp 35.15 M
+                                Rp {{ number_format($totalAnggaran, 0, ',', '.') }}
                             </div>
                         </div>
                         <div class="col-auto">
@@ -161,7 +163,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                 Proyek Aktif</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $proyekAktif ?? 0 }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $proyekAktif }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-play-circle fa-2x text-gray-300"></i>
@@ -171,7 +173,7 @@
             </div>
         </div>
 
-           <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -189,7 +191,8 @@
         </div>
     </div>
 
-    <!-- Sumber Dana Statistics - VERSI SESUAI GAMBAR BARU -->
+    <!-- Sumber Dana Statistics -->
+    @if($sumberDanaCount->isNotEmpty())
     <div class="row mb-4 mx-2">
         <div class="col-12">
             <div class="card shadow">
@@ -199,108 +202,68 @@
                     </h6>
                 </div>
                 <div class="card-body">
+                    @php
+                        // Hitung total proyek untuk persentase
+                        $totalForPercentage = $totalProyek > 0 ? $totalProyek : 1;
+                        $colors = ['bg-primary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger', 'bg-secondary', 'bg-dark'];
+                        $icons = [
+                            'Hibah' => 'fa-gift',
+                            'APBN' => 'fa-landmark',
+                            'Swasta' => 'fa-building',
+                            'APBD Kabupaten/Kota' => 'fa-city',
+                            'APBD Provinsi' => 'fa-flag',
+                            'Pinjaman Luar Negeri' => 'fa-globe-americas'
+                        ];
+                        $colorMap = [];
+                        $i = 0;
+                    @endphp
+
                     <!-- Progress Bar Overall -->
                     <div class="mb-4">
                         <div class="progress" style="height: 25px; border-radius: 12px;">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: 21.0%" title="Hibah: 21.0%"></div>
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 16.0%" title="APBN: 16.0%"></div>
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 24.0%" title="Swasta: 24.0%"></div>
-                            <div class="progress-bar bg-warning" role="progressbar" style="width: 13.0%" title="APBD Kabupaten/Kota: 13.0%"></div>
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: 18.0%" title="APBD Provinsi: 18.0%"></div>
-                            <div class="progress-bar bg-secondary" role="progressbar" style="width: 8.0%" title="Pinjaman Luar Negeri: 8.0%"></div>
+                            @foreach($sumberDanaCount as $index => $item)
+                                @php
+                                    $percentage = ($item->count / $totalForPercentage) * 100;
+                                    $colorClass = $colors[$index % count($colors)];
+                                    $colorMap[$item->sumber_dana] = str_replace('bg-', '', $colorClass);
+                                @endphp
+                                <div class="progress-bar {{ $colorClass }}"
+                                     role="progressbar"
+                                     style="width: {{ $percentage }}%"
+                                     title="{{ $item->sumber_dana }}: {{ number_format($percentage, 1) }}%">
+                                </div>
+                            @endforeach
                         </div>
                     </div>
 
-                    <!-- Statistics Grid - Layout Baru -->
+                    <!-- Statistics Grid -->
                     <div class="row">
-                        <!-- Hibah -->
-                        <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="d-flex align-items-center p-3 border rounded h-100">
-                                <div class="icon-circle bg-primary me-3">
-                                    <i class="fas fa-gift text-white fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h4 class="mb-1 text-primary fw-bold">21</h4>
-                                    <p class="mb-1 fw-bold text-dark">Hibah</p>
-                                    <small class="text-primary fw-bold">21.0%</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- APBD Kabupaten/Kota -->
-                        <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="d-flex align-items-center p-3 border rounded h-100">
-                                <div class="icon-circle bg-warning me-3">
-                                    <i class="fas fa-city text-white fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h4 class="mb-1 text-warning fw-bold">13</h4>
-                                    <p class="mb-1 fw-bold text-dark">APBD Kabupaten/Kota</p>
-                                    <small class="text-warning fw-bold">13.0%</small>
+                        @foreach($sumberDanaCount as $index => $item)
+                            @php
+                                $percentage = ($item->count / $totalForPercentage) * 100;
+                                $colorClass = $colors[$index % count($colors)];
+                                $colorTextClass = 'text-' . str_replace('bg-', '', $colorClass);
+                                $icon = $icons[$item->sumber_dana] ?? 'fa-chart-bar';
+                            @endphp
+                            <div class="col-lg-4 col-md-6 mb-3">
+                                <div class="d-flex align-items-center p-3 border rounded h-100">
+                                    <div class="icon-circle {{ $colorClass }} me-3">
+                                        <i class="fas {{ $icon }} text-white fa-lg"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h4 class="mb-1 {{ $colorTextClass }} fw-bold">{{ $item->count }}</h4>
+                                        <p class="mb-1 fw-bold text-dark">{{ $item->sumber_dana }}</p>
+                                        <small class="{{ $colorTextClass }} fw-bold">{{ number_format($percentage, 1) }}%</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- APBN -->
-                        <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="d-flex align-items-center p-3 border rounded h-100">
-                                <div class="icon-circle bg-success me-3">
-                                    <i class="fas fa-landmark text-white fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h4 class="mb-1 text-success fw-bold">16</h4>
-                                    <p class="mb-1 fw-bold text-dark">APBN</p>
-                                    <small class="text-success fw-bold">16.0%</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- APBD Provinsi -->
-                        <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="d-flex align-items-center p-3 border rounded h-100">
-                                <div class="icon-circle bg-danger me-3">
-                                    <i class="fas fa-flag text-white fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h4 class="mb-1 text-danger fw-bold">18</h4>
-                                    <p class="mb-1 fw-bold text-dark">APBD Provinsi</p>
-                                    <small class="text-danger fw-bold">18.0%</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Swasta -->
-                        <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="d-flex align-items-center p-3 border rounded h-100">
-                                <div class="icon-circle bg-info me-3">
-                                    <i class="fas fa-building text-white fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h4 class="mb-1 text-info fw-bold">24</h4>
-                                    <p class="mb-1 fw-bold text-dark">Swasta</p>
-                                    <small class="text-info fw-bold">24.0%</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pinjaman Luar Negeri -->
-                        <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="d-flex align-items-center p-3 border rounded h-100">
-                                <div class="icon-circle bg-secondary me-3">
-                                    <i class="fas fa-globe-americas text-white fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h4 class="mb-1 text-secondary fw-bold">8</h4>
-                                    <p class="mb-1 fw-bold text-dark">Pinjaman Luar Negeri</p>
-                                    <small class="text-secondary fw-bold">8.0%</small>
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    @endif
 
     {{-- ALERT / NOTIFIKASI --}}
     @if (session('success'))
@@ -333,15 +296,67 @@
     @else
     <div class="row mx-2">
         @foreach($proyek as $item)
+        @php
+            // Hitung jumlah file untuk proyek ini
+            $fileCount = \App\Models\Multipleuploads::where('ref_table', 'proyek')
+                ->where('ref_id', $item->proyek_id)
+                ->count();
+
+            // Ambil 3 file terbaru untuk preview
+            $latestFiles = \App\Models\Multipleuploads::where('ref_table', 'proyek')
+                ->where('ref_id', $item->proyek_id)
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+        @endphp
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card h-100 shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-white position-relative">
                     <h6 class="card-title mb-1 fw-bold">{{ Str::limit($item->nama_proyek, 40) }}</h6>
                     <small class="card-text opacity-75">
                         <i class="fas fa-barcode me-1"></i> {{ $item->kode_proyek }}
                     </small>
+
+                    <!-- Badge untuk jumlah file -->
+                    @if($fileCount > 0)
+                    <span class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-info">
+                        {{ $fileCount }} <i class="fas fa-file ms-1"></i>
+                    </span>
+                    @endif
                 </div>
+
                 <div class="card-body">
+                    <!-- Preview File Gambar -->
+                    @if($latestFiles->where('mime_type', 'like', 'image/%')->count() > 0)
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <small class="text-muted d-block mb-2">
+                                <i class="fas fa-images me-1"></i> Preview File
+                            </small>
+                            <div class="d-flex">
+                                @foreach($latestFiles->where('mime_type', 'like', 'image/%')->take(2) as $file)
+                                <div class="me-2">
+                                    <img src="{{ Storage::url($file->file_path) }}"
+                                         class="rounded"
+                                         alt="Preview"
+                                         style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                         onclick="window.open('{{ Storage::url($file->file_path) }}', '_blank')">
+                                </div>
+                                @endforeach
+
+                                @if($fileCount > 2)
+                                <div class="position-relative" style="width: 60px; height: 60px;">
+                                    <div class="bg-secondary rounded d-flex align-items-center justify-content-center"
+                                         style="width: 100%; height: 100%;">
+                                        <span class="text-white">+{{ $fileCount - 2 }}</span>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="row mb-2">
                         <div class="col-12">
                             <small class="text-muted d-block">
@@ -401,6 +416,18 @@
                             </button>
                         </form>
                     </div>
+
+                    <!-- Quick Action untuk Upload File -->
+                    @auth
+                    <div class="mt-2 text-center">
+                        <small>
+                            <a href="{{ route('proyek.show', $item->proyek_id) }}#uploadForm"
+                               class="text-primary text-decoration-none">
+                                <i class="fas fa-plus-circle me-1"></i>Tambah File
+                            </a>
+                        </small>
+                    </div>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -409,8 +436,10 @@
 
     <!-- Pagination Links -->
     @if($proyek->hasPages())
-        <div>
-            {{ $proyek->links('pagination::bootstrap-5') }}
+
+            <div>
+                {{ $proyek->links('pagination::bootstrap-5') }}
+            </div>
         </div>
     @endif
     @endif
@@ -435,6 +464,7 @@
 
 .progress-bar {
     position: relative;
+    transition: width 0.3s ease;
 }
 
 .progress-bar:hover::after {
@@ -452,9 +482,61 @@
     z-index: 1000;
 }
 
-/* Sembunyikan info pagination bawaan */
-.pagination .small.text-muted {
-    display: none !important;
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+.translate-middle {
+    transform: translate(50%, -50%);
+}
+
+.badge.rounded-pill {
+    font-size: 0.7rem;
+    padding: 0.25em 0.6em;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .col-xl-4 {
+        width: 100%;
+    }
+
+    .progress {
+        height: 20px;
+    }
+
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+    }
 }
 </style>
+
+@push('scripts')
+<script>
+// Add smooth scrolling for upload link
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle hash links
+    if (window.location.hash) {
+        const element = document.querySelector(window.location.hash);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+});
+</script>
+@endpush
 @endsection

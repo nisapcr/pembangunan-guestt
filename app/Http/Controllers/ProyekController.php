@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proyek;
+use App\Models\Multipleuploads;
 use App\Models\TahapanProyek;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -80,16 +81,16 @@ class ProyekController extends Controller
             'anggaran' => 'required|numeric',
             'sumber_dana' => 'required',
             'deskripsi' => 'nullable',
-            'dokumen' => 'nullable|file|max:2048' // Max 2MB
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx|max:5120'
         ]);
 
-        // Handle upload file dokumen
-        if ($request->hasFile('dokumen')) {
-            $path = $request->file('dokumen')->store('dokumen-proyek', 'public');
-            $validated['dokumen'] = $path;
-        }
+        // Simpan proyek
+        $proyek = Proyek::create($validated);
 
-        Proyek::create($validated);
+        // Handle upload multiple files
+        if ($request->hasFile('files')) {
+            $this->uploadMultipleFiles($request->file('files'), $proyek->proyek_id, $request->caption);
+        }
 
         return redirect()->route('proyek.index')->with('success', 'Proyek berhasil ditambahkan');
     }
@@ -99,8 +100,15 @@ class ProyekController extends Controller
      */
     public function show(Proyek $proyek)
     {
+        // Ambil semua file yang terkait dengan proyek ini
+        $files = Multipleuploads::where('ref_table', 'proyek')
+            ->where('ref_id', $proyek->proyek_id)
+            ->orderBy('sort_order')
+            ->get();
+
         return view('pages.proyek.show', [
             'proyek' => $proyek,
+            'files' => $files,
             'title' => 'Detail Proyek'
         ]);
     }
@@ -110,8 +118,15 @@ class ProyekController extends Controller
      */
     public function edit(Proyek $proyek)
     {
+        // Ambil semua file yang terkait dengan proyek ini
+        $files = Multipleuploads::where('ref_table', 'proyek')
+            ->where('ref_id', $proyek->proyek_id)
+            ->orderBy('sort_order')
+            ->get();
+
         return view('pages.proyek.edit', [
             'proyek' => $proyek,
+            'files' => $files,
             'title' => 'Edit Proyek'
         ]);
     }
@@ -130,24 +145,16 @@ class ProyekController extends Controller
             'anggaran' => 'required|numeric',
             'sumber_dana' => 'required',
             'deskripsi' => 'nullable',
-            'dokumen' => 'nullable|file|max:2048'
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx|max:5120'
         ]);
 
-        // Handle upload file dokumen jika ada file baru
-        if ($request->hasFile('dokumen')) {
-            // Hapus file lama jika ada
-            if ($proyek->dokumen && Storage::disk('public')->exists($proyek->dokumen)) {
-                Storage::disk('public')->delete($proyek->dokumen);
-            }
-
-            $path = $request->file('dokumen')->store('dokumen-proyek', 'public');
-            $validated['dokumen'] = $path;
-        } else {
-            // Jika tidak ada file baru, pertahankan file lama
-            $validated['dokumen'] = $proyek->dokumen;
-        }
-
+        // Update data proyek
         $proyek->update($validated);
+
+        // Handle upload multiple files baru
+        if ($request->hasFile('files')) {
+            $this->uploadMultipleFiles($request->file('files'), $proyek->proyek_id, $request->caption);
+        }
 
         return redirect()->route('proyek.index')->with('success', 'Proyek berhasil diperbarui');
     }
@@ -157,14 +164,139 @@ class ProyekController extends Controller
      */
     public function destroy(Proyek $proyek)
     {
-        // Hapus file dokumen jika ada
-        if ($proyek->dokumen && Storage::disk('public')->exists($proyek->dokumen)) {
-            Storage::disk('public')->delete($proyek->dokumen);
+        // Hapus semua file yang terkait dengan proyek ini
+        $files = Multipleuploads::where('ref_table', 'proyek')
+            ->where('ref_id', $proyek->proyek_id)
+            ->get();
+
+        foreach ($files as $file) {
+            // Hapus file dari storage
+            if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
+                Storage::disk('public')->delete($file->file_path);
+            }
+            // Hapus record dari database
+            $file->delete();
         }
 
+        // Hapus proyek
         $proyek->delete();
 
         return redirect()->route('proyek.index')->with('success', 'Proyek berhasil dihapus');
+    }
+
+    /**
+     * Upload file tambahan untuk proyek (AJAX).
+     */
+    public function uploadFiles(Request $request, Proyek $proyek)
+    {
+        $request->validate([
+            'files.*' => 'required|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx|max:5120',
+            'caption' => 'nullable|string|max:255'
+        ]);
+
+        if ($request->hasFile('files')) {
+            $uploadedFiles = $this->uploadMultipleFiles($request->file('files'), $proyek->proyek_id, $request->caption);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Files uploaded successfully',
+                'files' => $uploadedFiles
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No files uploaded'
+        ], 400);
+    }
+
+    /**
+     * Hapus file dari proyek (AJAX).
+     */
+    public function deleteFile(Request $request, Proyek $proyek, $fileId)
+    {
+        // Cari file berdasarkan ID dan pastikan milik proyek ini
+        $file = Multipleuploads::where('id', $fileId)
+            ->where('ref_table', 'proyek')
+            ->where('ref_id', $proyek->proyek_id)
+            ->firstOrFail();
+
+        // Hapus file dari storage
+        if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
+            Storage::disk('public')->delete($file->file_path);
+        }
+
+        // Hapus record dari database
+        $file->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'File deleted successfully'
+        ]);
+    }
+
+    /**
+     * Helper method untuk upload multiple files.
+     */
+    private function uploadMultipleFiles($files, $proyekId, $caption = null)
+    {
+        $uploadedFiles = [];
+
+        if (!is_array($files)) {
+            $files = [$files];
+        }
+
+        foreach ($files as $file) {
+            if ($file->isValid()) {
+                // Generate nama file unik
+                $originalName = $file->getClientOriginalName();
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Simpan file ke folder 'proyek'
+                $filePath = $file->storeAs('proyek', $fileName, 'public');
+
+                // Simpan ke tabel multipleuploads
+                $uploadedFile = Multipleuploads::create([
+                    'ref_table' => 'proyek',
+                    'ref_id' => $proyekId,
+                    'filename' => $fileName,
+                    'original_name' => $originalName,
+                    'caption' => $caption,
+                    'mime_type' => $file->getMimeType(),
+                    'file_size' => $file->getSize(),
+                    'file_path' => $filePath,
+                    'sort_order' => Multipleuploads::where('ref_table', 'proyek')
+                        ->where('ref_id', $proyekId)
+                        ->max('sort_order') + 1
+                ]);
+
+                $uploadedFiles[] = $uploadedFile;
+            }
+        }
+
+        return $uploadedFiles;
+    }
+
+    /**
+     * Update sort order files (AJAX).
+     */
+    public function updateFileOrder(Request $request, Proyek $proyek)
+    {
+        $request->validate([
+            'files' => 'required|array'
+        ]);
+
+        foreach ($request->files as $index => $fileId) {
+            Multipleuploads::where('id', $fileId)
+                ->where('ref_table', 'proyek')
+                ->where('ref_id', $proyek->proyek_id)
+                ->update(['sort_order' => $index]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'File order updated successfully'
+        ]);
     }
 
     /**
@@ -174,10 +306,12 @@ class ProyekController extends Controller
     {
         return view('pages.tentang', ['title' => 'Tentang Kami']);
     }
+
     public function kontraktor()
     {
         return view('pages.kontraktor', ['title' => 'Daftar Kontraktor']);
     }
+
     public function lokasi()
     {
         return view('pages.lokasi', ['title' => 'Lokasi Proyek']);
@@ -186,5 +320,47 @@ class ProyekController extends Controller
     public function progres()
     {
         return view('pages.progres', ['title' => 'Progres Proyek']);
+    }
+
+    /**
+     * Download file.
+     */
+    public function downloadFile(Proyek $proyek, $fileId)
+    {
+        // Cari file berdasarkan ID dan pastikan milik proyek ini
+        $file = Multipleuploads::where('id', $fileId)
+            ->where('ref_table', 'proyek')
+            ->where('ref_id', $proyek->proyek_id)
+            ->firstOrFail();
+
+        if (!Storage::disk('public')->exists($file->file_path)) {
+            abort(404, 'File not found');
+        }
+
+        return Storage::disk('public')->download($file->file_path, $file->original_name);
+    }
+
+    /**
+     * View file.
+     */
+    public function viewFile(Proyek $proyek, $fileId)
+    {
+        // Cari file berdasarkan ID dan pastikan milik proyek ini
+        $file = Multipleuploads::where('id', $fileId)
+            ->where('ref_table', 'proyek')
+            ->where('ref_id', $proyek->proyek_id)
+            ->firstOrFail();
+
+        if (!Storage::disk('public')->exists($file->file_path)) {
+            abort(404, 'File not found');
+        }
+
+        $path = Storage::disk('public')->path($file->file_path);
+        $mime = mime_content_type($path);
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $file->original_name . '"'
+        ]);
     }
 }

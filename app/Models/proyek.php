@@ -1,5 +1,4 @@
 <?php
-// app/Models/Proyek.php
 
 namespace App\Models;
 
@@ -11,7 +10,7 @@ class Proyek extends Model
 {
     use HasFactory;
 
-    protected $table = 'proyek';
+    protected $table = 'proyek'; // TAMBAHKAN INI
     protected $primaryKey = 'proyek_id';
 
     protected $fillable = [
@@ -23,11 +22,6 @@ class Proyek extends Model
         'sumber_dana',
         'deskripsi',
         'dokumen'
-    ];
-
-    protected $casts = [
-        'tahun' => 'integer',
-        'anggaran' => 'decimal:2'
     ];
 
     /**
@@ -56,5 +50,58 @@ class Proyek extends Model
             });
         }
         return $query;
+    }
+
+    /**
+     * Get files associated with this proyek
+     */
+    public function files()
+    {
+        return $this->hasMany(\App\Models\Multipleuploads::class, 'ref_id', 'proyek_id')
+                    ->where('ref_table', 'proyek');
+    }
+
+    /**
+     * Get the count of files
+     */
+    public function getFilesCountAttribute()
+    {
+        return $this->files()->count();
+    }
+
+    /**
+     * Get formatted anggaran
+     */
+    public function getFormattedAnggaranAttribute()
+    {
+        return 'Rp ' . number_format($this->anggaran, 0, ',', '.');
+    }
+
+    /**
+     * Get status based on tahun
+     */
+    public function getStatusAttribute()
+    {
+        if ($this->tahun >= date('Y')) {
+            return 'Aktif';
+        } elseif ($this->tahun >= date('Y') - 1) {
+            return 'Baru Selesai';
+        } else {
+            return 'Selesai';
+        }
+    }
+
+    /**
+     * Get status color
+     */
+    public function getStatusColorAttribute()
+    {
+        if ($this->tahun >= date('Y')) {
+            return 'success';
+        } elseif ($this->tahun >= date('Y') - 1) {
+            return 'warning';
+        } else {
+            return 'secondary';
+        }
     }
 }

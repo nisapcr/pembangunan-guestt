@@ -5,29 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage; // TAMBAHKAN INI
 
 class UserController extends Controller
 {
     /**
      * Tampilkan daftar semua user.
      */
-public function index(Request $request)
-{
-    // Kolom yang bisa di-filter
-    $filterableColumns = [];
+    public function index(Request $request)
+    {
+        // Kolom yang bisa di-filter
+        $filterableColumns = [];
 
-    // Kolom yang bisa dicari
-    $searchableColumns = ['name', 'email'];
+        // Kolom yang bisa dicari
+        $searchableColumns = ['name', 'email'];
 
-    // Query dengan pagination, search, dan filter + onEachSide(2)
-    $users = User::filter($request, $filterableColumns)
-                ->search($request, $searchableColumns)
-                ->paginate(10)
-                ->withQueryString()
-                ->onEachSide(2);
+        // Query dengan pagination, search, dan filter + onEachSide(2)
+        $users = User::filter($request, $filterableColumns)
+                    ->search($request, $searchableColumns)
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->onEachSide(2);
 
-    return view('pages.User.index', compact('users'));
-}
+        return view('pages.User.index', compact('users'));
+    }
+
     /**
      * Tampilkan form untuk menambah user baru.
      */
@@ -45,13 +47,22 @@ public function index(Request $request)
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // TAMBAHKAN INI
         ]);
 
-        User::create([
+        $userData = [
             'name'     => $validated['name'],
             'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
-        ]);
+        ];
+
+        // Handle upload profile picture
+        if ($request->hasFile('profile_picture')) {
+            $imagePath = $request->file('profile_picture')->store('profile-pictures', 'public');
+            $userData['profile_picture'] = $imagePath;
+        }
+
+        User::create($userData);
 
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
     }
@@ -85,6 +96,7 @@ public function index(Request $request)
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // TAMBAHKAN INI
         ]);
 
         $data = [
@@ -96,9 +108,37 @@ public function index(Request $request)
             $data['password'] = Hash::make($validated['password']);
         }
 
+        // Handle upload profile picture
+        if ($request->hasFile('profile_picture')) {
+            // Delete old image if exists
+            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+
+            $imagePath = $request->file('profile_picture')->store('profile-pictures', 'public');
+            $data['profile_picture'] = $imagePath;
+        }
+
         $user->update($data);
 
         return redirect()->route('users.index')->with('success', 'User berhasil diperbarui.');
+    }
+
+    /**
+     * Hapus profile picture user
+     */
+    public function removePicture(string $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+            Storage::disk('public')->delete($user->profile_picture);
+            $user->update(['profile_picture' => null]);
+
+            return back()->with('success', 'Foto profil berhasil dihapus.');
+        }
+
+        return back()->with('error', 'Foto profil tidak ditemukan.');
     }
 
     /**
@@ -111,6 +151,11 @@ public function index(Request $request)
         // Cegah user menghapus akun sendiri
         if (auth()->check() && auth()->id() == $user->id) {
             return redirect()->route('users.index')->with('error', 'Tidak dapat menghapus akun sendiri.');
+        }
+
+        // Delete profile picture if exists
+        if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+            Storage::disk('public')->delete($user->profile_picture);
         }
 
         $user->delete();

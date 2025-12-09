@@ -82,9 +82,20 @@
                             <div class="card user-card h-100">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start mb-3">
-                                        <div class="user-avatar me-3">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        <!-- MODIFIKASI BAGIAN INI -->
+                                        <div class="me-3">
+                                            @if($user->profile_picture)
+                                                <img src="{{ Storage::url($user->profile_picture) }}"
+                                                     alt="{{ $user->name }}"
+                                                     class="rounded-circle"
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                            @else
+                                                <div class="user-avatar me-3">
+                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                </div>
+                                            @endif
                                         </div>
+                                        <!-- END MODIFIKASI -->
                                         <div class="flex-grow-1">
                                             <h6 class="card-title mb-1 fw-bold text-truncate">{{ $user->name }}</h6>
                                             <p class="card-text text-muted small mb-2 text-truncate">
@@ -165,7 +176,7 @@
 
             <!-- Pagination -->
             @if($users->hasPages())
-               
+
                     <div>
                         {{ $users->links('pagination::bootstrap-5') }}
                     </div>
@@ -198,8 +209,8 @@
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
     }
     .user-avatar {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         background-color: #0d6efd;
         display: flex;
@@ -207,7 +218,7 @@
         justify-content: center;
         color: white;
         font-weight: bold;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         flex-shrink: 0;
     }
     .empty-state {
