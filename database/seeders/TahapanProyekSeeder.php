@@ -13,7 +13,7 @@ class TahapanProyekSeeder extends Seeder
         $faker = \Faker\Factory::create('id_ID');
 
         // Ambil proyek_id dari tabel proyek
-        $proyekIds = DB::table('proyek')->pluck('proyek_id');
+        $proyekIds = DB::table('proyeks')->pluck('proyek_id');
 
         if ($proyekIds->isEmpty()) {
             $this->command->error('Tidak ada data proyek! Jalankan ProyekSeeder terlebih dahulu.');

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('tahun');
             $table->string('lokasi');
             // Menggunakan tipe data yang tepat untuk angka besar
-            $table->decimal('anggaran', 15, 2); 
+            $table->decimal('anggaran', 15, 2);
             $table->string('sumber_dana');
             $table->text('deskripsi')->nullable();
             $table->timestamps();

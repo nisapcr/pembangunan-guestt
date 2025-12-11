@@ -25,7 +25,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('progres') }}"
+                    <a href="{{ route('progres.index') }}"
                         class="nav-link {{ Request::is('progres*') ? 'active' : '' }}">
                         <i class="fas fa-chart-line me-1"></i>Progres
                     </a>

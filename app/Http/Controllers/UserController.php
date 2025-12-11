@@ -49,10 +49,11 @@ class UserController extends Controller
      */
     public function create()
     {
+        // SESUAIKAN DENGAN ENUM DI DATABASE
         $roles = [
-            'pelanggan' => 'Pelanggan',
-            'mitra' => 'Mitra',
-            'superadmin' => 'Super Admin'
+            'admin'    => 'Administrator',
+            'petugas'  => 'Petugas',
+            'user'     => 'User Biasa'
         ];
         return view('pages.user.create', compact('roles'));
     }
@@ -66,7 +67,8 @@ class UserController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'role'     => 'required|string|in:pelanggan,mitra,superadmin',
+            // SESUAIKAN DENGAN ENUM DI DATABASE
+            'role'     => 'required|string|in:admin,petugas,user',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
@@ -104,10 +106,11 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
+        // SESUAIKAN DENGAN ENUM DI DATABASE
         $roles = [
-            'pelanggan' => 'Pelanggan',
-            'mitra' => 'Mitra',
-            'superadmin' => 'Super Admin'
+            'admin'    => 'Admin',
+            'petugas'  => 'Petugas',
+            'user'     => 'User'
         ];
         return view('pages.user.edit', compact('user', 'roles'));
     }
@@ -123,7 +126,8 @@ class UserController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
-            'role'     => 'required|string|in:pelanggan,mitra,superadmin',
+            // SESUAIKAN DENGAN ENUM DI DATABASE
+            'role'     => 'required|string|in:admin,petugas,user',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 

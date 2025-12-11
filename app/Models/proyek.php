@@ -10,7 +10,7 @@ class Proyek extends Model
 {
     use HasFactory;
 
-    protected $table = 'proyek'; // TAMBAHKAN INI
+    protected $table = 'proyeks'; // TAMBAHKAN INI
     protected $primaryKey = 'proyek_id';
 
     protected $fillable = [

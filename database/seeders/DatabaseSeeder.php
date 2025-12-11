@@ -6,11 +6,12 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         $this->call([
-            ProyekSeeder::class,      // Harus dijalankan dulu
-            TahapanProyekSeeder::class, // Baru kemudian tahapan
+            ProyekSeeder::class,
+            TahapanProyekSeeder::class,
+            ProgresProyekSeeder::class,
         ]);
     }
 }

@@ -33,7 +33,7 @@ class ProyekSeeder extends Seeder
         ];
 
         // Hapus data existing tanpa truncate (karena ada foreign key)
-        DB::table('proyek')->delete();
+        DB::table('proyeks')->delete();
 
         $data = [];
         for ($i = 0; $i < 100; $i++) {
@@ -53,7 +53,7 @@ class ProyekSeeder extends Seeder
             ];
         }
 
-        DB::table('proyek')->insert($data);
+        DB::table('proyeks')->insert($data);
 
         $this->command->info('Seeder Proyek berhasil dijalankan! ' . count($data) . ' data ditambahkan.');
     }
