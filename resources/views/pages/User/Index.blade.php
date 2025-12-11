@@ -36,41 +36,54 @@
             <form method="GET" action="{{ route('users.index') }}" class="mb-4">
                 <div class="row g-2">
                     <!-- Search -->
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text bg-light">
                                 <i class="fas fa-search text-muted"></i>
                             </span>
                             <input type="text" name="search" class="form-control border-start-0"
-                                   value="{{ request('search') }}" placeholder="Cari nama atau email pengguna...">
+                                   value="{{ request('search') }}" placeholder="Cari nama atau email...">
+                        </div>
+                    </div>
+
+                    <!-- Filter Role -->
+                    <div class="col-md-4">
+                        <select name="role" class="form-select">
+                            <option value="">Semua Role</option>
+                            <option value="pelanggan" {{ request('role') == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
+                            <option value="mitra" {{ request('role') == 'mitra' ? 'selected' : '' }}>Mitra</option>
+                            <option value="superadmin" {{ request('role') == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
+                        </select>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="col-md-2">
+                        <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search me-1"></i> Cari
+                                <i class="fas fa-filter me-1"></i> Filter
                             </button>
-                            @if(request('search'))
-                                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="btn btn-outline-danger">
-                                    <i class="fas fa-times me-1"></i> Clear
+                            @if(request('search') || request('role'))
+                                <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-refresh"></i>
                                 </a>
                             @endif
                         </div>
                     </div>
-
-                    <!-- Reset Filter -->
-                    @if(request('search'))
-                        <div class="col-md-4">
-                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary w-100">
-                                <i class="fas fa-refresh me-1"></i> Reset
-                            </a>
-                        </div>
-                    @endif
                 </div>
             </form>
 
             <!-- Info Hasil Pencarian -->
-            @if(request('search'))
+            @if(request('search') || request('role'))
                 <div class="alert alert-info mb-3">
                     <i class="fas fa-info-circle me-2"></i>
-                    Hasil pencarian untuk: "<strong>{{ request('search') }}</strong>"
-                    <span class="badge bg-primary ms-2">{{ $users->total() }} hasil ditemukan</span>
+                    @if(request('search'))
+                        Hasil pencarian untuk: "<strong>{{ request('search') }}</strong>"
+                    @endif
+                    @if(request('role'))
+                        @if(request('search')) <br> @endif
+                        Filter role: <span class="badge bg-primary">{{ ucfirst(request('role')) }}</span>
+                    @endif
+                    <span class="badge bg-dark ms-2">{{ $users->total() }} hasil</span>
                 </div>
             @endif
 
@@ -82,20 +95,20 @@
                             <div class="card user-card h-100">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start mb-3">
-                                        <!-- MODIFIKASI BAGIAN INI -->
+                                        <!-- Avatar/Profile Picture -->
                                         <div class="me-3">
                                             @if($user->profile_picture)
-                                                <img src="{{ Storage::url($user->profile_picture) }}"
+                                                <img src="{{ asset('storage/profile_pictures/' . $user->profile_picture) }}"
                                                      alt="{{ $user->name }}"
                                                      class="rounded-circle"
                                                      style="width: 50px; height: 50px; object-fit: cover;">
                                             @else
-                                                <div class="user-avatar me-3">
+                                                <div class="user-avatar">
                                                     {{ strtoupper(substr($user->name, 0, 1)) }}
                                                 </div>
                                             @endif
                                         </div>
-                                        <!-- END MODIFIKASI -->
+                                        <!-- User Info -->
                                         <div class="flex-grow-1">
                                             <h6 class="card-title mb-1 fw-bold text-truncate">{{ $user->name }}</h6>
                                             <p class="card-text text-muted small mb-2 text-truncate">
@@ -104,19 +117,31 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="badge bg-light text-dark">
-                                                <i class="fas fa-calendar me-1"></i>
-                                                Bergabung: {{ $user->created_at->format('d/m/Y') }}
-                                            </span>
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-user me-1"></i>
-                                                Aktif
-                                            </span>
-                                        </div>
+                                    <!-- Role Badge -->
+                                    <div class="mb-2">
+                                        @php
+                                            $roleColors = [
+                                                'superadmin' => 'bg-danger',
+                                                'mitra' => 'bg-warning text-dark',
+                                                'pelanggan' => 'bg-primary'
+                                            ];
+                                            $roleColor = $roleColors[$user->role] ?? 'bg-secondary';
+                                        @endphp
+                                        <span class="badge {{ $roleColor }} px-3 py-1">
+                                            <i class="fas fa-user-tag me-1"></i>
+                                            {{ ucfirst($user->role) }}
+                                        </span>
                                     </div>
 
+                                    <!-- Created Date -->
+                                    <div class="mb-3">
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            Bergabung: {{ $user->created_at->format('d/m/Y') }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Action Buttons -->
                                     <div class="d-flex justify-content-between align-items-center">
                                         <small class="text-muted">
                                             ID: {{ $user->id }}
@@ -137,7 +162,7 @@
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             @else
-                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm"
@@ -154,32 +179,38 @@
                         </div>
                     @endforeach
                 </div>
+
+                <!-- Pagination -->
+                @if($users->hasPages())
+                    <div class="mt-4">
+                        {{ $users->withQueryString()->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
             @else
                 <!-- Empty State -->
                 <div class="empty-state text-center py-5">
                     <i class="fas fa-users fa-4x text-muted mb-3"></i>
-                    @if(request('search'))
+                    @if(request('search') || request('role'))
                         <h5 class="fw-bold text-muted">Tidak ditemukan pengguna</h5>
-                        <p class="text-muted">Tidak ada pengguna yang sesuai dengan pencarian "<strong>{{ request('search') }}</strong>"</p>
+                        <p class="text-muted">
+                            @if(request('search'))
+                                Tidak ada pengguna yang sesuai dengan pencarian "<strong>{{ request('search') }}</strong>"
+                            @endif
+                            @if(request('role'))
+                                @if(request('search')) <br> @endif
+                                dengan role: <span class="badge bg-primary">{{ ucfirst(request('role')) }}</span>
+                            @endif
+                        </p>
                         <a href="{{ route('users.index') }}" class="btn btn-primary mt-2">
-                            <i class="fas fa-refresh me-1"></i> Tampilkan Semua Pengguna
+                            <i class="fas fa-refresh me-1"></i> Tampilkan Semua
                         </a>
                     @else
                         <h5 class="fw-bold text-muted">Belum ada data pengguna</h5>
                         <p class="text-muted">Mulai dengan menambahkan pengguna pertama Anda</p>
                         <a href="{{ route('users.create') }}" class="btn btn-primary mt-2">
-                            <i class="fas fa-plus me-1"></i> Tambah Pengguna Pertama
+                            <i class="fas fa-plus me-1"></i> Tambah Pengguna
                         </a>
                     @endif
-                </div>
-            @endif
-
-            <!-- Pagination -->
-            @if($users->hasPages())
-
-                    <div>
-                        {{ $users->links('pagination::bootstrap-5') }}
-                    </div>
                 </div>
             @endif
         </div>

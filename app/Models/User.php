@@ -2,44 +2,27 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'profile_picture', // TAMBAHKAN INI
+        'role', // TAMBAHKAN INI
+        'profile_picture',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -48,45 +31,44 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Scope untuk filter
-     */
-    public function scopeFilter(Builder $query, $request, array $filterableColumns): Builder
+    // Tambahkan method helper untuk role
+    public function isAdmin(): bool
     {
-        foreach ($filterableColumns as $column) {
-            if ($request->filled($column)) {
-                $query->where($column, $request->input($column));
-            }
-        }
-        return $query;
+        return $this->role === 'admin';
     }
 
-    /**
-     * Scope untuk search
-     */
-    public function scopeSearch($query, $request, array $columns)
+    public function isPetugas(): bool
     {
-        if ($request->filled('search')) {
-            $query->where(function($q) use ($request, $columns) {
-                foreach ($columns as $column) {
-                    $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
-                }
-            });
-        }
-        return $query;
+        return $this->role === 'petugas';
     }
 
-    /**
-     * Get profile picture URL
-     */
-    public function getProfilePictureUrlAttribute()
+    public function isUser(): bool
     {
-        return $this->profile_picture ? asset('storage/' . $this->profile_picture) : null;
+        return $this->role === 'user';
     }
 
-    /**
-     * Get profile picture or default avatar
-     */
+    public function hasRole($role): bool
+    {
+        return $this->role === $role;
+    }
+
+    // Scope untuk role
+    public function scopeAdmin($query)
+    {
+        return $query->where('role', 'admin');
+    }
+
+    public function scopePetugas($query)
+    {
+        return $query->where('role', 'petugas');
+    }
+
+    public function scopeUser($query)
+    {
+        return $query->where('role', 'user');
+    }
+
+    // Getter untuk avatar
     public function getAvatarAttribute()
     {
         if ($this->profile_picture) {

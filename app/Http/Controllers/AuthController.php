@@ -55,13 +55,13 @@ class AuthController extends Controller
         'name' => $data['name'],
         'email' => $data['email'],
         'password' => bcrypt($data['password']),
+        'role' => 'user', // Set default role sebagai 'user'
     ]);
 
     Auth::login($user);
 
     return redirect()->route('dashboard');
 }
-
 
 public function logout(Request $request)
 {

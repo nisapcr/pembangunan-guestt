@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage; // TAMBAHKAN INI
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -14,18 +14,32 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        // Kolom yang bisa di-filter
-        $filterableColumns = [];
+        // Query dasar
+        $query = User::query();
 
-        // Kolom yang bisa dicari
-        $searchableColumns = ['name', 'email'];
+        // SEARCH: Filter berdasarkan keyword pencarian
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm)
+                  ->orWhere('email', 'like', $searchTerm);
+            });
+        }
 
-        // Query dengan pagination, search, dan filter + onEachSide(2)
-        $users = User::filter($request, $filterableColumns)
-                    ->search($request, $searchableColumns)
-                    ->paginate(10)
-                    ->withQueryString()
-                    ->onEachSide(2);
+        // FILTER: Filter berdasarkan role
+        if ($request->has('role') && !empty($request->role)) {
+            $query->where('role', $request->role);
+        }
+
+        // SORTING: Urutkan berdasarkan kolom
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination dengan query string dan onEachSide
+        $users = $query->paginate(10)
+                      ->withQueryString()
+                      ->onEachSide(2);
 
         return view('pages.User.index', compact('users'));
     }
@@ -35,7 +49,12 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('pages.user.create');
+        $roles = [
+            'pelanggan' => 'Pelanggan',
+            'mitra' => 'Mitra',
+            'superadmin' => 'Super Admin'
+        ];
+        return view('pages.user.create', compact('roles'));
     }
 
     /**
@@ -46,20 +65,23 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // TAMBAHKAN INI
+            'password' => 'required|string|min:6|confirmed',
+            'role'     => 'required|string|in:pelanggan,mitra,superadmin',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $userData = [
             'name'     => $validated['name'],
             'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role'     => $validated['role'],
         ];
 
         // Handle upload profile picture
         if ($request->hasFile('profile_picture')) {
-            $imagePath = $request->file('profile_picture')->store('profile-pictures', 'public');
-            $userData['profile_picture'] = $imagePath;
+            $imageName = time() . '_' . $request->file('profile_picture')->getClientOriginalName();
+            $imagePath = $request->file('profile_picture')->storeAs('profile_pictures', $imageName, 'public');
+            $userData['profile_picture'] = $imageName;
         }
 
         User::create($userData);
@@ -82,7 +104,12 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
-        return view('pages.user.edit', compact('user'));
+        $roles = [
+            'pelanggan' => 'Pelanggan',
+            'mitra' => 'Mitra',
+            'superadmin' => 'Super Admin'
+        ];
+        return view('pages.user.edit', compact('user', 'roles'));
     }
 
     /**
@@ -95,13 +122,15 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // TAMBAHKAN INI
+            'password' => 'nullable|string|min:6|confirmed',
+            'role'     => 'required|string|in:pelanggan,mitra,superadmin',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $data = [
-            'name'  => $validated['name'],
-            'email' => $validated['email'],
+            'name'   => $validated['name'],
+            'email'  => $validated['email'],
+            'role'   => $validated['role'],
         ];
 
         if (!empty($validated['password'])) {
@@ -111,12 +140,13 @@ class UserController extends Controller
         // Handle upload profile picture
         if ($request->hasFile('profile_picture')) {
             // Delete old image if exists
-            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-                Storage::disk('public')->delete($user->profile_picture);
+            if ($user->profile_picture && Storage::disk('public')->exists('profile_pictures/' . $user->profile_picture)) {
+                Storage::disk('public')->delete('profile_pictures/' . $user->profile_picture);
             }
 
-            $imagePath = $request->file('profile_picture')->store('profile-pictures', 'public');
-            $data['profile_picture'] = $imagePath;
+            $imageName = time() . '_' . $request->file('profile_picture')->getClientOriginalName();
+            $imagePath = $request->file('profile_picture')->storeAs('profile_pictures', $imageName, 'public');
+            $data['profile_picture'] = $imageName;
         }
 
         $user->update($data);
@@ -131,8 +161,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-            Storage::disk('public')->delete($user->profile_picture);
+        if ($user->profile_picture && Storage::disk('public')->exists('profile_pictures/' . $user->profile_picture)) {
+            Storage::disk('public')->delete('profile_pictures/' . $user->profile_picture);
             $user->update(['profile_picture' => null]);
 
             return back()->with('success', 'Foto profil berhasil dihapus.');
@@ -154,8 +184,8 @@ class UserController extends Controller
         }
 
         // Delete profile picture if exists
-        if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-            Storage::disk('public')->delete($user->profile_picture);
+        if ($user->profile_picture && Storage::disk('public')->exists('profile_pictures/' . $user->profile_picture)) {
+            Storage::disk('public')->delete('profile_pictures/' . $user->profile_picture);
         }
 
         $user->delete();

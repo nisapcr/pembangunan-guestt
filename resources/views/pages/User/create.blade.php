@@ -3,56 +3,95 @@
 
 @section('content')
 <div class="container mt-5">
-    <h2 class="mb-4">Tambah Pengguna Baru</h2>
-
-    <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-
-        <div class="mb-3">
-            <label for="name" class="form-label">Nama</label>
-            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
-            @error('name') <div class="text-danger">{{ $message }}</div> @enderror
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Tambah Pengguna Baru</h5>
         </div>
+        <div class="card-body">
+            <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
-            @error('email') <div class="text-danger">{{ $message }}</div> @enderror
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                            @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
+                            @error('email') <div class="text-danger small">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                    <input type="password" name="password" id="password" class="form-control" required>
+                                    @error('password') <div class="text-danger small">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password_confirmation" class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
+                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                            <select name="role" id="role" class="form-select" required>
+                                <option value="">Pilih Role</option>
+                                @foreach($roles as $key => $value)
+                                    <option value="{{ $key }}" {{ old('role') == $key ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('role') <div class="text-danger small">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <!-- Foto Profil -->
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">Foto Profil</label>
+                            <div class="border rounded p-3 text-center">
+                                <div id="imagePreview" class="mb-2">
+                                    <img id="previewImage" class="img-thumbnail rounded-circle"
+                                         width="150" height="150" style="object-fit: cover;"
+                                         src="https://ui-avatars.com/api/?name=New+User&background=0D6EFD&color=fff&size=150">
+                                </div>
+                                <input type="file" name="profile_picture" id="profile_picture"
+                                       class="form-control" accept="image/*">
+                                <div class="form-text small mt-2">
+                                    Format: JPG, PNG, GIF, WebP. Maksimal: 2MB
+                                </div>
+                                @error('profile_picture') <div class="text-danger small">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i> Simpan
+                    </button>
+                    <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Kembali
+                    </a>
+                </div>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label for="password" class="form-label">Kata Sandi</label>
-            <input type="password" name="password" id="password" class="form-control" required>
-            @error('password') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
-            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
-        </div>
-
-        <!-- TAMBAHKAN FORM UPLOAD FOTO PROFIL -->
-        <div class="mb-3">
-            <label for="profile_picture" class="form-label">Foto Profil</label>
-            <input type="file" name="profile_picture" id="profile_picture" class="form-control" accept="image/*">
-            <div class="form-text">Format: JPG, PNG, GIF. Maksimal: 2MB</div>
-            @error('profile_picture') <div class="text-danger">{{ $message }}</div> @enderror
-
-            <!-- Preview Image -->
-            <div id="imagePreview" class="mt-2 d-none">
-                <img id="previewImage" class="img-thumbnail" width="150">
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-success">Simpan</button>
-        <a href="{{ route('users.index') }}" class="btn btn-secondary">Kembali</a>
-    </form>
+    </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const profilePictureInput = document.getElementById('profile_picture');
-    const imagePreview = document.getElementById('imagePreview');
     const previewImage = document.getElementById('previewImage');
 
     profilePictureInput.addEventListener('change', function() {
@@ -61,12 +100,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             reader.onload = function(e) {
                 previewImage.src = e.target.result;
-                imagePreview.classList.remove('d-none');
             }
 
             reader.readAsDataURL(this.files[0]);
         } else {
-            imagePreview.classList.add('d-none');
+            previewImage.src = "https://ui-avatars.com/api/?name=New+User&background=0D6EFD&color=fff&size=150";
         }
     });
 });
@@ -74,10 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <style>
 .img-thumbnail {
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    padding: 4px;
-    background-color: #f8f9fa;
+    border: 3px solid #dee2e6;
 }
 </style>
 @endsection
