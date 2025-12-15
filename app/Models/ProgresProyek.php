@@ -39,7 +39,7 @@ class ProgresProyek extends Model
      */
     public function tahapan()
     {
-        return $this->belongsTo(TahapanProyek::class, 'tahap_id', 'tahap_id');
+        return $this->belongsTo(TahapanProyek::class, 'tahap_id', 'id');
     }
 
     /**

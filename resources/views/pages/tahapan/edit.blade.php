@@ -9,7 +9,7 @@
     <div class="card shadow">
         <div class="card-body">
 
-            <form action="{{ route('tahapan.update', $tahapan->tahap_id) }}" method="POST">
+           <form action="{{ route('tahapan.update', $tahapan) }}" method="POST">
                 @csrf
                 @method('PUT')
 

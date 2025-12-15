@@ -501,13 +501,7 @@
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-body py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="mb-0 text-muted">
-                                Menampilkan {{ $progress->firstItem() }} - {{ $progress->lastItem() }}
-                                dari {{ $progress->total() }} data
-                            </p>
-                        </div>
+                    <div >
                         <div>
                             {{ $progress->links('pagination::bootstrap-5') }}
                         </div>

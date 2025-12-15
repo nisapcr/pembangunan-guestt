@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
         // USER 1: ADMIN (email khusus untuk admin)
         $data[] = [
             'name' => 'Administrator',
-            'email' => 'admin@proyek.com',  
+            'email' => 'admin@proyek.com',
             'email_verified_at' => now(),
             'password' => Hash::make('Admin123'), // Password mudah diingat
             'role' => 'admin', // TAMBAHKAN INI

@@ -15,7 +15,7 @@ public function index(Request $request)
         $filterableColumns = ['status', 'proyek_id'];
 
         // Kolom yang bisa dicari
-        $searchableColumns = ['nama_tahapan', 'deskripsi'];
+        $searchableColumns = ['nama_tahapan',];
 
         // Query dengan pagination, search, dan filter
         $tahapans = TahapanProyek::with('proyek')
@@ -84,32 +84,30 @@ public function index(Request $request)
         return view('pages.tahapan.show', compact('tahapan'));
     }
 
-    public function edit($id)
-    {
-        $tahapan = TahapanProyek::findOrFail($id);
-        $proyeks = Proyek::all();
+public function edit($id)
+{
+    $tahapan = TahapanProyek::findOrFail($id);
+    $proyeks = Proyek::all();
 
-        return view('pages.tahapan.edit', compact('tahapan', 'proyeks'));
-    }
+    return view('pages.tahapan.edit', compact('tahapan', 'proyeks'));
+}
 
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'proyek_id'         => 'required|integer',
-            'nama_tahapan'      => 'required|string',
-            'target_persen'     => 'required|integer|min:0|max:100',
-            'tanggal_mulai'     => 'nullable|date',
-            'tanggal_selesai'   => 'nullable|date',
-            'status'            => 'required|string|in:pending,in_progress,completed',
-        ]);
+ public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        'proyek_id'       => 'required|integer',
+        'nama_tahapan'    => 'required|string',
+        'target_persen'   => 'required|integer|min:0|max:100',
+        'tanggal_mulai'   => 'nullable|date',
+        'tanggal_selesai' => 'nullable|date',
+        'status'          => 'required|in:pending,in_progress,completed',
+    ]);
 
-        $tahapan = TahapanProyek::findOrFail($id);
-        $tahapan->update($validated);
+    TahapanProyek::findOrFail($id)->update($validated);
 
-        return redirect()->route('tahapan.index')
-            ->with('success', 'Tahapan berhasil diperbarui!');
-    }
-
+    return redirect()->route('tahapan.index')
+        ->with('success', 'Tahapan berhasil diperbarui!');
+}
     public function destroy($id)
     {
         $tahapan = TahapanProyek::findOrFail($id);

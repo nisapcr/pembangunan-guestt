@@ -9,15 +9,12 @@ use Illuminate\Database\Eloquent\Builder;
 class TahapanProyek extends Model
 {
     protected $table = 'tahapan_proyek';
-
-    protected $primaryKey = 'tahap_id';
-
-    public $timestamps = false;
+    protected $primaryKey = 'id';
+    public $timestamps = true;
 
     protected $fillable = [
         'proyek_id',
         'nama_tahapan',
-        'deskripsi',
         'target_persen',
         'tanggal_mulai',
         'tanggal_selesai',
@@ -26,12 +23,17 @@ class TahapanProyek extends Model
 
     protected $casts = [
         'tanggal_mulai' => 'date',
-        'tanggal_selesai' => 'date'
+        'tanggal_selesai' => 'date',
     ];
 
     public function proyek()
     {
-        return $this->belongsTo(Proyek::class, 'proyek_id');
+        return $this->belongsTo(Proyek::class, 'proyek_id', 'proyek_id');
+    }
+
+    public function progres()
+    {
+        return $this->hasMany(ProgresProyek::class, 'tahap_id', 'id');
     }
 
     /**

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -23,91 +22,79 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
         }
 
         .register-card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(50, 50, 93, 0.1), 0 3px 10px rgba(0, 0, 0, 0.07);
             overflow: hidden;
             width: 100%;
-            max-width: 520px;
+            max-width: 480px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .register-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 18px 40px rgba(50, 50, 93, 0.15), 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             color: white;
-            padding: 30px 20px;
+            padding: 25px 15px 15px 15px;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .card-header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(30deg);
-        }
-
         .card-body {
-            padding: 30px;
+            padding: 25px;
         }
 
         .form-control {
             border-radius: 8px;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 1px solid #e3e6f0;
+            font-size: 0.9rem;
             transition: all 0.3s;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.25);
         }
 
         .btn-register {
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             border: none;
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            font-size: 0.95rem;
             transition: all 0.3s;
         }
 
         .btn-register:hover {
             transform: translateY(-2px);
-            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 5px 12px rgba(50, 50, 93, 0.1), 0 2px 5px rgba(0, 0, 0, 0.08);
         }
 
         .form-label {
             font-weight: 600;
             color: #5a5c69;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
         }
 
         .password-requirements {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #6c757d;
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .login-link {
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .login-link:hover {
@@ -116,22 +103,23 @@
 
         .error-message {
             color: #e74a3b;
-            font-size: 0.875rem;
-            margin-top: 5px;
+            font-size: 0.8rem;
+            margin-top: 4px;
         }
 
         .success-message {
             color: #1cc88a;
-            font-size: 0.875rem;
-            margin-top: 5px;
+            font-size: 0.8rem;
+            margin-top: 4px;
         }
 
         .input-icon {
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: #b7b9cc;
+            font-size: 0.9rem;
         }
 
         .input-with-icon {
@@ -142,33 +130,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
         }
 
-        .logo {
+        .logo-svg {
             width: 50px;
             height: 50px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin-right: 10px;
-        }
-
-        .logo i {
-            font-size: 24px;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
         }
 
         .brand-text {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
         }
 
         .password-strength {
-            height: 5px;
-            border-radius: 5px;
-            margin-top: 5px;
+            height: 4px;
+            border-radius: 4px;
+            margin-top: 4px;
             background-color: #e3e6f0;
             overflow: hidden;
         }
@@ -194,12 +176,60 @@
         .checkbox-container {
             display: flex;
             align-items: flex-start;
-            margin-top: 15px;
+            margin-top: 12px;
+            font-size: 0.85rem;
         }
 
         .checkbox-container input {
-            margin-top: 3px;
-            margin-right: 10px;
+            margin-top: 2px;
+            margin-right: 8px;
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            font-size: 0.85rem;
+        }
+
+        .alert ul {
+            margin-bottom: 0;
+            padding-left: 15px;
+        }
+
+        .card-header h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .card-header p {
+            font-size: 0.85rem;
+            opacity: 0.75;
+            margin-bottom: 0;
+        }
+
+        .text-center small {
+            font-size: 0.85rem;
+        }
+
+        /* Responsive untuk mobile kecil */
+        @media (max-width: 480px) {
+            .register-card {
+                max-width: 100%;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .logo-svg {
+                width: 45px;
+                height: 45px;
+            }
+
+            .brand-text {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -207,9 +237,45 @@
     <div class="register-card">
         <div class="card-header">
             <div class="logo-container">
-                <div class="logo">
-                    <i class="fas fa-hammer"></i>
-                </div>
+                <!-- Logo SVG Horizontal -->
+                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background Circle -->
+                    <circle cx="50" cy="50" r="48" fill="rgba(255, 255, 255, 0.2)"/>
+
+                    <!-- Building Base -->
+                    <rect x="30" y="48" width="40" height="30" fill="#ffffff" rx="2"/>
+
+                    <!-- Building Windows -->
+                    <rect x="35" y="53" width="6" height="6" fill="#4e73df" opacity="0.9"/>
+                    <rect x="44" y="53" width="6" height="6" fill="#4e73df" opacity="0.9"/>
+                    <rect x="53" y="53" width="6" height="6" fill="#4e73df" opacity="0.9"/>
+
+                    <rect x="35" y="63" width="6" height="6" fill="#4e73df" opacity="0.9"/>
+                    <rect x="44" y="63" width="6" height="6" fill="#4e73df" opacity="0.9"/>
+                    <rect x="53" y="63" width="6" height="6" fill="#4e73df" opacity="0.9"/>
+
+                    <!-- Door -->
+                    <rect x="44" y="70" width="6" height="8" fill="#ffc107"/>
+
+                    <!-- Crane Structure -->
+                    <line x1="38" y1="48" x2="38" y2="25" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="38" y1="25" x2="60" y2="35" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round"/>
+
+                    <!-- Crane Cable -->
+                    <line x1="57" y1="34" x2="57" y2="45" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-dasharray="2,2"/>
+
+                    <!-- Crane Hook -->
+                    <circle cx="57" cy="47" r="2.5" fill="#ff6b6b"/>
+
+                    <!-- Construction Worker Helmet -->
+                    <circle cx="67" cy="28" r="6" fill="#ffc107"/>
+                    <ellipse cx="67" cy="26" rx="7" ry="3" fill="#ffed4e"/>
+
+                    <!-- Brick/Construction Element -->
+                    <rect x="20" y="70" width="8" height="4" fill="#ff6b6b" opacity="0.8"/>
+                    <rect x="20" y="74" width="8" height="4" fill="#ff6b6b" opacity="0.6"/>
+                </svg>
+
                 <div class="brand-text">PembangunanProyek</div>
             </div>
             <h4 class="mb-0">Buat Akun Baru</h4>
@@ -304,7 +370,7 @@
                 </button>
             </form>
 
-            <div class="text-center mt-4">
+            <div class="text-center mt-3">
                 <small>Sudah punya akun? <a href="{{ route('login') }}" class="login-link">Masuk di sini</a></small>
             </div>
         </div>

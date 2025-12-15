@@ -76,12 +76,13 @@
                                         </a>
                                     </div>
                                 @else
-                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
-                                         style="width: 150px; height: 150px;">
-                                        <span class="text-white fs-1">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                                    </div>
+                                    <!-- Placeholder Image dari placeholder.com (compressed) -->
+                                    <img src="https://via.placeholder.com/150x150/0d6efd/FFFFFF?text={{ urlencode(strtoupper(substr($user->name, 0, 1))) }}"
+                                         alt="Foto Profil Placeholder"
+                                         class="img-thumbnail rounded-circle mb-2"
+                                         width="150" height="150" style="object-fit: cover;">
                                     <div class="text-muted">
-                                        <small>Belum ada foto profil</small>
+                                        <small>Menggunakan foto placeholder</small>
                                     </div>
                                 @endif
                             </div>
@@ -92,12 +93,15 @@
                             <label for="profile_picture" class="form-label">Ganti Foto Profil</label>
                             <input type="file" name="profile_picture" id="profile_picture"
                                    class="form-control" accept="image/*">
-                            <div class="form-text small">Biarkan kosong jika tidak ingin mengubah</div>
+                            <div class="form-text small">
+                                Biarkan kosong jika tidak ingin mengubah<br>
+                                <small class="text-muted">Format: JPG, PNG | Maks: 2MB</small>
+                            </div>
                             @error('profile_picture') <div class="text-danger small">{{ $message }}</div> @enderror
 
                             <!-- Preview Image -->
                             <div id="imagePreview" class="mt-2 d-none text-center">
-                                <img id="previewImage" class="img-thumbnail rounded-circle" width="100">
+                                <img id="previewImage" class="img-thumbnail rounded-circle" width="100" height="100" style="object-fit: cover;">
                                 <small class="d-block text-muted mt-1">Preview foto baru</small>
                             </div>
                         </div>
@@ -125,6 +129,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     profilePictureInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
+            // Validasi ukuran file (maks 2MB)
+            if (this.files[0].size > 2 * 1024 * 1024) {
+                alert('Ukuran file maksimal 2MB');
+                this.value = '';
+                imagePreview.classList.add('d-none');
+                return;
+            }
+
+            // Validasi tipe file
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(this.files[0].type)) {
+                alert('Format file harus JPG atau PNG');
+                this.value = '';
+                imagePreview.classList.add('d-none');
+                return;
+            }
+
             const reader = new FileReader();
 
             reader.onload = function(e) {
@@ -143,6 +164,11 @@ document.addEventListener('DOMContentLoaded', function() {
 <style>
 .img-thumbnail {
     border: 3px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+.img-thumbnail:hover {
+    border-color: #0d6efd;
+    transform: scale(1.02);
 }
 </style>
 @endsection

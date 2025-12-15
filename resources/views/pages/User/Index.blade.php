@@ -137,7 +137,8 @@
                                     <div class="mb-3">
                                         <span class="badge bg-light text-dark">
                                             <i class="fas fa-calendar me-1"></i>
-                                            Bergabung: {{ $user->created_at->format('d/m/Y') }}
+                                            {{ optional($user->created_at)->format('d/m/Y') ?? '-' }}
+
                                         </span>
                                     </div>
 

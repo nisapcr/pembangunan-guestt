@@ -44,24 +44,27 @@
                             @enderror
                         </div>
 
-                        <!-- Tahapan -->
-                        <div class="mb-3">
-                            <label class="form-label">Tahapan <span class="text-danger">*</span></label>
-                            <select name="tahap_id"
-                                    class="form-control @error('tahap_id') is-invalid @enderror" required>
-                                <option value="">-- Pilih Tahapan --</option>
-                                @foreach ($tahapans as $tahapan)
-                                    <option value="{{ $tahapan->tahap_id }}"
-                                        data-proyek-id="{{ $tahapan->proyek_id }}"
-                                        {{ old('tahap_id') == $tahapan->tahap_id ? 'selected' : '' }}>
-                                        {{ $tahapan->nama_tahapan }} ({{ $tahapan->proyek->nama_proyek ?? '-' }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('tahap_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                       <!-- Tahapan -->
+<div class="mb-3">
+    <label class="form-label">Tahapan <span class="text-danger">*</span></label>
+    <select name="tahap_id"
+            class="form-control @error('tahap_id') is-invalid @enderror"
+            required>
+        <option value="">-- Pilih Tahapan --</option>
+        @foreach ($tahapans as $tahapan)
+            <option value="{{ $tahapan->id }}"
+                data-proyek-id="{{ $tahapan->proyek_id }}"
+                {{ old('tahap_id') == $tahapan->id ? 'selected' : '' }}>
+                {{ $tahapan->nama_tahapan }}
+                ({{ $tahapan->proyek->nama_proyek ?? '-' }})
+            </option>
+        @endforeach
+    </select>
+
+    @error('tahap_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
 
                         <!-- Tanggal -->
                         <div class="mb-3">

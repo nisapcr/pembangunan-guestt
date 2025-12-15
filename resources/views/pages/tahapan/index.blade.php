@@ -372,26 +372,33 @@
 
                         <!-- Card Footer - Actions -->
                         <div class="card-footer bg-transparent">
-                            <div class="btn-group w-100" role="group">
-                                <a href="{{ route('tahapan.show', $item->tahap_id) }}"
-                                   class="btn btn-outline-info btn-sm" title="Lihat Detail">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('tahapan.edit', $item->tahap_id) }}"
-                                   class="btn btn-outline-warning btn-sm" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('tahapan.destroy', $item->tahap_id) }}"
-                                      method="POST" class="d-inline"
-                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus tahapan {{ $item->nama_tahapan }}?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+    <div class="btn-group w-100" role="group">
+
+        <a href="{{ route('tahapan.show', $item->id) }}"
+           class="btn btn-outline-info btn-sm" title="Lihat Detail">
+            <i class="fas fa-eye"></i>
+        </a>
+
+        <a href="{{ route('tahapan.edit', $item->id) }}"
+           class="btn btn-outline-warning btn-sm" title="Edit">
+            <i class="fas fa-edit"></i>
+        </a>
+
+        <form action="{{ route('tahapan.destroy', $item->id) }}"
+              method="POST" class="d-inline"
+              onsubmit="return confirm('Apakah Anda yakin ingin menghapus tahapan {{ $item->nama_tahapan }}?')">
+
+            @csrf
+            @method('DELETE')
+
+            <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
+
+    </div>
+</div>
+
                     </div>
                 </div>
                 @endforeach

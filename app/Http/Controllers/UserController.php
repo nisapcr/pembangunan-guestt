@@ -51,10 +51,10 @@ class UserController extends Controller
     {
         // SESUAIKAN DENGAN ENUM DI DATABASE
         $roles = [
-            'admin'    => 'Administrator',
-            'petugas'  => 'Petugas',
-            'user'     => 'User Biasa'
-        ];
+    'admin'    => 'Administrator',
+    'pelanggan'=> 'Pelanggan',
+    'user'     => 'User Biasa'
+];
         return view('pages.user.create', compact('roles'));
     }
 
@@ -68,7 +68,8 @@ class UserController extends Controller
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
             // SESUAIKAN DENGAN ENUM DI DATABASE
-            'role'     => 'required|string|in:admin,petugas,user',
+            'role' => 'required|string|in:admin,pelanggan,user',
+
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 

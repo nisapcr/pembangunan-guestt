@@ -18,7 +18,7 @@
             align-items: center;
             justify-content: center;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background-image: url('https://images.unsplash.com/photo-1541888946743-b9cb5319597f?fit=crop&w=1400&q=80');
             background-size: cover;
             background-position: center;
@@ -32,98 +32,128 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1;
         }
 
         .login-container {
             background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             width: 100%;
-            max-width: 420px;
+            max-width: 380px;
             z-index: 2;
             padding: 0;
-            animation: fadeIn 0.8s ease-in-out;
+            animation: fadeIn 0.6s ease-in-out;
         }
 
         .login-header {
             background: #007bff;
             color: white;
             text-align: center;
-            padding: 40px 20px 20px 20px;
-            border-bottom: 5px solid #0056b3;
+            padding: 25px 15px 15px 15px;
+            border-bottom: 4px solid #0056b3;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-svg {
+            width: 55px;
+            height: 55px;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
         }
 
         .login-header h1 {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            margin: 10px 0 0;
+            margin: 8px 0 0;
+            position: relative;
+            z-index: 1;
         }
 
         .login-header p {
-            font-size: 1rem;
+            font-size: 0.85rem;
             opacity: 0.9;
-            margin-top: 5px;
+            margin-top: 3px;
+            position: relative;
+            z-index: 1;
         }
 
         .login-body {
-            padding: 35px;
+            padding: 25px;
         }
 
         .form-control {
-            border-radius: 12px;
-            padding: 14px 18px;
+            border-radius: 10px;
+            padding: 12px 15px;
             border: 1px solid #ced4da;
-            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
         }
 
         .form-control:focus {
             border-color: #007bff;
-            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
             outline: none;
         }
 
         .form-label {
             font-weight: 600;
             color: #343a40;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
         .input-group-text {
             background-color: #e9ecef;
             border-right: none;
-            border-radius: 12px 0 0 12px;
-            padding: 0.75rem 1rem;
+            border-radius: 10px 0 0 10px;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.9rem;
         }
 
         .form-control-with-icon {
             border-left: none;
-            border-radius: 0 12px 12px 0;
+            border-radius: 0 10px 10px 0;
         }
 
         .btn-login {
             background: linear-gradient(45deg, #007bff 0%, #0056b3 100%);
             border: none;
-            border-radius: 12px;
-            padding: 15px;
-            font-weight: 700;
-            font-size: 1.1rem;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 1rem;
             color: white;
             width: 100%;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .btn-login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.5);
-            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
         }
 
         .alert {
-            border-radius: 12px;
-            border-left: 5px solid;
+            border-radius: 10px;
+            border-left: 4px solid;
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
         }
 
         .alert-danger { border-left-color: #dc3545; }
@@ -131,45 +161,130 @@
 
         .login-footer {
             text-align: center;
-            padding: 20px 35px;
+            padding: 15px 25px;
             background: #f8f9fa;
             border-top: 1px solid #e9ecef;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 16px 16px;
         }
 
         .login-footer a {
             color: #007bff;
             text-decoration: none;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .login-footer a:hover {
             text-decoration: underline;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .login-footer p {
+            margin: 5px 0;
+            font-size: 0.8rem;
         }
 
-        /* Toggle Password */
         .password-toggle {
             background-color: #e9ecef;
             border: none;
-            border-radius: 0 12px 12px 0;
+            border-radius: 0 10px 10px 0;
             cursor: pointer;
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.9rem;
         }
 
         .password-toggle:hover {
             background-color: #dee2e6;
+        }
+
+        .form-text {
+            font-size: 0.8rem;
+        }
+
+        .form-check {
+            margin-bottom: 15px;
+        }
+
+        .form-check-input {
+            margin-top: 0.25rem;
+        }
+
+        .form-check-label {
+            font-size: 0.9rem;
+        }
+
+        .text-center a {
+            font-size: 0.85rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive untuk mobile sangat kecil */
+        @media (max-width: 400px) {
+            .login-container {
+                max-width: 340px;
+            }
+
+            .login-body {
+                padding: 20px;
+            }
+
+            .login-header {
+                padding: 20px 15px 12px 15px;
+            }
+
+            .login-header h1 {
+                font-size: 1.4rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <i class="fas fa-hard-hat fa-3x mb-2"></i>
+            <div class="logo-container">
+                <!-- Logo SVG -->
+                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background Circle -->
+                    <circle cx="50" cy="50" r="48" fill="rgba(255, 255, 255, 0.2)"/>
+
+                    <!-- Building Base -->
+                    <rect x="30" y="48" width="40" height="30" fill="#ffffff" rx="2"/>
+
+                    <!-- Building Windows -->
+                    <rect x="35" y="53" width="6" height="6" fill="#007bff" opacity="0.9"/>
+                    <rect x="44" y="53" width="6" height="6" fill="#007bff" opacity="0.9"/>
+                    <rect x="53" y="53" width="6" height="6" fill="#007bff" opacity="0.9"/>
+
+                    <rect x="35" y="63" width="6" height="6" fill="#007bff" opacity="0.9"/>
+                    <rect x="44" y="63" width="6" height="6" fill="#007bff" opacity="0.9"/>
+                    <rect x="53" y="63" width="6" height="6" fill="#007bff" opacity="0.9"/>
+
+                    <!-- Door -->
+                    <rect x="44" y="70" width="6" height="8" fill="#ffc107"/>
+
+                    <!-- Crane Structure -->
+                    <line x1="38" y1="48" x2="38" y2="25" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="38" y1="25" x2="60" y2="35" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round"/>
+
+                    <!-- Crane Cable -->
+                    <line x1="57" y1="34" x2="57" y2="45" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-dasharray="2,2"/>
+
+                    <!-- Crane Hook -->
+                    <circle cx="57" cy="47" r="2.5" fill="#ff6b6b"/>
+
+                    <!-- Construction Worker Helmet -->
+                    <circle cx="67" cy="28" r="6" fill="#ffc107"/>
+                    <ellipse cx="67" cy="26" rx="7" ry="3" fill="#ffed4e"/>
+
+                    <!-- Brick/Construction Element -->
+                    <rect x="20" y="70" width="8" height="4" fill="#ff6b6b" opacity="0.8"/>
+                    <rect x="20" y="74" width="8" height="4" fill="#ff6b6b" opacity="0.6"/>
+                </svg>
+            </div>
+
             <h1>PembangunanProyek</h1>
             <p>Sistem Manajemen Proyek Terpadu</p>
         </div>
@@ -207,7 +322,7 @@
                     </div>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
@@ -221,8 +336,7 @@
                             <i class="fas fa-eye" id="toggleIcon"></i>
                         </button>
                     </div>
-                    <!-- HAPUS PESAN SYARAT HURUF KAPITAL -->
-                    <small class="form-text text-muted mt-2 d-block">
+                    <small class="form-text text-muted mt-1 d-block">
                         Password minimal 3 karakter
                     </small>
                 </div>
@@ -244,7 +358,7 @@
         </div>
 
         <div class="login-footer">
-            <p class="mb-0">
+            <p class="mb-1">
                 Belum punya akun? <a href="{{ route('register') }}">Daftar Sekarang</a>
             </p>
             <p class="mt-2 small text-muted">
@@ -262,43 +376,20 @@
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('toggleIcon');
 
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                toggleIcon.classList.toggle('fa-eye');
-                toggleIcon.classList.toggle('fa-eye-slash');
-            });
-
-            // Validasi Form
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-
-                // Cek kosong
-                if (!email || !password) {
-                    e.preventDefault();
-                    alert('Email dan password wajib diisi');
-                    return;
-                }
-
-                // Validasi Password (Hanya minimal 3 karakter)
-                if (password.length < 3) {
-                    e.preventDefault();
-                    alert('Password harus minimal 3 karakter');
-                    return;
-                }
-
-                // HAPUS VALIDASI HURUF KAPITAL
-                // if (!/[A-Z]/.test(password)) {
-                //     e.preventDefault();
-                //     alert('Password harus mengandung huruf kapital');
-                //     return;
-                // }
-            });
+            if (togglePassword) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    toggleIcon.classList.toggle('fa-eye');
+                    toggleIcon.classList.toggle('fa-eye-slash');
+                });
+            }
 
             // Auto focus pada email field
-            document.getElementById('email').focus();
+            const emailInput = document.getElementById('email');
+            if (emailInput) {
+                emailInput.focus();
+            }
 
             // Alert otomatis hilang setelah 5 detik
             setTimeout(() => {
