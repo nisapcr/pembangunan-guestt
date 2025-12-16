@@ -1,6 +1,6 @@
 {{-- resources/views/pages/lokasi/index.blade.php --}}
 @extends('layouts.guest.app')
-@section('title', 'Lokasi Proyek')
+@section('title', 'Daftar Lokasi Proyek')
 
 @section('content')
 <div class="container-fluid">

@@ -1,5 +1,5 @@
 @extends('layouts.guest.app')
-@section('title', 'Progress Proyek')
+@section('title', 'Daftar Progres Proyek')
 
 @section('content')
 <div class="container-fluid">

@@ -11,6 +11,7 @@ use App\Http\Controllers\TahapanProyekController;
 use App\Http\Controllers\MultipleuploadsController;
 use App\Http\Controllers\ProgresProyekController;
 use App\Http\Controllers\LokasiProyekController;
+use App\Http\Controllers\KontraktorController;
 
 // --- RUTE BERANDA (Bisa diakses oleh semua pengguna) ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -36,7 +37,7 @@ Route::middleware('auth')->group(function () {
 
     // 2. Resource Tahapan Proyek
     Route::resource('tahapan', TahapanProyekController::class);
-
+ Route::resource('kontraktor', KontraktorController::class);
     // 3. Resource Progress Proyek
 Route::resource('progres', ProgresProyekController::class);
 
@@ -51,7 +52,6 @@ Route::get('progres/export', [ProgresProyekController::class, 'export'])
     ->name('progres.export');
 
     // 4. Rute kustom lainnya
-    Route::get('/kontraktor', [ProyekController::class, 'kontraktor'])->name('kontraktor');
     Route::get('/contact', [ProyekController::class, 'contact'])->name('contact');
     Route::get('/tentang', [ProyekController::class, 'tentang'])->name('tentang');
 
