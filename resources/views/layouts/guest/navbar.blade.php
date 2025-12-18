@@ -1,86 +1,71 @@
 <nav class="navbar navbar-expand-lg sticky-top main-navbar">
     <div class="container">
+        <!-- Logo dengan teks -->
         <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
-            <!-- Logo Horizontal untuk Navbar -->
-            <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
-                <svg class="logo-navbar" width="200" height="60" viewBox="0 0 400 120"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <!-- Icon Container -->
-                    <g transform="translate(10, 10)">
-                        <!-- Background Circle -->
-                        <circle cx="50" cy="50" r="48" fill="#E3F2FD" />
+            <!-- Logo bulat -->
+            <div class="logo-container me-3">
+                <img src="{{ asset('img/logo.png') }}"
+                     alt="Logo Pembangunan Proyek"
+                     class="rounded-circle logo-image">
+            </div>
 
-                        <!-- Building -->
-                        <rect x="30" y="55" width="25" height="35" fill="#37474F" rx="1" />
-                        <rect x="33" y="60" width="4" height="4" fill="#64B5F6" />
-                        <rect x="39" y="60" width="4" height="4" fill="#64B5F6" />
-                        <rect x="46" y="60" width="4" height="4" fill="#64B5F6" />
-                        <rect x="33" y="68" width="4" height="4" fill="#64B5F6" />
-                        <rect x="39" y="68" width="4" height="4" fill="#64B5F6" />
-                        <rect x="46" y="68" width="4" height="4" fill="#64B5F6" />
-                        <rect x="33" y="76" width="4" height="4" fill="#64B5F6" />
-                        <rect x="39" y="76" width="4" height="4" fill="#64B5F6" />
-                        <rect x="46" y="76" width="4" height="4" fill="#64B5F6" />
-                        <rect x="39" y="84" width="4" height="6" fill="#FFA726" />
+            <!-- Teks brand -->
+            <div class="brand-text">
+                <h2 class="brand-subtitle">Pembangunan</h2>
+                <h2 class="brand-subtitle">Proyek</h2>
+            </div>
+        </a>
 
-                        <!-- Tower Crane -->
-                        <line x1="60" y1="30" x2="60" y2="70" stroke="#FFA726"
-                            stroke-width="3" stroke-linecap="round" />
-                        <line x1="60" y1="30" x2="80" y2="30" stroke="#FFA726"
-                            stroke-width="3" stroke-linecap="round" />
-                        <line x1="40" y1="30" x2="60" y2="30" stroke="#FFA726"
-                            stroke-width="2.5" stroke-linecap="round" />
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse">
+            <span class="fa fa-bars text-dark"></span>
+        </button>
 
-                        <!-- Crane Cable -->
-                        <line x1="70" y1="30" x2="70" y2="45" stroke="#FF6B6B"
-                            stroke-width="2" stroke-linecap="round" stroke-dasharray="2,2" />
-                        <rect x="67" y="45" width="6" height="4" fill="#90A4AE" rx="1" />
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <!-- HOME/BERANDA - Always Public -->
+                <li class="nav-item">
+                    <a href="{{ route('home') }}"
+                        class="nav-link {{ Request::is('/') ? 'active' : '' }}">
+                        <i class="fas fa-home me-1"></i>Beranda
+                    </a>
+                </li>
 
-                        <!-- Excavator -->
-                        <g transform="translate(20, 75)">
-                            <rect x="0" y="10" width="15" height="6" fill="#FFA726" rx="1" />
-                            <circle cx="3" cy="16" r="2.5" fill="#37474F" />
-                            <circle cx="12" cy="16" r="2.5" fill="#37474F" />
-                            <rect x="12" y="5" width="4" height="6" fill="#FFA726" />
-                            <path d="M 16 5 L 22 2 L 24 4 L 18 7 Z" fill="#FFA726" />
-                        </g>
+                <!-- TENTANG - Always Public -->
+                <li class="nav-item">
+                    <a href="{{ route('tentang') }}"
+                        class="nav-link {{ Request::is('tentang*') ? 'active' : '' }}">
+                        <i class="fas fa-info-circle me-1"></i>Tentang
+                    </a>
+                </li>
 
-                        <!-- Safety Helmet -->
-                        <circle cx="75" cy="55" r="5" fill="#FFC107" />
-                        <ellipse cx="75" cy="53" rx="6" ry="2" fill="#FFEB3B" />
-                    </g>
+                <!-- IDENTITAS - Always Public (Pindahkan ke sini) -->
+                <li class="nav-item">
+                    <a href="{{ route('identitas') }}"
+                        class="nav-link {{ Request::is('identitas*') ? 'active' : '' }}">
+                        <i class="fas fa-user-circle me-1"></i>Identitas
+                    </a>
+                </li>
 
-                    <!-- Text -->
-                    <text x="120" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="700"
-                        fill="#1E3A5F">
-                        Pembangunan
-                    </text>
-                    <text x="120" y="78" font-family="Arial, sans-serif" font-size="28" font-weight="700"
-                        fill="#1E3A5F">
-                        Proyek
-                    </text>
-                </svg>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarCollapse">
-                <span class="fa fa-bars text-dark"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                    <!-- Menu utama -->
+                <!-- MENU HANYA UNTUK USER YANG LOGIN -->
+                @auth
+                    <!-- Menu Proyek -->
                     <li class="nav-item">
                         <a href="{{ route('proyek.index') }}"
                             class="nav-link {{ Request::is('proyek*') && !Request::is('proyek/*/files*') ? 'active' : '' }}">
                             <i class="fas fa-project-diagram me-1"></i>Proyek
                         </a>
                     </li>
+
+                    <!-- Menu Tahapan -->
                     <li class="nav-item">
                         <a href="{{ route('tahapan.index') }}"
                             class="nav-link {{ Request::is('tahapan*') ? 'active' : '' }}">
                             <i class="fas fa-tasks me-1"></i>Tahapan
                         </a>
                     </li>
+
+                    <!-- Menu Progres -->
                     <li class="nav-item">
                         <a href="{{ route('progres.index') }}"
                             class="nav-link {{ Request::is('progres*') ? 'active' : '' }}">
@@ -88,7 +73,7 @@
                         </a>
                     </li>
 
-                    <!-- MENU LOKASI -->
+                    <!-- Menu Lokasi -->
                     <li class="nav-item">
                         <a href="{{ route('lokasi.index') }}"
                             class="nav-link {{ Request::is('lokasi*') ? 'active' : '' }}">
@@ -96,8 +81,7 @@
                         </a>
                     </li>
 
-
-                    <!-- MENJADI INI (tanpa kondisi): -->
+                    <!-- Menu Kontraktor -->
                     <li class="nav-item">
                         <a href="{{ route('kontraktor.index') }}"
                             class="nav-link {{ Request::is('kontraktor*') ? 'active' : '' }}">
@@ -105,111 +89,101 @@
                         </a>
                     </li>
 
-                    <!-- MENU TENTANG -->
-                    @if (Route::has('tentang'))
-                        <li class="nav-item">
-                            <a href="{{ route('tentang') }}"
-                                class="nav-link {{ Request::is('tentang*') ? 'active' : '' }}">
-                                <i class="fas fa-info-circle me-1"></i>Tentang
-                            </a>
-                        </li>
-                    @endif
-
-                    <!-- DROPDOWN DATA WARGA & USER (Hanya untuk yang login) -->
-                    @auth
-                        @if (in_array(Auth::user()->role, ['superadmin', 'admin']))
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle {{ Request::is('warga*') || Request::is('users*') ? 'active' : '' }}"
-                                    href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-database me-1"></i>Data
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item {{ Request::is('warga*') ? 'active' : '' }}"
-                                            href="{{ route('warga.index') }}">
-                                            <i class="fas fa-users me-2"></i>Daftar Warga
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item {{ Request::is('users*') ? 'active' : '' }}"
-                                            href="{{ route('users.index') }}">
-                                            <i class="fas fa-user-cog me-2"></i>Daftar Pengguna
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        @endif
-                    @endauth
-
-                    <!-- USER MENU / LOGIN MENU -->
-                    @auth
-                        <!-- User dropdown menu (saat login) -->
+                    <!-- DROPDOWN DATA WARGA & USER (Hanya untuk admin/superadmin) -->
+                    @if (in_array(Auth::user()->role, ['superadmin', 'admin']))
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                                data-bs-toggle="dropdown">
-                                <div class="avatar-sm me-2">
-                                    @if (Auth::user()->profile_picture)
-                                        <img src="{{ asset('storage/profile_pictures/' . Auth::user()->profile_picture) }}"
-                                            alt="{{ Auth::user()->name }}" class="rounded-circle">
-                                    @else
-                                        <div
-                                            class="rounded-circle bg-primary d-flex align-items-center justify-content-center">
-                                            <span
-                                                class="text-white fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
-                                        </div>
-                                    @endif
-                                </div>
-                                <span class="user-name">{{ Auth::user()->name }}</span>
+                            <a class="nav-link dropdown-toggle {{ Request::is('warga*') || Request::is('users*') ? 'active' : '' }}"
+                                href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-database me-1"></i>Data
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    <a class="dropdown-item {{ Request::is('warga*') ? 'active' : '' }}"
+                                        href="{{ route('warga.index') }}">
+                                        <i class="fas fa-users me-2"></i>Daftar Warga
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('users.edit', Auth::user()->id) }}">
-                                        <i class="fas fa-user-edit me-2"></i>Edit Profil
-                                    </a>
-                                </li>
-                                @if (in_array(Auth::user()->role, ['superadmin', 'admin']))
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                @endif
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                    </form>
-                                    <a class="dropdown-item text-danger" href="#"
-                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    <a class="dropdown-item {{ Request::is('users*') ? 'active' : '' }}"
+                                        href="{{ route('users.index') }}">
+                                        <i class="fas fa-user-cog me-2"></i>Daftar Pengguna
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                    @else
-                        <!-- Login menu (saat belum login) -->
-                        <li class="nav-item">
-                            <a href="{{ route('login') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">
-                                <i class="fas fa-sign-in-alt me-1"></i>Login
-                            </a>
-                        </li>
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a href="{{ route('register') }}"
-                                    class="nav-link {{ Request::is('register') ? 'active' : '' }}">
-                                    <i class="fas fa-user-plus me-1"></i>Register
+                    @endif
+
+                    <!-- USER MENU DROPDOWN -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                            data-bs-toggle="dropdown">
+                            <div class="avatar-sm me-2">
+                                @if (Auth::user()->profile_picture)
+                                    <img src="{{ asset('storage/profile_pictures/' . Auth::user()->profile_picture) }}"
+                                        alt="{{ Auth::user()->name }}" class="rounded-circle">
+                                @else
+                                    <div
+                                        class="rounded-circle bg-primary d-flex align-items-center justify-content-center">
+                                        <span
+                                            class="text-white fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <span class="user-name">{{ Auth::user()->name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                 </a>
                             </li>
-                        @endif
-                    @endauth
-                </ul>
-            </div>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('users.edit', Auth::user()->id) }}">
+                                    <i class="fas fa-user-edit me-2"></i>Edit Profil
+                                </a>
+                            </li>
+                            @if (in_array(Auth::user()->role, ['superadmin', 'admin']))
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                            @endif
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                </form>
+                                <a class="dropdown-item text-danger" href="#"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <!-- Untuk non-login user: Hanya tampilkan Beranda, Tentang, dan Login -->
+
+                    <!-- Login menu -->
+                    <li class="nav-item">
+                        <a href="{{ route('login') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+
+                    <!-- Register menu (optional) -->
+                    @if (Route::has('register'))
+                        <li class="nav-item">
+                            <a href="{{ route('register') }}"
+                                class="nav-link {{ Request::is('register') ? 'active' : '' }}">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    @endif
+                @endauth
+            </ul>
+        </div>
     </div>
 </nav>
 
@@ -219,38 +193,92 @@
     .main-navbar {
         background-color: #ffffff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 12px 0;
+        padding: 8px 0;
         z-index: 1030;
         font-size: 0.875rem;
     }
 
-    /* LOGO STYLING */
-    .logo-navbar {
-        flex-shrink: 0;
-        transition: transform 0.3s ease;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    /* LOGO CONTAINER */
+    .logo-container {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
     }
 
-    .navbar-brand:hover .logo-navbar {
-        transform: scale(1.05) rotate(2deg);
-    }
-
-    /* BRAND/LOGO */
-    .navbar-brand {
-        font-size: 0.95rem;
-        text-decoration: none;
+    /* LOGO BULAT */
+    .logo-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #007bff;
+        padding: 3px;
+        background-color: white;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
     }
 
-    .navbar-brand:hover {
-        opacity: 0.9;
+    /* Efek hover pada logo */
+    .navbar-brand:hover .logo-image {
+        transform: scale(1.05) rotate(5deg);
+        border-color: #0056b3;
+        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
     }
 
-    .navbar-brand h1 {
-        font-size: 1.25rem;
+    /* Efek glow saat hover */
+    .logo-container::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,123,255,0.2) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .navbar-brand:hover .logo-container::after {
+        opacity: 1;
+    }
+
+    /* BRAND TEXT */
+    .brand-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .brand-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1E3A5F;
+        margin: 0;
+        line-height: 1.2;
+        letter-spacing: 0.5px;
+    }
+
+    .brand-subtitle {
+        font-size: 0.95rem;
         font-weight: 600;
         color: #2c3e50;
         margin: 0;
+        line-height: 1.2;
+        opacity: 0.9;
+    }
+
+    /* Efek hover pada teks */
+    .navbar-brand:hover .brand-title {
+        color: #007bff;
+    }
+
+    .navbar-brand:hover .brand-subtitle {
+        opacity: 1;
     }
 
     /* NAV LINK */
@@ -392,7 +420,6 @@
             opacity: 0;
             transform: translateY(-5px);
         }
-
         to {
             opacity: 1;
             transform: translateY(0);
@@ -437,13 +464,44 @@
             max-width: 100px;
         }
 
-        .navbar-brand h1 {
-            font-size: 1.1rem;
+        /* Responsive untuk logo dan teks */
+        .logo-container {
+            width: 50px;
+            height: 50px;
         }
 
-        .logo-navbar {
-            width: 35px;
-            height: 35px;
+        .brand-title {
+            font-size: 1rem;
+        }
+
+        .brand-subtitle {
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .logo-container {
+            width: 45px;
+            height: 45px;
+        }
+
+        .brand-title {
+            font-size: 0.9rem;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+        }
+
+        /* Sembunyikan teks brand di mobile yang sangat kecil */
+        @media (max-width: 576px) {
+            .brand-text {
+                display: none;
+            }
+
+            .logo-container {
+                margin-right: 0;
+            }
         }
     }
 
@@ -477,6 +535,22 @@
         white-space: nowrap;
         display: inline-block;
         vertical-align: middle;
+    }
+
+    /* Animasi untuk logo saat page load */
+    @keyframes logoAppear {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .logo-image {
+        animation: logoAppear 0.5s ease-out;
     }
 </style>
 
@@ -564,5 +638,36 @@
                 }
             }
         });
+
+        // Efek klik pada logo
+        const logoContainer = document.querySelector('.logo-container');
+        if (logoContainer) {
+            logoContainer.addEventListener('click', function(e) {
+                // Tambahkan efek ripple
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.backgroundColor = 'rgba(0, 123, 255, 0.3)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.width = '100%';
+                ripple.style.height = '100%';
+                ripple.style.top = '0';
+                ripple.style.left = '0';
+                ripple.style.zIndex = '1';
+
+                this.appendChild(ripple);
+
+                // Hapus elemen ripple setelah animasi selesai
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        }
+
+        // Tambahkan style untuk efek ripple
+        const style = document.createElement('style');
+        style.textContent = '@keyframes ripple { to { transform: scale(2); opacity: 0; } }';
+        document.head.appendChild(style);
     });
 </script>

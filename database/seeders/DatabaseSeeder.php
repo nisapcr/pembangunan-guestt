@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
             ProyekSeeder::class,
             TahapanProyekSeeder::class,
             ProgresProyekSeeder::class,
+            lokasiProyekSeeder::class,
+            KontraktorProyekSeeder::class,
         ]);
     }
 }

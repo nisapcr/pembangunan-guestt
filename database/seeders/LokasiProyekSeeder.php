@@ -41,13 +41,13 @@ class LokasiProyekSeeder extends Seeder
             'denah_proyek_2.png',
             'denah_site_plan.jpg',
             'denah_lokasi.png',
-            null, // Beberapa lokasi tidak punya denah
+            null,
             null,
         ];
 
         // Contoh GeoJSON data (sederhana)
         $geojsonSamples = [
-            null, // Beberapa lokasi tidak punya GeoJSON
+            null,
             null,
             [
                 'type' => 'Feature',
@@ -84,24 +84,24 @@ class LokasiProyekSeeder extends Seeder
             ]
         ];
 
-        // Contoh media tambahan (dummy data)
+        // Contoh media tambahan (FIXED: field names)
         $mediaTambahanSamples = [
-            null, // Beberapa lokasi tidak punya media tambahan
+            null,
             null,
             [
                 [
                     'filename' => 'site_photo_1.jpg',
                     'original_name' => 'foto_site_1.jpg',
-                    'mime_type' => 'image/jpeg',
-                    'file_size' => 204800,
+                    'mime' => 'image/jpeg',
+                    'size' => 204800,
                     'path' => 'lokasi_proyek/media/site_photo_1.jpg',
                     'uploaded_at' => now()->subDays(10)->toDateTimeString()
                 ],
                 [
                     'filename' => 'document_plan.pdf',
                     'original_name' => 'rencana_proyek.pdf',
-                    'mime_type' => 'application/pdf',
-                    'file_size' => 512000,
+                    'mime' => 'application/pdf',
+                    'size' => 512000,
                     'path' => 'lokasi_proyek/media/document_plan.pdf',
                     'uploaded_at' => now()->subDays(5)->toDateTimeString()
                 ]
@@ -110,8 +110,8 @@ class LokasiProyekSeeder extends Seeder
                 [
                     'filename' => 'progress_report.docx',
                     'original_name' => 'laporan_progres.docx',
-                    'mime_type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    'file_size' => 153600,
+                    'mime' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'size' => 153600,
                     'path' => 'lokasi_proyek/media/progress_report.docx',
                     'uploaded_at' => now()->subDays(3)->toDateTimeString()
                 ]
@@ -157,9 +157,9 @@ class LokasiProyekSeeder extends Seeder
                     'alamat' => $alamat,
                     'lat' => $lat,
                     'lng' => $lng,
-                    'geojson' => $geojson ? json_encode($geojson) : null,
+                    'geojson' => $geojson ? json_encode($geojson, JSON_UNESCAPED_SLASHES) : null,
                     'denah_gambar' => $denah,
-                    'media_tambahan' => $mediaTambahan ? json_encode($mediaTambahan) : null,
+                    'media_tambahan' => $mediaTambahan ? json_encode($mediaTambahan, JSON_UNESCAPED_SLASHES) : null,
                     'created_at' => Carbon::now()->subDays(rand(1, 365)),
                     'updated_at' => Carbon::now(),
                 ];

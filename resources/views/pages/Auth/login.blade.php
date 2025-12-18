@@ -245,44 +245,10 @@
     <div class="login-container">
         <div class="login-header">
             <div class="logo-container">
-                <!-- Logo SVG -->
-                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Background Circle -->
-                    <circle cx="50" cy="50" r="48" fill="rgba(255, 255, 255, 0.2)"/>
-
-                    <!-- Building Base -->
-                    <rect x="30" y="48" width="40" height="30" fill="#ffffff" rx="2"/>
-
-                    <!-- Building Windows -->
-                    <rect x="35" y="53" width="6" height="6" fill="#007bff" opacity="0.9"/>
-                    <rect x="44" y="53" width="6" height="6" fill="#007bff" opacity="0.9"/>
-                    <rect x="53" y="53" width="6" height="6" fill="#007bff" opacity="0.9"/>
-
-                    <rect x="35" y="63" width="6" height="6" fill="#007bff" opacity="0.9"/>
-                    <rect x="44" y="63" width="6" height="6" fill="#007bff" opacity="0.9"/>
-                    <rect x="53" y="63" width="6" height="6" fill="#007bff" opacity="0.9"/>
-
-                    <!-- Door -->
-                    <rect x="44" y="70" width="6" height="8" fill="#ffc107"/>
-
-                    <!-- Crane Structure -->
-                    <line x1="38" y1="48" x2="38" y2="25" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="38" y1="25" x2="60" y2="35" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round"/>
-
-                    <!-- Crane Cable -->
-                    <line x1="57" y1="34" x2="57" y2="45" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-dasharray="2,2"/>
-
-                    <!-- Crane Hook -->
-                    <circle cx="57" cy="47" r="2.5" fill="#ff6b6b"/>
-
-                    <!-- Construction Worker Helmet -->
-                    <circle cx="67" cy="28" r="6" fill="#ffc107"/>
-                    <ellipse cx="67" cy="26" rx="7" ry="3" fill="#ffed4e"/>
-
-                    <!-- Brick/Construction Element -->
-                    <rect x="20" y="70" width="8" height="4" fill="#ff6b6b" opacity="0.8"/>
-                    <rect x="20" y="74" width="8" height="4" fill="#ff6b6b" opacity="0.6"/>
-                </svg>
+                <!-- Logo dengan gambar -->
+                <img src="{{ asset('img/logo.png') }}"
+                     alt="Logo Pembangunan Proyek"
+                     style="width: 55px; height: 55px; border-radius: 50%; border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.2); object-fit: cover;">
             </div>
 
             <h1>PembangunanProyek</h1>

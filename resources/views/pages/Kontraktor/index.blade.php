@@ -9,7 +9,6 @@
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="fas fa-hard-hat text-primary me-2"></i>Data Kontraktor
             </h1>
-            <p class="text-muted mb-0">Manajemen data kontraktor pembangunan proyek</p>
         </div>
         <div>
             <a href="{{ route('kontraktor.create') }}" class="btn btn-primary">

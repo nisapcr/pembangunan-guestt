@@ -1,5 +1,6 @@
-<!-- resources/views/pages/lokasi/show.blade.php -->
 @extends('layouts.guest.app')
+
+@section('title', 'Detail Lokasi Proyek')
 
 @section('content')
 <div class="container">
@@ -7,16 +8,16 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h3>
-                    <i class="fas fa-map-marker-alt"></i>
+                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
                     {{ $lokasi->nama_lokasi }}
                 </h3>
                 <div class="btn-group">
                     <a href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}"
                        class="btn btn-warning">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit me-1"></i> Edit
                     </a>
                     <a href="{{ route('lokasi.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Kembali
+                        <i class="fas fa-arrow-left me-1"></i> Kembali
                     </a>
                 </div>
             </div>
@@ -26,134 +27,179 @@
 
     <!-- Alert Messages -->
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
     @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
     <div class="row">
         <!-- Left Column -->
         <div class="col-md-8">
-            <!-- Basic Info Card -->
+            <!-- FOTO UTAMA -->
+            @if($lokasi->memiliki_foto_utama)
             <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Informasi Lokasi</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <tr>
-                            <th width="30%">Nama Lokasi</th>
-                            <td>{{ $lokasi->nama_lokasi }}</td>
-                        </tr>
-                        <tr>
-                            <th>Proyek</th>
-                            <td>{{ $lokasi->proyek->nama_proyek ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Alamat</th>
-                            <td>{{ $lokasi->alamat ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Koordinat</th>
-                            <td>
-                                @if($lokasi->lat && $lokasi->lng)
-                                    {{ $lokasi->lat }}, {{ $lokasi->lng }}
-                                    <a href="https://maps.google.com/?q={{ $lokasi->lat }},{{ $lokasi->lng }}"
-                                       target="_blank" class="btn btn-sm btn-info ms-2">
-                                        <i class="fas fa-map"></i> View Map
-                                    </a>
-                                @else
-                                    <span class="text-muted">Tidak ada koordinat</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Dibuat</th>
-                            <td>{{ $lokasi->created_at->format('d/m/Y H:i') }}</td>
-                        </tr>
-                        <tr>
-                            <th>Diupdate</th>
-                            <td>{{ $lokasi->updated_at->format('d/m/Y H:i') }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Denah Image -->
-            @if($lokasi->denah_gambar)
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Denah Gambar</h5>
-                    <a href="{{ Storage::url($lokasi->denah_gambar) }}"
-                       target="_blank" class="btn btn-sm btn-primary">
-                        <i class="fas fa-download"></i> Download
-                    </a>
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-camera me-2"></i>Foto Utama Lokasi
+                    </h5>
+                    <div>
+                        <a href="{{ $lokasi->foto_utama_url }}"
+                           target="_blank"
+                           class="btn btn-sm btn-light me-1">
+                            <i class="fas fa-expand me-1"></i> Full Screen
+                        </a>
+                        <a href="{{ $lokasi->foto_utama_url }}"
+                           download="{{ $lokasi->nama_foto_utama }}"
+                           class="btn btn-sm btn-light">
+                            <i class="fas fa-download me-1"></i> Download
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body text-center">
-                    <img src="{{ Storage::url($lokasi->denah_gambar) }}"
-                         alt="Denah {{ $lokasi->nama_lokasi }}"
-                         class="img-fluid rounded"
-                         style="max-height: 400px;">
+                    <img src="{{ $lokasi->foto_utama_url }}"
+                         alt="Foto Utama {{ $lokasi->nama_lokasi }}"
+                         class="img-fluid rounded shadow"
+                         style="max-height: 400px; cursor: pointer;"
+                         onclick="window.open('{{ $lokasi->foto_utama_url }}', '_blank')">
+                    <p class="text-muted mt-2 mb-0">Klik gambar untuk melihat ukuran penuh</p>
                 </div>
             </div>
             @endif
 
-            <!-- Media Gallery -->
-            @php
-                $mediaItems = [];
-                if (is_array($lokasi->media_tambahan)) {
-                    $mediaItems = $lokasi->media_tambahan;
-                }
-                $mediaCount = count($mediaItems);
-            @endphp
-
-            @if($mediaCount > 0)
+            <!-- Basic Info Card -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">Media Tambahan ({{ $mediaCount }})</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Informasi Lokasi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th width="30%">Nama Lokasi</th>
+                                <td>{{ $lokasi->nama_lokasi }}</td>
+                            </tr>
+                            <tr>
+                                <th>Proyek</th>
+                                <td>
+                                    <span class="badge bg-info">{{ $lokasi->proyek->nama_proyek ?? '-' }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Alamat</th>
+                                <td>{{ $lokasi->alamat ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Koordinat</th>
+                                <td>
+                                    @if($lokasi->memiliki_koordinat)
+                                        <code>{{ $lokasi->koordinat_string }}</code>
+                                        <a href="{{ $lokasi->map_url }}"
+                                           target="_blank"
+                                           class="btn btn-sm btn-outline-primary ms-2">
+                                            <i class="fas fa-external-link-alt me-1"></i> Buka di Google Maps
+                                        </a>
+                                    @else
+                                        <span class="text-muted">Tidak ada koordinat</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Dibuat</th>
+                                <td>
+                                    <i class="fas fa-calendar-plus text-secondary me-1"></i>
+                                    {{ $lokasi->created_at->format('d/m/Y H:i') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Diupdate</th>
+                                <td>
+                                    <i class="fas fa-calendar-check text-secondary me-1"></i>
+                                    {{ $lokasi->updated_at->format('d/m/Y H:i') }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Gallery -->
+            @if($lokasi->memiliki_media_tambahan)
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-images me-2"></i>Media Tambahan ({{ $lokasi->jumlah_media_tambahan }} file)
+                    </h5>
+                    <small class="text-muted">Klik untuk melihat/download</small>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        @foreach($mediaItems as $index => $media)
+                        @foreach($lokasi->media_tambahan_fixed as $index => $media)
                         @php
-                            $isImage = isset($media['mime']) && str_starts_with($media['mime'], 'image/');
-                            $fileUrl = isset($media['path']) ? Storage::url($media['path']) : '#';
+                            // Gunakan 'mime' atau fallback ke 'nime' jika ada typo
+                            $mimeType = $media['mime'] ?? $media['nime'] ?? 'application/octet-stream';
+                            $isImage = str_starts_with($mimeType, 'image/');
+
+                            // Path sudah diperbaiki di model
+                            $filePath = $media['path'] ?? '';
+                            $fileUrl = $filePath ? Storage::url($filePath) : '#';
+
                             $fileName = $media['original_name'] ?? 'File ' . ($index + 1);
+                            $fileSize = isset($media['size']) ? round($media['size'] / 1024, 1) : 0;
                         @endphp
-                        <div class="col-md-3 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body text-center">
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card h-100 shadow-sm hover-shadow" style="transition: all 0.3s;">
+                                <div class="card-body text-center p-3">
                                     @if($isImage)
                                         <img src="{{ $fileUrl }}"
                                              alt="{{ $fileName }}"
                                              class="img-fluid rounded mb-2"
-                                             style="height: 100px; object-fit: cover;">
+                                             style="height: 120px; width: 100%; object-fit: cover; cursor: pointer;"
+                                             onclick="window.open('{{ $fileUrl }}', '_blank')">
                                     @else
-                                        <i class="fas fa-file fa-3x text-secondary mb-2"></i>
+                                        <div class="py-4" style="height: 120px; cursor: pointer;"
+                                             onclick="window.open('{{ $fileUrl }}', '_blank')">
+                                            <i class="fas fa-file fa-4x text-secondary mb-2"></i>
+                                        </div>
                                     @endif
-                                    <h6 class="text-truncate" title="{{ $fileName }}">
-                                        {{ Str::limit($fileName, 15) }}
+                                    <h6 class="text-truncate mb-1" title="{{ $fileName }}">
+                                        {{ Str::limit($fileName, 20) }}
                                     </h6>
-                                    <small class="text-muted">
-                                        {{ isset($media['size']) ? round($media['size'] / 1024, 1) : 0 }} KB
+                                    <small class="text-muted d-block">
+                                        <i class="fas fa-hdd me-1"></i>{{ $fileSize }} KB
                                     </small>
                                 </div>
-                                <div class="card-footer p-2">
+                                <div class="card-footer bg-transparent border-top-0 p-2">
                                     <div class="d-flex justify-content-center">
                                         <a href="{{ $fileUrl }}"
                                            target="_blank"
-                                           class="btn btn-sm btn-outline-primary me-1">
+                                           class="btn btn-sm btn-outline-primary me-1"
+                                           title="Lihat">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a href="{{ route('lokasi.download-media', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}"
-                                           class="btn btn-sm btn-outline-success">
+                                           class="btn btn-sm btn-outline-success"
+                                           title="Download">
                                             <i class="fas fa-download"></i>
                                         </a>
+                                        <form action="{{ route('lokasi.hapus-media', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}"
+                                              method="POST"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Hapus media ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -169,23 +215,29 @@
         <div class="col-md-4">
             <!-- Actions Card -->
             <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Aksi</h5>
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools me-2"></i>Aksi
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
                         <a href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}"
                            class="btn btn-warning">
-                            <i class="fas fa-edit"></i> Edit Lokasi
+                            <i class="fas fa-edit me-1"></i> Edit Lokasi
                         </a>
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMediaModal">
+                            <i class="fas fa-plus-circle me-1"></i> Tambah Media
+                        </button>
 
                         <form action="{{ route('lokasi.destroy', $lokasi->lokasi_id) }}"
                               method="POST"
-                              onsubmit="return confirm('Hapus lokasi ini?')">
+                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger w-100">
-                                <i class="fas fa-trash"></i> Hapus Lokasi
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i> Hapus Lokasi
                             </button>
                         </form>
                     </div>
@@ -193,36 +245,135 @@
             </div>
 
             <!-- Status Card -->
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">Status</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Status
+                    </h5>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Denah Gambar</span>
-                            @if($lokasi->denah_gambar)
-                                <span class="badge bg-success">Ada</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="fas fa-camera me-2"></i>Foto Utama
+                            </span>
+                            @if($lokasi->memiliki_foto_utama)
+                                <span class="badge bg-success rounded-pill">
+                                    <i class="fas fa-check me-1"></i>Ada
+                                </span>
                             @else
-                                <span class="badge bg-secondary">Tidak ada</span>
+                                <span class="badge bg-secondary rounded-pill">
+                                    <i class="fas fa-times me-1"></i>Tidak ada
+                                </span>
                             @endif
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Media Tambahan</span>
-                            <span class="badge bg-primary">{{ $mediaCount }} file</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="fas fa-paperclip me-2"></i>Media Tambahan
+                            </span>
+                            <span class="badge bg-primary rounded-pill">
+                                {{ $lokasi->jumlah_media_tambahan }} file
+                            </span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Koordinat</span>
-                            @if($lokasi->lat && $lokasi->lng)
-                                <span class="badge bg-success">Lengkap</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="fas fa-map-marker-alt me-2"></i>Koordinat
+                            </span>
+                            @if($lokasi->memiliki_koordinat)
+                                <span class="badge bg-success rounded-pill">
+                                    <i class="fas fa-check me-1"></i>Lengkap
+                                </span>
                             @else
-                                <span class="badge bg-warning">Tidak lengkap</span>
+                                <span class="badge bg-warning rounded-pill">
+                                    <i class="fas fa-exclamation me-1"></i>Perlu koordinat
+                                </span>
+                            @endif
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="fas fa-map me-2"></i>GeoJSON
+                            </span>
+                            @if($lokasi->geojson)
+                                <span class="badge bg-info rounded-pill">
+                                    <i class="fas fa-check me-1"></i>Ada
+                                </span>
+                            @else
+                                <span class="badge bg-secondary rounded-pill">
+                                    <i class="fas fa-times me-1"></i>Tidak ada
+                                </span>
                             @endif
                         </li>
                     </ul>
                 </div>
             </div>
+
+            <!-- Quick Links -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-link me-2"></i>Tautan Cepat
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{{ route('proyek.show', $lokasi->proyek_id) }}"
+                           class="list-group-item list-group-item-action">
+                            <i class="fas fa-project-diagram me-2"></i>
+                            Lihat Detail Proyek
+                        </a>
+                        <a href="{{ route('lokasi.index') }}"
+                           class="list-group-item list-group-item-action">
+                            <i class="fas fa-list me-2"></i>
+                            Daftar Semua Lokasi
+                        </a>
+                        <a href="https://maps.google.com/?q={{ $lokasi->lat }},{{ $lokasi->lng }}"
+                           target="_blank"
+                           class="list-group-item list-group-item-action">
+                            <i class="fas fa-map-marked-alt me-2"></i>
+                            Buka di Google Maps
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Modal for Add Media -->
+<div class="modal fade" id="addMediaModal" tabindex="-1" aria-labelledby="addMediaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMediaModalLabel">
+                    <i class="fas fa-plus-circle me-2"></i>Tambah Media
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('lokasi.tambah-media', $lokasi->lokasi_id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Pilih File</label>
+                        <input type="file" name="media_tambahan" class="form-control" required>
+                        <small class="text-muted">Format: Gambar, PDF, DOC, XLS. Maks: 5MB</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+.card {
+    transition: all 0.3s ease;
+}
+</style>
 @endsection

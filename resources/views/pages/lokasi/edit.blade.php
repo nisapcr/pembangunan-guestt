@@ -103,46 +103,59 @@
                                     <small class="text-muted">Klik pada peta untuk mengubah koordinat</small>
                                 </div>
 
-                                <!-- Denah Gambar -->
+                                <!-- FOTO UTAMA -->
                                 <div class="mb-3">
-                                    <label class="form-label">Denah Gambar</label>
+                                    <label class="form-label">
+                                        <i class="fas fa-camera me-1"></i>Foto Utama Lokasi
+                                    </label>
 
-                                    <!-- Current Denah -->
-                                    @if($lokasi->denah_gambar)
+                                    <!-- Current Foto Utama -->
+                                    @if($lokasi->memiliki_foto_utama)
                                     <div class="mb-2">
-                                        <p class="text-muted mb-1">Denah saat ini:</p>
-                                        <img src="{{ $lokasi->denah_gambar_url }}"
-                                             class="img-fluid rounded border"
-                                             style="max-height: 150px;">
-                                        <div class="form-check mt-2">
-                                            <input class="form-check-input" type="checkbox"
-                                                   name="hapus_denah" id="hapusDenah" value="1">
-                                            <label class="form-check-label text-danger" for="hapusDenah">
-                                                Hapus denah saat ini
-                                            </label>
+                                        <p class="text-muted mb-1">Foto saat ini:</p>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ $lokasi->foto_utama_url }}"
+                                                 class="img-thumbnail me-3"
+                                                 style="max-width: 150px; max-height: 150px;">
+                                            <div>
+                                                <a href="{{ $lokasi->foto_utama_url }}"
+                                                   target="_blank"
+                                                   class="btn btn-sm btn-outline-primary mb-1">
+                                                    <i class="fas fa-eye"></i> Lihat Full
+                                                </a>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="hapus_denah" id="hapusDenah" value="1">
+                                                    <label class="form-check-label text-danger" for="hapusDenah">
+                                                        <i class="fas fa-trash"></i> Hapus foto ini
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     @endif
 
-                                    <!-- Upload New Denah -->
+                                    <!-- Upload New Foto -->
                                     <input type="file" name="denah_gambar"
                                            class="form-control @error('denah_gambar') is-invalid @enderror"
-                                           accept="image/*" id="denahInput">
+                                           accept="image/*" id="fotoUtamaInput">
                                     @error('denah_gambar')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <small class="text-muted">Format: JPG, PNG, GIF, SVG. Maks: 2MB</small>
+                                    <small class="text-muted">Format: JPG, PNG, GIF. Maks: 2MB</small>
 
-                                    <!-- Preview New Denah -->
-                                    <div id="denahPreview" class="mt-2 d-none">
-                                        <p class="text-muted mb-1">Preview denah baru:</p>
-                                        <img id="denahPreviewImg" src="" class="img-fluid rounded" style="max-height: 150px;">
+                                    <!-- Preview New Foto -->
+                                    <div id="fotoPreview" class="mt-2 d-none">
+                                        <p class="text-muted mb-1">Preview foto baru:</p>
+                                        <img id="fotoPreviewImg" src="" class="img-fluid rounded" style="max-height: 150px;">
                                     </div>
                                 </div>
 
                                 <!-- Media Tambahan Baru -->
                                 <div class="mb-3">
-                                    <label class="form-label">Tambah Media Tambahan (opsional)</label>
+                                    <label class="form-label">
+                                        <i class="fas fa-plus-circle me-1"></i>Tambah Media Tambahan (opsional)
+                                    </label>
                                     <input type="file" name="media_tambahan_baru[]"
                                            class="form-control"
                                            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
@@ -173,17 +186,25 @@
                                 <!-- Media Tambahan Existing -->
                                 @if($lokasi->memiliki_media_tambahan)
                                 <div class="mb-3">
-                                    <label class="form-label">Media Tambahan yang Sudah Ada</label>
+                                    <label class="form-label">
+                                        <i class="fas fa-paperclip me-1"></i>Media Tambahan yang Sudah Ada ({{ $lokasi->jumlah_media_tambahan }})
+                                    </label>
                                     <div class="alert alert-info">
                                         <i class="fas fa-info-circle me-2"></i>
-                                        Media dapat dihapus dari halaman detail lokasi atau saat menambah media baru.
+                                        Media dapat dihapus dari halaman detail lokasi.
                                     </div>
                                     <div class="row">
-                                        @foreach($lokasi->media_tambahan_parsed as $index => $media)
+                                        @foreach($lokasi->media_tambahan_fixed as $index => $media)
                                         <div class="col-md-3 mb-3">
-                                            <div class="card border-0 shadow-sm">
-                                                @if(str_starts_with($media['mime_type'] ?? '', 'image/'))
-                                                <img src="{{ asset('storage/' . $media['path']) }}"
+                                            <div class="card border-0 shadow-sm h-100">
+                                                @php
+                                                    $mimeType = $media['mime'] ?? 'application/octet-stream';
+                                                    $isImage = str_starts_with($mimeType, 'image/');
+                                                    $fileUrl = isset($media['path']) ? Storage::url($media['path']) : '#';
+                                                @endphp
+
+                                                @if($isImage)
+                                                <img src="{{ $fileUrl }}"
                                                      class="card-img-top"
                                                      alt="{{ $media['original_name'] }}"
                                                      style="height: 100px; object-fit: cover;">
@@ -199,10 +220,10 @@
                                                 <div class="card-body p-2">
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <small class="text-muted text-truncate">
-                                                            {{ $media['original_name'] }}
+                                                            {{ Str::limit($media['original_name'], 15) }}
                                                         </small>
                                                         <small class="text-muted">
-                                                            {{ round(($media['file_size'] ?? 0) / 1024, 1) }} KB
+                                                            {{ round(($media['size'] ?? 0) / 1024, 1) }} KB
                                                         </small>
                                                     </div>
                                                 </div>
@@ -244,15 +265,6 @@
 #mapPicker {
     z-index: 1;
 }
-
-.media-item {
-    transition: all 0.2s ease;
-}
-
-.media-item:hover {
-    transform: translateY(-2px);
-}
-
 .remove-media {
     width: 30px;
     height: 30px;
@@ -261,7 +273,6 @@
     align-items: center;
     justify-content: center;
 }
-
 .preview-item {
     position: relative;
     border-radius: 8px;
@@ -278,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const zoom = {{ $lokasi->lat ? 15 : 12 }};
 
     const map = L.map('mapPicker').setView([defaultLat, defaultLng], zoom);
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
@@ -295,11 +305,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
 
-        // Update form fields
         document.getElementById('latInput').value = lat.toFixed(8);
         document.getElementById('lngInput').value = lng.toFixed(8);
 
-        // Update atau buat marker baru
         if (marker) {
             marker.setLatLng(e.latlng);
         } else {
@@ -307,44 +315,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Preview denah gambar baru
-    const denahInput = document.getElementById('denahInput');
-    const denahPreview = document.getElementById('denahPreview');
-    const denahPreviewImg = document.getElementById('denahPreviewImg');
+    // Preview foto utama baru
+    const fotoInput = document.getElementById('fotoUtamaInput');
+    const fotoPreview = document.getElementById('fotoPreview');
+    const fotoPreviewImg = document.getElementById('fotoPreviewImg');
 
-    if (denahInput) {
-        denahInput.addEventListener('change', function(e) {
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
-
-                // Validasi ukuran file (2MB)
                 const maxSize = 2 * 1024 * 1024;
+
                 if (file.size > maxSize) {
                     alert('File melebihi batas ukuran 2MB');
                     this.value = '';
-                    denahPreview.classList.add('d-none');
+                    fotoPreview.classList.add('d-none');
                     return;
                 }
 
-                // Validasi tipe file
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
                 if (!allowedTypes.includes(file.type)) {
-                    alert('Tipe file tidak didukung. Hanya gambar yang diperbolehkan.');
+                    alert('Tipe file tidak didukung. Hanya gambar (JPG, PNG, GIF) yang diperbolehkan.');
                     this.value = '';
-                    denahPreview.classList.add('d-none');
+                    fotoPreview.classList.add('d-none');
                     return;
                 }
 
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    denahPreviewImg.src = e.target.result;
-                    denahPreview.classList.remove('d-none');
+                    fotoPreviewImg.src = e.target.result;
+                    fotoPreview.classList.remove('d-none');
                 }
-
                 reader.readAsDataURL(file);
             } else {
-                denahPreview.classList.add('d-none');
+                fotoPreview.classList.add('d-none');
             }
         });
     }
@@ -358,7 +362,6 @@ document.addEventListener('DOMContentLoaded', function() {
             mediaPreviewContainer.innerHTML = '';
 
             if (this.files && this.files.length > 0) {
-                // Validasi jumlah file
                 const maxFiles = 5;
                 if (this.files.length > maxFiles) {
                     alert(`Maksimal ${maxFiles} file yang dapat diupload sekaligus`);
@@ -367,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 Array.from(this.files).forEach((file, index) => {
-                    // Validasi ukuran file (5MB)
                     const maxSize = 5 * 1024 * 1024;
                     if (file.size > maxSize) {
                         alert(`File "${file.name}" melebihi batas ukuran 5MB`);
@@ -375,7 +377,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-                    // Validasi tipe file
                     const allowedTypes = [
                         'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp',
                         'application/pdf',
@@ -388,7 +389,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-                    // Buat preview item
                     const col = document.createElement('div');
                     col.className = 'col-md-3 mb-3';
 
@@ -410,14 +410,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             `;
 
-                            // Add remove event listener
                             col.querySelector('.remove-media').addEventListener('click', function() {
                                 removeFileFromInput(this.dataset.index);
                             });
                         }
                         reader.readAsDataURL(file);
                     } else {
-                        // Tentukan icon berdasarkan tipe file
                         let fileIcon = 'fa-file';
                         let fileColor = 'text-primary';
 
@@ -438,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                      style="height: 100px;">
                                     <i class="fas ${fileIcon} fa-2x ${fileColor} mb-2"></i>
                                     <small class="text-muted text-center">
-                                        ${pathinfo(file.name).extension.toUpperCase()}
+                                        ${getFileExtension(file.name).toUpperCase()}
                                     </small>
                                 </div>
                                 <div class="p-2">
@@ -451,7 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `;
 
-                        // Add remove event listener
                         col.querySelector('.remove-media').addEventListener('click', function() {
                             removeFileFromInput(this.dataset.index);
                         });
@@ -469,27 +466,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const dt = new DataTransfer();
         const files = Array.from(input.files);
 
-        // Hapus file dari array
         files.splice(index, 1);
-
-        // Tambahkan file yang tersisa ke DataTransfer
         files.forEach(file => {
             dt.items.add(file);
         });
 
-        // Update file input
         input.files = dt.files;
-
-        // Trigger change event untuk update preview
         const event = new Event('change');
         input.dispatchEvent(event);
     }
 
     // Helper function untuk mendapatkan ekstensi file
-    function pathinfo(filename) {
-        const name = filename.substring(0, filename.lastIndexOf('.'));
-        const extension = filename.substring(filename.lastIndexOf('.') + 1);
-        return { name, extension };
+    function getFileExtension(filename) {
+        return filename.split('.').pop();
     }
 
     // Form submission
@@ -497,7 +486,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('submitBtn');
 
     form.addEventListener('submit', function(e) {
-        // Validasi GeoJSON
         const geojsonInput = document.querySelector('textarea[name="geojson"]');
         if (geojsonInput.value.trim()) {
             try {
@@ -510,7 +498,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Disable button dan tampilkan loading
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
     });

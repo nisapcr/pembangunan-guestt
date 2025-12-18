@@ -12,9 +12,14 @@ use App\Http\Controllers\MultipleuploadsController;
 use App\Http\Controllers\ProgresProyekController;
 use App\Http\Controllers\LokasiProyekController;
 use App\Http\Controllers\KontraktorController;
+use App\Http\Controllers\TentangController;
 
-// --- RUTE BERANDA (Bisa diakses oleh semua pengguna) ---
+// --- RUTE BERANDA & PUBLIC (Bisa diakses oleh semua pengguna) ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/tentang', [TentangController::class, 'index'])->name('tentang');
+Route::get('/identitas', function () {
+    return view('pages.identitas');
+})->name('identitas');
 
 // --- GUEST ONLY (Non-Authenticated Users) ---
 Route::middleware('guest')->group(function () {
@@ -37,23 +42,20 @@ Route::middleware('auth')->group(function () {
 
     // 2. Resource Tahapan Proyek
     Route::resource('tahapan', TahapanProyekController::class);
- Route::resource('kontraktor', KontraktorController::class);
-    // 3. Resource Progress Proyek
-Route::resource('progres', ProgresProyekController::class);
 
-// AJAX Routes
-Route::get('progres/tahapan/{proyekId}', [ProgresProyekController::class, 'getTahapanByProyek'])
-    ->name('progres.tahapan');
+    // 3. Kontraktor
+    Route::resource('kontraktor', KontraktorController::class);
 
-Route::delete('progres/{id}/foto/{fotoId}', [ProgresProyekController::class, 'hapusFotoTambahan'])
-    ->name('progres.hapus-foto');
+    // 4. Resource Progress Proyek
+    Route::resource('progres', ProgresProyekController::class);
 
-Route::get('progres/export', [ProgresProyekController::class, 'export'])
-    ->name('progres.export');
-
-    // 4. Rute kustom lainnya
-    Route::get('/contact', [ProyekController::class, 'contact'])->name('contact');
-    Route::get('/tentang', [ProyekController::class, 'tentang'])->name('tentang');
+    // AJAX Routes untuk Progress
+    Route::get('progres/tahapan/{proyekId}', [ProgresProyekController::class, 'getTahapanByProyek'])
+        ->name('progres.tahapan');
+    Route::delete('progres/{id}/foto/{fotoId}', [ProgresProyekController::class, 'hapusFotoTambahan'])
+        ->name('progres.hapus-foto');
+    Route::get('progres/export', [ProgresProyekController::class, 'export'])
+        ->name('progres.export');
 
     // 5. Dashboard & Logout
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -64,7 +66,7 @@ Route::get('progres/export', [ProgresProyekController::class, 'export'])
 
     // 7. Resource Users
     Route::resource('users', UserController::class);
-   Route::get('users/{user}/remove-picture', [UserController::class, 'removePicture'])->name('users.remove-picture');
+    Route::get('users/{user}/remove-picture', [UserController::class, 'removePicture'])->name('users.remove-picture');
 
     // 8. Multiple Uploads
     Route::get('/multipleuploads', [MultipleuploadsController::class, 'index'])->name('uploads');
@@ -72,12 +74,13 @@ Route::get('progres/export', [ProgresProyekController::class, 'export'])
     Route::delete('/multipleuploads/{id}', [MultipleuploadsController::class, 'destroy'])->name('uploads.destroy');
     Route::get('/multipleuploads/by-reference', [MultipleuploadsController::class, 'getByReference'])->name('uploads.byReference');
 
-    // 9. ROUTES LOKASI PROYEK - DIPINDAHKAN KE DALAM MIDDLEWARE AUTH
-   // Lokasi Proyek Routes
-Route::resource('lokasi', \App\Http\Controllers\LokasiProyekController::class);
-Route::post('/lokasi/{id}/tambah-media', [\App\Http\Controllers\LokasiProyekController::class, 'tambahMedia'])->name('lokasi.tambah-media');
-Route::delete('/lokasi/{id}/hapus-media/{index}', [\App\Http\Controllers\LokasiProyekController::class, 'hapusMedia'])->name('lokasi.hapus-media');
-Route::get('/lokasi/{id}/download-media/{index}', [\App\Http\Controllers\LokasiProyekController::class, 'downloadMedia'])->name('lokasi.download-media');
-Route::get('/lokasi/api/map-data', [\App\Http\Controllers\LokasiProyekController::class, 'getMapData'])->name('lokasi.api.map-data');
-Route::get('/lokasi/api/geojson-data', [\App\Http\Controllers\LokasiProyekController::class, 'getGeojsonData'])->name('lokasi.api.geojson-data');
+    // 9. Lokasi Proyek Routes
+    Route::resource('lokasi', LokasiProyekController::class);
+    Route::post('/lokasi/{id}/tambah-media', [LokasiProyekController::class, 'tambahMedia'])->name('lokasi.tambah-media');
+    Route::delete('/lokasi/{id}/hapus-media/{index}', [LokasiProyekController::class, 'hapusMedia'])->name('lokasi.hapus-media');
+    Route::get('/lokasi/{id}/download-media/{index}', [LokasiProyekController::class, 'downloadMedia'])->name('lokasi.download-media');
+    Route::get('/lokasi/api/map-data', [LokasiProyekController::class, 'getMapData'])->name('lokasi.api.map-data');
+    Route::get('/lokasi/api/geojson-data', [LokasiProyekController::class, 'getGeojsonData'])->name('lokasi.api.geojson-data');
+
+    // HAPUS LINE INI: Route::get('/identitas', function () { return view('pages.identitas'); })->name('identitas');
 });

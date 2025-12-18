@@ -355,38 +355,102 @@
                                              class="img-fluid rounded shadow-sm cursor-pointer"
                                              data-bs-toggle="modal"
                                              data-bs-target="#fotoModal{{ $item->progres_id }}"
-                                             style="height: 80px; width: 100%; object-fit: cover;">
+                                             style="height: 80px; width: 100%; object-fit: cover;"
+                                             onerror="this.onerror=null; this.src='{{ asset('img/placeholder-progress.png') }}';">
                                         <span class="position-absolute top-0 start-0 bg-primary text-white px-1 py-0 rounded-end small">
+                                            Utama
+                                        </span>
+                                    </div>
+                                </div>
+                                @else
+                                <!-- Placeholder untuk foto utama -->
+                                <div class="col-4">
+                                    <div class="position-relative">
+                                        <div class="img-placeholder rounded shadow-sm cursor-pointer d-flex flex-column align-items-center justify-content-center"
+                                             data-bs-toggle="modal"
+                                             data-bs-target="#fotoModal{{ $item->progres_id }}"
+                                             style="height: 80px; width: 100%; background-color: #f8f9fa;">
+                                            <img src="{{ asset('img/placeholder-progress.png') }}"
+                                                 alt="Placeholder Foto"
+                                                 style="height: 40px; width: 40px; opacity: 0.6;"
+                                                 class="mb-1">
+                                            <span class="text-muted small">No Photo</span>
+                                        </div>
+                                        <span class="position-absolute top-0 start-0 bg-secondary text-white px-1 py-0 rounded-end small">
                                             Utama
                                         </span>
                                     </div>
                                 </div>
                                 @endif
 
-                                @foreach($item->fotos->take(3 - ($item->foto_progres ? 1 : 0)) as $foto)
+                                @php
+                                    $fotoTambahan = $item->fotos->take(3 - 1);
+                                    $totalTampil = 1 + $fotoTambahan->count();
+                                    $totalFoto = $item->fotos->count() + ($item->foto_progres ? 1 : 1);
+                                @endphp
+
+                                @foreach($fotoTambahan as $foto)
                                 <div class="col-4">
                                     <img src="{{ asset('storage/' . $foto->file_path) }}"
                                          alt="Foto Tambahan"
                                          class="img-fluid rounded shadow-sm cursor-pointer"
                                          data-bs-toggle="modal"
                                          data-bs-target="#fotoModal{{ $item->progres_id }}"
-                                         style="height: 80px; width: 100%; object-fit: cover;">
+                                         style="height: 80px; width: 100%; object-fit: cover;"
+                                         onerror="this.onerror=null; this.src='{{ asset('img/placeholder-progress.png') }}';">
                                 </div>
                                 @endforeach
 
-                                @if($item->fotos->count() + ($item->foto_progres ? 1 : 0) > 3)
+                                @if($totalFoto > 3)
                                 <div class="col-4">
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center cursor-pointer"
+                                    <div class="bg-light rounded d-flex flex-column align-items-center justify-content-center cursor-pointer"
                                          style="height: 80px;"
                                          data-bs-toggle="modal"
                                          data-bs-target="#fotoModal{{ $item->progres_id }}">
-                                        <span class="text-muted">
-                                            +{{ $item->fotos->count() + ($item->foto_progres ? 1 : 0) - 3 }}
+                                        <span class="text-primary fw-bold">
+                                            +{{ $totalFoto - 3 }}
+                                        </span>
+                                        <small class="text-muted">Foto</small>
+                                    </div>
+                                </div>
+                                @elseif($totalFoto <1)
+                                    @for($i = $totalFoto; $i < 1; $i++)
+                                    <div class="col-4">
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                             style="height: 80px;">
+                                            <i class="fas fa-plus text-muted"></i>
+                                        </div>
+                                    </div>
+                                    @endfor
+                                @endif
+                            </div>
+                        </div>
+                        @else
+                        <!-- Placeholder ketika tidak ada foto sama sekali -->
+                        <div class="mb-3">
+                            <small class="text-muted d-block mb-2">Foto Progress:</small>
+                                <div class="col-4">
+                                    <div class="position-relative">
+                                        <div class="img-placeholder rounded shadow-sm cursor-pointer d-flex flex-column align-items-center justify-content-center"
+                                             data-bs-toggle="modal"
+                                             data-bs-target="#fotoModal{{ $item->progres_id }}"
+                                             style="height: 80px; width: 100%; background-color: #f8f9fa;">
+                                            <img src="{{ asset('img/placeholder-progress.png') }}"
+                                                 alt="Placeholder Foto"
+                                                 style="height: 40px; width: 40px; opacity: 0.6;"
+                                                 class="mb-1">
+                                            <span class="text-muted small">No Photo</span>
+                                        </div>
+                                        <span class="position-absolute top-0 start-0 bg-secondary text-white px-1 py-0 rounded-end small">
+                                            Utama
                                         </span>
                                     </div>
                                 </div>
-                                @endif
-                            </div>
+
+                                <!-- Placeholder untuk foto tambahan -->
+                            <small class="text-muted mt-1 d-block">
+                                <i class="fas fa-info-circle me-1"></i>Belum ada foto yang diupload
+                            </small>
                         </div>
                         @endif
                     </div>
@@ -438,7 +502,22 @@
                                 <img src="{{ asset('storage/' . $item->foto_progres) }}"
                                      class="img-fluid rounded shadow"
                                      alt="Foto Progress"
-                                     style="max-height: 400px;">
+                                     style="max-height: 400px;"
+                                     onerror="this.onerror=null; this.src='{{ asset('img/placeholder-progress.png') }}';">
+                            </div>
+                            @else
+                            <!-- Placeholder dalam modal -->
+                            <div class="text-center mb-4">
+                                <h6 class="text-primary mb-2">Foto Utama</h6>
+                                <div class="bg-light rounded shadow d-flex flex-column align-items-center justify-content-center"
+                                     style="height: 300px; max-height: 400px;">
+                                    <img src="{{ asset('img/placeholder-progress.png') }}"
+                                         alt="Placeholder Foto"
+                                         style="height: 100px; width: 100px; opacity: 0.5;"
+                                         class="mb-3">
+                                    <h5 class="text-muted">Tidak ada foto utama</h5>
+                                    <p class="text-muted small">Foto belum diupload untuk progress ini</p>
+                                </div>
                             </div>
                             @endif
 
@@ -453,7 +532,8 @@
                                         <img src="{{ asset('storage/' . $foto->file_path) }}"
                                              class="card-img-top"
                                              alt="{{ $foto->original_name }}"
-                                             style="height: 200px; object-fit: cover;">
+                                             style="height: 200px; object-fit: cover;"
+                                             onerror="this.onerror=null; this.src='{{ asset('img/placeholder-progress.png') }}';">
                                         <div class="card-body p-2">
                                             <small class="text-muted d-block">{{ $foto->original_name }}</small>
                                             <small class="text-muted">{{ round($foto->file_size / 1024, 1) }} KB</small>
@@ -461,6 +541,17 @@
                                     </div>
                                 </div>
                                 @endforeach
+                            </div>
+                            @else
+                            <div class="text-center mt-4">
+                                <h6 class="text-primary mb-3">Foto Tambahan</h6>
+                                <div class="bg-light rounded p-4">
+                                    <img src="{{ asset('img/placeholder-progress.png') }}"
+                                         alt="Placeholder Foto"
+                                         style="height: 80px; width: 80px; opacity: 0.5;"
+                                         class="mb-3">
+                                    <p class="text-muted mb-0">Tidak ada foto tambahan</p>
+                                </div>
                             </div>
                             @endif
                         </div>
@@ -594,6 +685,17 @@
     font-size: 0.875rem;
 }
 
+/* Placeholder styles */
+.img-placeholder {
+    transition: all 0.3s ease;
+    border: 1px dashed #dee2e6;
+}
+
+.img-placeholder:hover {
+    background-color: #e9ecef !important;
+    border-color: #4e73df;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .progress-card {
@@ -628,6 +730,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         card.addEventListener('mouseleave', function() {
             this.style.zIndex = '1';
+        });
+    });
+
+    // Fallback for broken images
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('error', function() {
+            this.src = '{{ asset('img/placeholder-progress.png') }}';
+            this.style.opacity = '0.7';
         });
     });
 });

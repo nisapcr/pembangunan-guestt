@@ -388,4 +388,99 @@
             font-size: 28px;
         }
     }
+
+    /* ===== FOOTER BIRU MODERN ===== */
+.footer-dark {
+    background: linear-gradient(135deg, #0d6efd, #1e88ff, #4facfe);
+    color: #ffffff;
+    padding: 80px 0 35px;
+    font-size: 14px;
+}
+
+/* Judul */
+.footer-dark .footer-title {
+    color: #ffffff;
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+/* Text */
+.footer-dark .footer-text {
+    color: rgba(255,255,255,0.9);
+    line-height: 1.8;
+}
+
+/* List */
+.footer-dark .footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-dark .footer-list li {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.95);
+}
+
+/* Icon list */
+.footer-dark .footer-list i {
+    color: #e0f2fe;
+}
+
+/* Social Icons */
+.footer-dark .social-icons {
+    margin-top: 18px;
+}
+
+.footer-dark .social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin: 0 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    color: #ffffff;
+    font-size: 16px;
+    backdrop-filter: blur(6px);
+    transition: all 0.3s ease;
+}
+
+.footer-dark .social-icons a:hover {
+    background: #ffffff;
+    color: #0d6efd;
+    transform: translateY(-4px) scale(1.05);
+}
+
+/* Footer bottom */
+.footer-dark .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.3);
+    margin-top: 50px;
+    padding-top: 22px;
+    text-align: center;
+    color: rgba(255,255,255,0.9);
+}
+
+.footer-dark .footer-bottom strong {
+    color: #ffffff;
+}
+/* Samakan posisi judul */
+.footer-title {
+    min-height: 32px;
+}
+
+/* List default */
+.footer-dark .footer-list li {
+    justify-content: flex-start;
+}
+
+/* Opening Hours rata kanan tapi tetap sejajar */
+.footer-dark .opening-hours .footer-list li {
+    justify-content: flex-end;
+}
+
 </style>

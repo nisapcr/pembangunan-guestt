@@ -57,10 +57,98 @@ class LokasiProyek extends Model
         return $query;
     }
 
-    // Accessor untuk denah_gambar_url
-    public function getDenahGambarUrlAttribute()
+    // ========== ACCESSOR UNTUK FOTO UTAMA ==========
+
+    // Foto utama URL (dari denah_gambar)
+    public function getFotoUtamaUrlAttribute()
     {
         return $this->denah_gambar ? Storage::url($this->denah_gambar) : null;
+    }
+
+    // Cek apakah ada foto utama
+    public function getMemilikiFotoUtamaAttribute()
+    {
+        return !empty($this->denah_gambar);
+    }
+
+    // Nama file foto utama
+    public function getNamaFotoUtamaAttribute()
+    {
+        if ($this->denah_gambar) {
+            return basename($this->denah_gambar);
+        }
+        return null;
+    }
+
+    // ========== ACCESSOR UNTUK MEDIA ==========
+
+    // Fix media_tambahan untuk handle typo dan path separator
+    public function getMediaTambahanFixedAttribute()
+    {
+        $media = $this->media_tambahan;
+
+        if (is_array($media)) {
+            return $this->fixMediaArray($media);
+        }
+
+        if (is_string($media) && !empty($media)) {
+            $decoded = json_decode($media, true);
+            if (is_array($decoded)) {
+                return $this->fixMediaArray($decoded);
+            }
+        }
+
+        return [];
+    }
+
+    // Helper untuk memperbaiki array media
+    private function fixMediaArray($array)
+    {
+        if (!is_array($array)) {
+            return [];
+        }
+
+        $fixedArray = [];
+        foreach ($array as $item) {
+            if (is_array($item)) {
+                $fixedItem = [];
+                foreach ($item as $key => $value) {
+                    // Fix typo "nime" menjadi "mime"
+                    if ($key === 'nime') {
+                        $fixedItem['mime'] = $value;
+                    }
+                    // Fix path separator
+                    elseif ($key === 'path' && is_string($value)) {
+                        $fixedItem[$key] = str_replace('\\', '/', $value);
+                    }
+                    // Fix mime type separator
+                    elseif ($key === 'mime' && is_string($value)) {
+                        $fixedItem[$key] = str_replace('\\', '/', $value);
+                    }
+                    // Field lainnya
+                    else {
+                        $fixedItem[$key] = $value;
+                    }
+                }
+                $fixedArray[] = $fixedItem;
+            }
+        }
+
+        return $fixedArray;
+    }
+
+    // Accessor untuk media_tambahan_parsed (kompatibilitas)
+    public function getMediaTambahanParsedAttribute()
+    {
+        return $this->media_tambahan_fixed;
+    }
+
+    // ========== ACCESSOR LAMA ==========
+
+    // Accessor untuk denah_gambar_url (alias untuk kompatibilitas)
+    public function getDenahGambarUrlAttribute()
+    {
+        return $this->getFotoUtamaUrlAttribute();
     }
 
     // Accessor untuk memiliki_koordinat
@@ -90,58 +178,33 @@ class LokasiProyek extends Model
     // Accessor untuk memiliki_media_tambahan
     public function getMemilikiMediaTambahanAttribute()
     {
-        $media = $this->media_tambahan;
-
-        if (is_array($media) && count($media) > 0) {
-            return true;
-        }
-
-        if (is_string($media) && !empty($media)) {
-            $decoded = json_decode($media, true);
-            return is_array($decoded) && count($decoded) > 0;
-        }
-
-        return false;
+        $media = $this->media_tambahan_fixed;
+        return is_array($media) && count($media) > 0;
     }
 
     // Accessor untuk jumlah_media_tambahan
     public function getJumlahMediaTambahanAttribute()
     {
-        $media = $this->media_tambahan;
-
-        if (is_array($media)) {
-            return count($media);
-        }
-
-        if (is_string($media) && !empty($media)) {
-            $decoded = json_decode($media, true);
-            return is_array($decoded) ? count($decoded) : 0;
-        }
-
-        return 0;
+        $media = $this->media_tambahan_fixed;
+        return is_array($media) ? count($media) : 0;
     }
 
     // Accessor untuk media_tambahan_preview (3 item pertama)
     public function getMediaTambahanPreviewAttribute()
     {
-        $media = $this->media_tambahan;
+        $media = $this->media_tambahan_fixed;
         $result = [];
 
-        if (is_array($media)) {
+        if (is_array($media) && count($media) > 0) {
             $result = array_slice($media, 0, 3);
-        } elseif (is_string($media) && !empty($media)) {
-            $decoded = json_decode($media, true);
-            if (is_array($decoded)) {
-                $result = array_slice($decoded, 0, 3);
-            }
-        }
 
-        // Tambahkan URL untuk setiap media
-        foreach ($result as &$item) {
-            if (isset($item['path'])) {
-                $item['url'] = Storage::url($item['path']);
-                $item['mime_type'] = $item['mime'] ?? 'application/octet-stream';
-                $item['file_size'] = $item['size'] ?? 0;
+            // Tambahkan URL untuk setiap media
+            foreach ($result as &$item) {
+                if (isset($item['path'])) {
+                    $item['url'] = Storage::url($item['path']);
+                    $item['mime_type'] = $item['mime'] ?? 'application/octet-stream';
+                    $item['file_size'] = $item['size'] ?? 0;
+                }
             }
         }
 

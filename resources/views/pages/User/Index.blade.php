@@ -101,11 +101,14 @@
                                                 <img src="{{ asset('storage/profile_pictures/' . $user->profile_picture) }}"
                                                      alt="{{ $user->name }}"
                                                      class="rounded-circle"
-                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                     style="width: 50px; height: 50px; object-fit: cover;"
+                                                     onerror="this.onerror=null; this.src='{{ asset('img/placeholderuser.png') }}'">
                                             @else
-                                                <div class="user-avatar">
-                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                                </div>
+                                                <!-- Tambah placeholder.png di sini -->
+                                                <img src="{{ asset('img/placeholderuser.png') }}"
+                                                     alt="{{ $user->name }}"
+                                                     class="rounded-circle"
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
                                             @endif
                                         </div>
                                         <!-- User Info -->
@@ -239,19 +242,6 @@
     .user-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
-    }
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #0d6efd;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 1.2rem;
-        flex-shrink: 0;
     }
     .empty-state {
         padding: 3rem 1rem;
