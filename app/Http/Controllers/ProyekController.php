@@ -74,7 +74,7 @@ class ProyekController extends Controller
     {
         // Validasi data input
         $validated = $request->validate([
-            'kode_proyek' => 'required|unique:proyek,kode_proyek',
+            'kode_proyek' => 'required|unique:proyeks,kode_proyek',
             'nama_proyek' => 'required',
             'tahun' => 'required|integer',
             'lokasi' => 'required',
@@ -138,7 +138,7 @@ class ProyekController extends Controller
     {
         // Validasi data input untuk update
         $validated = $request->validate([
-            'kode_proyek' => 'required|unique:proyek,kode_proyek,' . $proyek->proyek_id . ',proyek_id',
+            'kode_proyek' => 'required|unique:proyeks,kode_proyek,' . $proyek->proyek_id . ',proyek_id',
             'nama_proyek' => 'required',
             'tahun' => 'required|integer',
             'lokasi' => 'required',
