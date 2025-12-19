@@ -1,7 +1,4 @@
-#0 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\View\\FileViewFinder.php(78): Illuminate\\View\\FileViewFinder->findInPaths('pages.about', Array)
-#1 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Factory.php(150): Illuminate\\View\\FileViewFinder->find('pages.about')
-#2 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(1101): Illuminate\\View\\Factory->make('pages.about', Array, Array)
-#3 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\app\\Http\\Controllers\\PageController.php(10): view('pages.about')
+
 #4 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(46): App\\Http\\Controllers\\PageController->about()
 #5 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(265): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\PageController), 'about')
 #6 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(211): Illuminate\\Routing\\Route->runController()
@@ -52,13 +49,6 @@
 #51 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\public\\index.php(20): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
 #52 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\Nisa-2SIC\\\\la...')
 #53 {main}
-"}
-[2025-10-29 12:31:38] local.ERROR: View [pages.about] not found. {"exception":"[object] (InvalidArgumentException(code: 0): View [pages.about] not found. at D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\View\\FileViewFinder.php:138)
-[stacktrace]
-#0 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\View\\FileViewFinder.php(78): Illuminate\\View\\FileViewFinder->findInPaths('pages.about', Array)
-#1 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Factory.php(150): Illuminate\\View\\FileViewFinder->find('pages.about')
-#2 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(1101): Illuminate\\View\\Factory->make('pages.about', Array, Array)
-#3 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\app\\Http\\Controllers\\PageController.php(10): view('pages.about')
 #4 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(46): App\\Http\\Controllers\\PageController->about()
 #5 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(265): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\PageController), 'about')
 #6 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\PembangunanGuest\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(211): Illuminate\\Routing\\Route->runController()
