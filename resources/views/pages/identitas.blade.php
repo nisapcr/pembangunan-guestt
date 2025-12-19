@@ -60,7 +60,7 @@
 
                         <!-- Sosial Media -->
                         <div class="social-icons d-flex justify-content-center gap-3 mt-3">
-                            <a href="https://www.linkedin.com/" target="_blank" class="social-circle">
+                            <a href="www.linkedin.com/in/siti-harnisa-nurhabiby/" target="_blank" class="social-circle">
                                 <i class="bi bi-linkedin"></i>
                             </a>
                             <a href="https://github.com/nisapcr" target="_blank" class="social-circle">
