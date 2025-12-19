@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('anggaran', 15, 2);
             $table->string('sumber_dana');
             $table->text('deskripsi')->nullable();
+            $table->string('dokumen')->nullable();
             $table->timestamps();
         });
     }
