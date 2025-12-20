@@ -76,11 +76,15 @@ Route::middleware('auth')->group(function () {
 
     // 9. Lokasi Proyek Routes
     Route::resource('lokasi', LokasiProyekController::class);
+
+    // TAMBAHKAN ROUTE INI UNTUK VIEW FILE
+    Route::get('/lokasi/{id}/denah/view', [LokasiProyekController::class, 'viewDenah'])
+        ->name('lokasi.denah.view');
+    Route::get('/lokasi/{id}/media/{index}/view', [LokasiProyekController::class, 'viewMedia'])
+        ->name('lokasi.media.view');
     Route::post('/lokasi/{id}/tambah-media', [LokasiProyekController::class, 'tambahMedia'])->name('lokasi.tambah-media');
     Route::delete('/lokasi/{id}/hapus-media/{index}', [LokasiProyekController::class, 'hapusMedia'])->name('lokasi.hapus-media');
     Route::get('/lokasi/{id}/download-media/{index}', [LokasiProyekController::class, 'downloadMedia'])->name('lokasi.download-media');
     Route::get('/lokasi/api/map-data', [LokasiProyekController::class, 'getMapData'])->name('lokasi.api.map-data');
     Route::get('/lokasi/api/geojson-data', [LokasiProyekController::class, 'getGeojsonData'])->name('lokasi.api.geojson-data');
-
-    // HAPUS LINE INI: Route::get('/identitas', function () { return view('pages.identitas'); })->name('identitas');
 });

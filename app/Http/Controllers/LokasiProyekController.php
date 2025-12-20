@@ -99,8 +99,7 @@ class LokasiProyekController extends Controller
             if ($request->hasFile('denah_gambar')) {
                 $file = $request->file('denah_gambar');
                 $filename = 'denah_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('public/lokasi_proyek/denah', $filename);
-                // FIX: Simpan dengan forward slash
+                $path = $file->storeAs('lokasi_proyek/denah', $filename, 'public');
                 $data['denah_gambar'] = 'lokasi_proyek/denah/' . $filename;
             }
 
@@ -109,7 +108,7 @@ class LokasiProyekController extends Controller
             if ($request->hasFile('media_tambahan')) {
                 foreach ($request->file('media_tambahan') as $index => $file) {
                     $filename = 'media_' . time() . '_' . $index . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
-                    $path = $file->storeAs('public/lokasi_proyek/media', $filename);
+                    $path = $file->storeAs('lokasi_proyek/media', $filename, 'public');
 
                     $mediaArray[] = [
                         'filename' => $filename,
@@ -213,19 +212,19 @@ class LokasiProyekController extends Controller
             // 1. Handle Denah (Foto Utama)
             if ($request->hasFile('denah_gambar')) {
                 // Hapus denah lama
-                if ($lokasi->denah_gambar && Storage::exists('public/' . $lokasi->denah_gambar)) {
-                    Storage::delete('public/' . $lokasi->denah_gambar);
+                if ($lokasi->denah_gambar && Storage::disk('public')->exists($lokasi->denah_gambar)) {
+                    Storage::disk('public')->delete($lokasi->denah_gambar);
                 }
 
                 // Upload baru
                 $file = $request->file('denah_gambar');
                 $filename = 'denah_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('public/lokasi_proyek/denah', $filename);
+                $path = $file->storeAs('lokasi_proyek/denah', $filename, 'public');
                 $data['denah_gambar'] = 'lokasi_proyek/denah/' . $filename;
             } elseif ($request->has('hapus_denah') && $request->hapus_denah) {
                 // Hapus jika diminta
-                if ($lokasi->denah_gambar && Storage::exists('public/' . $lokasi->denah_gambar)) {
-                    Storage::delete('public/' . $lokasi->denah_gambar);
+                if ($lokasi->denah_gambar && Storage::disk('public')->exists($lokasi->denah_gambar)) {
+                    Storage::disk('public')->delete($lokasi->denah_gambar);
                 }
                 $data['denah_gambar'] = null;
             } else {
@@ -240,7 +239,7 @@ class LokasiProyekController extends Controller
             if ($request->has('hapus_media')) {
                 foreach ($request->hapus_media as $index) {
                     if (isset($mediaArray[$index]['path'])) {
-                        Storage::delete('public/' . $mediaArray[$index]['path']);
+                        Storage::disk('public')->delete($mediaArray[$index]['path']);
                     }
                     unset($mediaArray[$index]);
                 }
@@ -251,7 +250,7 @@ class LokasiProyekController extends Controller
             if ($request->hasFile('media_tambahan_baru')) {
                 foreach ($request->file('media_tambahan_baru') as $file) {
                     $filename = 'media_' . time() . '_' . count($mediaArray) . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
-                    $path = $file->storeAs('public/lokasi_proyek/media', $filename);
+                    $path = $file->storeAs('lokasi_proyek/media', $filename, 'public');
 
                     $mediaArray[] = [
                         'filename' => $filename,
@@ -264,8 +263,9 @@ class LokasiProyekController extends Controller
                 }
             }
 
-            $data['media_tambahan'] = !empty($mediaArray) ?
-                json_encode($mediaArray, JSON_UNESCAPED_SLASHES) : null;
+            $data['media_tambahan'] = !empty($mediaArray)
+                ? json_encode($mediaArray, JSON_UNESCAPED_SLASHES)
+                : null;
 
             // 3. Update
             $lokasi->update($data);
@@ -294,15 +294,15 @@ class LokasiProyekController extends Controller
             $lokasi = LokasiProyek::findOrFail($id);
 
             // Hapus denah
-            if ($lokasi->denah_gambar && Storage::exists('public/' . $lokasi->denah_gambar)) {
-                Storage::delete('public/' . $lokasi->denah_gambar);
+            if ($lokasi->denah_gambar && Storage::disk('public')->exists($lokasi->denah_gambar)) {
+                Storage::disk('public')->delete($lokasi->denah_gambar);
             }
 
             // Hapus media tambahan
             $mediaArray = $lokasi->media_tambahan_fixed;
             foreach ($mediaArray as $media) {
                 if (isset($media['path'])) {
-                    Storage::delete('public/' . $media['path']);
+                    Storage::disk('public')->delete($media['path']);
                 }
             }
 
@@ -324,74 +324,74 @@ class LokasiProyekController extends Controller
     }
 
     // ========== AJAX: Hapus Media ==========
-    // ========== AJAX: Hapus Media ==========
-public function hapusMedia($id, $index)
-{
-    DB::beginTransaction();
-    try {
-        $lokasi = LokasiProyek::findOrFail($id);
-        $mediaArray = $lokasi->media_tambahan_fixed;
+    public function hapusMedia($id, $index)
+    {
+        DB::beginTransaction();
+        try {
+            $lokasi = LokasiProyek::findOrFail($id);
+            $mediaArray = $lokasi->media_tambahan_fixed;
 
-        Log::info('=== HAPUS MEDIA START ===');
-        Log::info('Lokasi ID: ' . $id);
-        Log::info('Index to delete: ' . $index);
-        Log::info('Current media count: ' . count($mediaArray));
-        Log::info('Media array: ' . json_encode($mediaArray));
+            Log::info('=== HAPUS MEDIA START ===');
+            Log::info('Lokasi ID: ' . $id);
+            Log::info('Index to delete: ' . $index);
+            Log::info('Current media count: ' . count($mediaArray));
 
-        if (!isset($mediaArray[$index])) {
-            Log::error('Media index not found');
+            if (!isset($mediaArray[$index])) {
+                Log::error('Media index not found');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Media tidak ditemukan'
+                ], 404);
+            }
+
+            // Delete file from storage
+            if (isset($mediaArray[$index]['path'])) {
+                $filePath = $mediaArray[$index]['path'];
+                Log::info('Deleting file: ' . $filePath);
+
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                    Log::info('File deleted successfully');
+                } else {
+                    Log::warning('File not found in storage: ' . $filePath);
+                }
+            }
+
+            // Remove from array
+            unset($mediaArray[$index]);
+            $mediaArray = array_values($mediaArray); // Re-index array
+
+            Log::info('New media count: ' . count($mediaArray));
+
+            // Update database
+            $lokasi->update([
+                'media_tambahan' => !empty($mediaArray)
+                    ? json_encode($mediaArray, JSON_UNESCAPED_SLASHES)
+                    : null
+            ]);
+
+            DB::commit();
+
+            Log::info('=== HAPUS MEDIA SUCCESS ===');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Media berhasil dihapus',
+                'new_count' => count($mediaArray)
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('HAPUS MEDIA ERROR: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Media tidak ditemukan'
-            ], 404);
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Delete file from storage
-        if (isset($mediaArray[$index]['path'])) {
-            $filePath = 'public/' . $mediaArray[$index]['path'];
-            Log::info('Deleting file: ' . $filePath);
-
-            if (Storage::exists($filePath)) {
-                Storage::delete($filePath);
-                Log::info('File deleted successfully');
-            } else {
-                Log::warning('File not found in storage: ' . $filePath);
-            }
-        }
-
-        // Remove from array
-        unset($mediaArray[$index]);
-        $mediaArray = array_values($mediaArray); // Re-index array
-
-        Log::info('New media count: ' . count($mediaArray));
-
-        // Update database
-        $lokasi->update([
-            'media_tambahan' => !empty($mediaArray) ?
-                json_encode($mediaArray, JSON_UNESCAPED_SLASHES) : null
-        ]);
-
-        DB::commit();
-
-        Log::info('=== HAPUS MEDIA SUCCESS ===');
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Media berhasil dihapus',
-            'new_count' => count($mediaArray)
-        ], 200);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('HAPUS MEDIA ERROR: ' . $e->getMessage());
-        Log::error($e->getTraceAsString());
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage()
-        ], 500);
     }
-}
+
     // ========== AJAX: Tambah Media ==========
     public function tambahMedia(Request $request, $id)
     {
@@ -407,7 +407,7 @@ public function hapusMedia($id, $index)
 
             // Upload new file
             $filename = 'media_' . time() . '_' . count($mediaArray) . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('public/lokasi_proyek/media', $filename);
+            $path = $file->storeAs('lokasi_proyek/media', $filename, 'public');
 
             // Add to array
             $newMedia = [
@@ -446,7 +446,6 @@ public function hapusMedia($id, $index)
     {
         try {
             $lokasi = LokasiProyek::findOrFail($id);
-
             $mediaArray = $lokasi->media_tambahan_fixed;
 
             if (!isset($mediaArray[$index])) {
@@ -454,19 +453,130 @@ public function hapusMedia($id, $index)
             }
 
             $media = $mediaArray[$index];
-            $path = 'public/' . $media['path'];
+            $path = $media['path'];
 
-            if (!Storage::exists($path)) {
+            if (!Storage::disk('public')->exists($path)) {
                 abort(404, 'File tidak ditemukan');
             }
 
-            return Storage::download($path, $media['original_name'] ?? 'download');
+            return Storage::disk('public')->download($path, $media['original_name'] ?? 'download');
 
         } catch (\Exception $e) {
             Log::error('DOWNLOAD MEDIA ERROR: ' . $e->getMessage());
             abort(500, 'Gagal mendownload file');
         }
     }
+
+    // ========== VIEW DENAH ==========
+  // ========== VIEW DENAH ==========
+// ========== VIEW DENAH ==========
+public function viewDenah($id)
+{
+    try {
+        Log::info('=== VIEW DENAH START ===');
+        Log::info('Lokasi ID: ' . $id);
+
+        $lokasi = LokasiProyek::find($id);
+
+        if (!$lokasi) {
+            Log::error('Lokasi not found for ID: ' . $id);
+            abort(404, 'Lokasi tidak ditemukan');
+        }
+
+        Log::info('Denah gambar value: ' . $lokasi->denah_gambar);
+
+        if (empty($lokasi->denah_gambar)) {
+            Log::error('Denah gambar field is empty or null');
+            abort(404, 'Denah gambar tidak ditemukan di database');
+        }
+
+        // Cek format path
+        $path = $lokasi->denah_gambar;
+
+        // Log untuk debugging
+        Log::info('Original path: ' . $path);
+
+        // Cek apakah path sudah benar
+        if (!str_starts_with($path, 'lokasi_proyek/')) {
+            Log::warning('Path tidak sesuai format, mencoba memperbaiki...');
+            $path = 'lokasi_proyek/denah/' . basename($path);
+            Log::info('Fixed path: ' . $path);
+        }
+
+        // Cek apakah file ada di storage
+        if (!Storage::disk('public')->exists($path)) {
+            Log::error('File does not exist in storage: ' . $path);
+
+            // List semua file untuk debugging
+            try {
+                $allFiles = Storage::disk('public')->allFiles('lokasi_proyek');
+                Log::info('All files in lokasi_proyek directory: ', $allFiles);
+
+                $denahFiles = Storage::disk('public')->allFiles('lokasi_proyek/denah');
+                Log::info('Files in denah directory: ', $denahFiles);
+            } catch (\Exception $e) {
+                Log::error('Error listing files: ' . $e->getMessage());
+            }
+
+            abort(404, 'File tidak ditemukan di storage');
+        }
+
+        $fullPath = Storage::disk('public')->path($path);
+        Log::info('Full path: ' . $fullPath);
+
+        if (!file_exists($fullPath)) {
+            Log::error('File does not exist in filesystem: ' . $fullPath);
+            abort(404, 'File tidak ditemukan di sistem file');
+        }
+
+        $mime = mime_content_type($fullPath);
+        Log::info('Mime type: ' . $mime);
+        Log::info('File size: ' . filesize($fullPath) . ' bytes');
+
+        Log::info('=== VIEW DENAH SUCCESS ===');
+
+        return response()->file($fullPath, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"'
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('VIEW DENAH ERROR: ' . $e->getMessage());
+        Log::error($e->getTraceAsString());
+        abort(404, 'Error: ' . $e->getMessage());
+    }
+}
+
+// ========== VIEW MEDIA ==========
+public function viewMedia($id, $index)
+{
+    try {
+        $lokasi = LokasiProyek::findOrFail($id);
+        $mediaArray = $lokasi->media_tambahan_fixed;
+
+        if (!isset($mediaArray[$index])) {
+            abort(404, 'Media tidak ditemukan');
+        }
+
+        $media = $mediaArray[$index];
+
+        if (!Storage::disk('public')->exists($media['path'])) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        $path = Storage::disk('public')->path($media['path']);
+        $mime = mime_content_type($path);
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . ($media['original_name'] ?? 'file') . '"'
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('VIEW MEDIA ERROR: ' . $e->getMessage());
+        abort(404, 'File tidak ditemukan');
+    }
+}
 
     // ========== GET MAP DATA (AJAX) ==========
     public function getMapData()
@@ -485,7 +595,9 @@ public function hapusMedia($id, $index)
                         'lat' => (float) $lokasi->lat,
                         'lng' => (float) $lokasi->lng,
                         'url' => route('lokasi.show', $lokasi->lokasi_id),
-                        'denah_url' => $lokasi->denah_gambar ? Storage::url($lokasi->denah_gambar) : null,
+                        'denah_url' => $lokasi->denah_gambar
+                            ? route('lokasi.denah.view', $lokasi->lokasi_id) // Gunakan route khusus
+                            : null,
                         'edit_url' => route('lokasi.edit', $lokasi->lokasi_id)
                     ];
                 });

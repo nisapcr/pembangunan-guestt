@@ -103,22 +103,22 @@
                                     <small class="text-muted">Klik pada peta untuk mengubah koordinat</small>
                                 </div>
 
-                                <!-- FOTO UTAMA -->
+                                <!-- DENAH GAMBAR -->
                                 <div class="mb-3">
                                     <label class="form-label">
-                                        <i class="fas fa-camera me-1"></i>Foto Utama Lokasi
+                                        <i class="fas fa-map me-1"></i>Denah Gambar
                                     </label>
 
-                                    <!-- Current Foto Utama -->
-                                    @if($lokasi->memiliki_foto_utama)
+                                    <!-- Current Denah -->
+                                    @if($lokasi->denah_gambar)
                                     <div class="mb-2">
-                                        <p class="text-muted mb-1">Foto saat ini:</p>
+                                        <p class="text-muted mb-1">Denah saat ini:</p>
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ $lokasi->foto_utama_url }}"
+                                            <img src="{{ route('lokasi.denah.view', $lokasi->lokasi_id) }}"
                                                  class="img-thumbnail me-3"
                                                  style="max-width: 150px; max-height: 150px;">
                                             <div>
-                                                <a href="{{ $lokasi->foto_utama_url }}"
+                                                <a href="{{ route('lokasi.denah.view', $lokasi->lokasi_id) }}"
                                                    target="_blank"
                                                    class="btn btn-sm btn-outline-primary mb-1">
                                                     <i class="fas fa-eye"></i> Lihat Full
@@ -127,7 +127,7 @@
                                                     <input class="form-check-input" type="checkbox"
                                                            name="hapus_denah" id="hapusDenah" value="1">
                                                     <label class="form-check-label text-danger" for="hapusDenah">
-                                                        <i class="fas fa-trash"></i> Hapus foto ini
+                                                        <i class="fas fa-trash"></i> Hapus denah ini
                                                     </label>
                                                 </div>
                                             </div>
@@ -135,19 +135,19 @@
                                     </div>
                                     @endif
 
-                                    <!-- Upload New Foto -->
+                                    <!-- Upload New Denah -->
                                     <input type="file" name="denah_gambar"
                                            class="form-control @error('denah_gambar') is-invalid @enderror"
-                                           accept="image/*" id="fotoUtamaInput">
+                                           accept="image/*" id="denahInput">
                                     @error('denah_gambar')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                     <small class="text-muted">Format: JPG, PNG, GIF. Maks: 2MB</small>
 
-                                    <!-- Preview New Foto -->
-                                    <div id="fotoPreview" class="mt-2 d-none">
-                                        <p class="text-muted mb-1">Preview foto baru:</p>
-                                        <img id="fotoPreviewImg" src="" class="img-fluid rounded" style="max-height: 150px;">
+                                    <!-- Preview New Denah -->
+                                    <div id="denahPreview" class="mt-2 d-none">
+                                        <p class="text-muted mb-1">Preview denah baru:</p>
+                                        <img id="denahPreviewImg" src="" class="img-fluid rounded" style="max-height: 150px;">
                                     </div>
                                 </div>
 
@@ -184,27 +184,31 @@
                                 </div>
 
                                 <!-- Media Tambahan Existing -->
-                                @if($lokasi->memiliki_media_tambahan)
+                                @php
+                                    $mediaArray = $lokasi->media_tambahan_fixed;
+                                    $mediaCount = count($mediaArray);
+                                @endphp
+
+                                @if($mediaCount > 0)
                                 <div class="mb-3">
                                     <label class="form-label">
-                                        <i class="fas fa-paperclip me-1"></i>Media Tambahan yang Sudah Ada ({{ $lokasi->jumlah_media_tambahan }})
+                                        <i class="fas fa-paperclip me-1"></i>Media Tambahan yang Sudah Ada ({{ $mediaCount }})
                                     </label>
                                     <div class="alert alert-info">
                                         <i class="fas fa-info-circle me-2"></i>
                                         Media dapat dihapus dari halaman detail lokasi.
                                     </div>
                                     <div class="row">
-                                        @foreach($lokasi->media_tambahan_fixed as $index => $media)
+                                        @foreach($mediaArray as $index => $media)
                                         <div class="col-md-3 mb-3">
                                             <div class="card border-0 shadow-sm h-100">
                                                 @php
                                                     $mimeType = $media['mime'] ?? 'application/octet-stream';
                                                     $isImage = str_starts_with($mimeType, 'image/');
-                                                    $fileUrl = isset($media['path']) ? Storage::url($media['path']) : '#';
                                                 @endphp
 
                                                 @if($isImage)
-                                                <img src="{{ $fileUrl }}"
+                                                <img src="{{ route('lokasi.media.view', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}"
                                                      class="card-img-top"
                                                      alt="{{ $media['original_name'] }}"
                                                      style="height: 100px; object-fit: cover;">
@@ -289,18 +293,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const zoom = {{ $lokasi->lat ? 15 : 12 }};
 
     const map = L.map('mapPicker').setView([defaultLat, defaultLng], zoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}/.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     let marker;
 
-    // Add marker jika ada koordinat
     if (defaultLat && defaultLng) {
         marker = L.marker([defaultLat, defaultLng]).addTo(map);
     }
 
-    // Click event untuk set marker
     map.on('click', function(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
@@ -315,13 +317,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Preview foto utama baru
-    const fotoInput = document.getElementById('fotoUtamaInput');
-    const fotoPreview = document.getElementById('fotoPreview');
-    const fotoPreviewImg = document.getElementById('fotoPreviewImg');
+    // Preview denah baru
+    const denahInput = document.getElementById('denahInput');
+    const denahPreview = document.getElementById('denahPreview');
+    const denahPreviewImg = document.getElementById('denahPreviewImg');
 
-    if (fotoInput) {
-        fotoInput.addEventListener('change', function(e) {
+    if (denahInput) {
+        denahInput.addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
                 const maxSize = 2 * 1024 * 1024;
@@ -329,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (file.size > maxSize) {
                     alert('File melebihi batas ukuran 2MB');
                     this.value = '';
-                    fotoPreview.classList.add('d-none');
+                    denahPreview.classList.add('d-none');
                     return;
                 }
 
@@ -337,18 +339,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!allowedTypes.includes(file.type)) {
                     alert('Tipe file tidak didukung. Hanya gambar (JPG, PNG, GIF) yang diperbolehkan.');
                     this.value = '';
-                    fotoPreview.classList.add('d-none');
+                    denahPreview.classList.add('d-none');
                     return;
                 }
 
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    fotoPreviewImg.src = e.target.result;
-                    fotoPreview.classList.remove('d-none');
+                    denahPreviewImg.src = e.target.result;
+                    denahPreview.classList.remove('d-none');
                 }
                 reader.readAsDataURL(file);
             } else {
-                fotoPreview.classList.add('d-none');
+                denahPreview.classList.add('d-none');
             }
         });
     }
@@ -460,7 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Helper function untuk remove file dari input
     function removeFileFromInput(index) {
         const input = document.getElementById('mediaInput');
         const dt = new DataTransfer();
@@ -476,7 +477,6 @@ document.addEventListener('DOMContentLoaded', function() {
         input.dispatchEvent(event);
     }
 
-    // Helper function untuk mendapatkan ekstensi file
     function getFileExtension(filename) {
         return filename.split('.').pop();
     }

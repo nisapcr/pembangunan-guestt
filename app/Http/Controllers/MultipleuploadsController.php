@@ -24,11 +24,14 @@ class MultipleuploadsController extends Controller
         $request->validate([
             'ref_table' => 'required|string|max:100',
             'ref_id' => 'required|integer',
-            'filename' => 'required',
-            'filename.*' => 'mimes:doc,docx,PDF,pdf,jpg,jpeg,png,gif,xls,xlsx|max:5120'
+            'filename' => 'required|array',
+            'filename.*' => 'required|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx|max:5120',
+
+
         ]);
 
-        if ($request->hasfile('filename')) {
+            if ($request->hasFile('filename')) {
+
             $files = [];
 
             foreach ($request->file('filename') as $file) {
@@ -52,7 +55,9 @@ class MultipleuploadsController extends Controller
                         'file_path' => $filePath,
                         'sort_order' => Multipleuploads::where('ref_table', $request->ref_table)
                                                     ->where('ref_id', $request->ref_id)
-                                                    ->max('sort_order') + 1
+
+                                                    ->max('sort_order') ?? 0 + 1
+
                     ];
                 }
             }

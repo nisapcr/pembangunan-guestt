@@ -83,23 +83,21 @@ class LokasiProyek extends Model
     // ========== ACCESSOR UNTUK MEDIA ==========
 
     // Fix media_tambahan untuk handle typo dan path separator
-    public function getMediaTambahanFixedAttribute()
-    {
-        $media = $this->media_tambahan;
-
-        if (is_array($media)) {
-            return $this->fixMediaArray($media);
-        }
-
-        if (is_string($media) && !empty($media)) {
-            $decoded = json_decode($media, true);
-            if (is_array($decoded)) {
-                return $this->fixMediaArray($decoded);
-            }
-        }
-
+public function getMediaTambahanFixedAttribute()
+{
+    if (empty($this->media_tambahan)) {
         return [];
     }
+
+    if (is_array($this->media_tambahan)) {
+        return $this->media_tambahan;
+    }
+
+    $decoded = json_decode($this->media_tambahan, true);
+
+    return is_array($decoded) ? $decoded : [];
+}
+
 
     // Helper untuk memperbaiki array media
     private function fixMediaArray($array)
@@ -211,3 +209,4 @@ class LokasiProyek extends Model
         return $result;
     }
 }
+    

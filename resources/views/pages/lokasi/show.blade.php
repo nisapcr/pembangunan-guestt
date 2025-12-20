@@ -42,32 +42,31 @@
     <div class="row">
         <!-- Left Column -->
         <div class="col-md-8">
-            <!-- FOTO UTAMA -->
-            @if($lokasi->memiliki_foto_utama)
+            <!-- DENAH GAMBAR -->
+            @if($lokasi->denah_gambar)
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-camera me-2"></i>Foto Utama Lokasi
+                        <i class="fas fa-map me-2"></i>Denah Lokasi
                     </h5>
                     <div>
-                        <a href="{{ $lokasi->foto_utama_url }}"
+                        <a href="{{ route('lokasi.denah.view', $lokasi->lokasi_id) }}"
                            target="_blank"
                            class="btn btn-sm btn-light me-1">
                             <i class="fas fa-expand me-1"></i> Full Screen
                         </a>
-                        <a href="{{ $lokasi->foto_utama_url }}"
-                           download="{{ $lokasi->nama_foto_utama }}"
+                        <a href="{{ route('lokasi.denah.view', $lokasi->lokasi_id) }}?download=true"
                            class="btn btn-sm btn-light">
                             <i class="fas fa-download me-1"></i> Download
                         </a>
                     </div>
                 </div>
                 <div class="card-body text-center">
-                    <img src="{{ $lokasi->foto_utama_url }}"
-                         alt="Foto Utama {{ $lokasi->nama_lokasi }}"
+                    <img src="{{ route('lokasi.denah.view', $lokasi->lokasi_id) }}"
+                         alt="Denah {{ $lokasi->nama_lokasi }}"
                          class="img-fluid rounded shadow"
                          style="max-height: 400px; cursor: pointer;"
-                         onclick="window.open('{{ $lokasi->foto_utama_url }}', '_blank')">
+                         onclick="window.open('{{ route('lokasi.denah.view', $lokasi->lokasi_id) }}', '_blank')">
                     <p class="text-muted mt-2 mb-0">Klik gambar untuk melihat ukuran penuh</p>
                 </div>
             </div>
@@ -90,7 +89,13 @@
                             <tr>
                                 <th>Proyek</th>
                                 <td>
-                                    <span class="badge bg-info">{{ $lokasi->proyek->nama_proyek ?? '-' }}</span>
+                                    @if($lokasi->proyek)
+                                        <a href="{{ route('proyek.show', $lokasi->proyek->proyek_id) }}" class="text-decoration-none">
+                                            <span class="badge bg-info">{{ $lokasi->proyek->nama_proyek }}</span>
+                                        </a>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
                                 </td>
                             </tr>
                             <tr>
@@ -100,12 +105,12 @@
                             <tr>
                                 <th>Koordinat</th>
                                 <td>
-                                    @if($lokasi->memiliki_koordinat)
-                                        <code>{{ $lokasi->koordinat_string }}</code>
-                                        <a href="{{ $lokasi->map_url }}"
+                                    @if($lokasi->lat && $lokasi->lng)
+                                        <code>Lat: {{ $lokasi->lat }}, Lng: {{ $lokasi->lng }}</code>
+                                        <a href="https://maps.google.com/?q={{ $lokasi->lat }},{{ $lokasi->lng }}"
                                            target="_blank"
                                            class="btn btn-sm btn-outline-primary ms-2">
-                                            <i class="fas fa-external-link-alt me-1"></i> Buka di Google Maps
+                                            <i class="fas fa-external-link-alt me-1"></i> Google Maps
                                         </a>
                                     @else
                                         <span class="text-muted">Tidak ada koordinat</span>
@@ -132,25 +137,27 @@
             </div>
 
             <!-- Media Gallery -->
-            @if($lokasi->memiliki_media_tambahan)
+            @php
+                $mediaArray = $lokasi->media_tambahan_fixed;
+                $mediaCount = count($mediaArray);
+            @endphp
+
+            @if($mediaCount > 0)
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-images me-2"></i>Media Tambahan ({{ $lokasi->jumlah_media_tambahan }} file)
+                        <i class="fas fa-images me-2"></i>Media Tambahan ({{ $mediaCount }} file)
                     </h5>
                     <small class="text-muted">Klik untuk melihat/download</small>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        @foreach($lokasi->media_tambahan_fixed as $index => $media)
+                        @foreach($mediaArray as $index => $media)
                         @php
                             // Gunakan 'mime' atau fallback ke 'nime' jika ada typo
                             $mimeType = $media['mime'] ?? $media['nime'] ?? 'application/octet-stream';
                             $isImage = str_starts_with($mimeType, 'image/');
-
-                            // Path sudah diperbaiki di model
-                            $filePath = $media['path'] ?? '';
-                            $fileUrl = $filePath ? Storage::url($filePath) : '#';
+                            $isPDF = $mimeType === 'application/pdf';
 
                             $fileName = $media['original_name'] ?? 'File ' . ($index + 1);
                             $fileSize = isset($media['size']) ? round($media['size'] / 1024, 1) : 0;
@@ -159,14 +166,21 @@
                             <div class="card h-100 shadow-sm hover-shadow" style="transition: all 0.3s;">
                                 <div class="card-body text-center p-3">
                                     @if($isImage)
-                                        <img src="{{ $fileUrl }}"
+                                        <!-- Untuk gambar, gunakan route view -->
+                                        <img src="{{ route('lokasi.media.view', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}"
                                              alt="{{ $fileName }}"
                                              class="img-fluid rounded mb-2"
                                              style="height: 120px; width: 100%; object-fit: cover; cursor: pointer;"
-                                             onclick="window.open('{{ $fileUrl }}', '_blank')">
-                                    @else
+                                             onclick="window.open('{{ route('lokasi.media.view', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}', '_blank')">
+                                    @elseif($isPDF)
+                                        <!-- Untuk PDF -->
                                         <div class="py-4" style="height: 120px; cursor: pointer;"
-                                             onclick="window.open('{{ $fileUrl }}', '_blank')">
+                                             onclick="window.open('{{ route('lokasi.media.view', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}', '_blank')">
+                                            <i class="fas fa-file-pdf fa-4x text-danger mb-2"></i>
+                                        </div>
+                                    @else
+                                        <!-- Untuk file lainnya -->
+                                        <div class="py-4" style="height: 120px; cursor: pointer;">
                                             <i class="fas fa-file fa-4x text-secondary mb-2"></i>
                                         </div>
                                     @endif
@@ -179,17 +193,24 @@
                                 </div>
                                 <div class="card-footer bg-transparent border-top-0 p-2">
                                     <div class="d-flex justify-content-center">
-                                        <a href="{{ $fileUrl }}"
-                                           target="_blank"
-                                           class="btn btn-sm btn-outline-primary me-1"
-                                           title="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                        @if($isImage || $isPDF)
+                                            <!-- Untuk gambar dan PDF, tampilkan tombol view -->
+                                            <a href="{{ route('lokasi.media.view', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}"
+                                               target="_blank"
+                                               class="btn btn-sm btn-outline-primary me-1"
+                                               title="Lihat">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        @endif
+
+                                        <!-- Tombol download untuk semua file -->
                                         <a href="{{ route('lokasi.download-media', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}"
-                                           class="btn btn-sm btn-outline-success"
+                                           class="btn btn-sm btn-outline-success {{ $isImage || $isPDF ? '' : 'me-1' }}"
                                            title="Download">
                                             <i class="fas fa-download"></i>
                                         </a>
+
+                                        <!-- Tombol hapus -->
                                         <form action="{{ route('lokasi.hapus-media', ['id' => $lokasi->lokasi_id, 'index' => $index]) }}"
                                               method="POST"
                                               class="d-inline"
@@ -255,9 +276,9 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>
-                                <i class="fas fa-camera me-2"></i>Foto Utama
+                                <i class="fas fa-map me-2"></i>Denah Gambar
                             </span>
-                            @if($lokasi->memiliki_foto_utama)
+                            @if($lokasi->denah_gambar)
                                 <span class="badge bg-success rounded-pill">
                                     <i class="fas fa-check me-1"></i>Ada
                                 </span>
@@ -272,14 +293,14 @@
                                 <i class="fas fa-paperclip me-2"></i>Media Tambahan
                             </span>
                             <span class="badge bg-primary rounded-pill">
-                                {{ $lokasi->jumlah_media_tambahan }} file
+                                {{ $mediaCount }} file
                             </span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>
                                 <i class="fas fa-map-marker-alt me-2"></i>Koordinat
                             </span>
-                            @if($lokasi->memiliki_koordinat)
+                            @if($lokasi->lat && $lokasi->lng)
                                 <span class="badge bg-success rounded-pill">
                                     <i class="fas fa-check me-1"></i>Lengkap
                                 </span>
@@ -291,7 +312,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>
-                                <i class="fas fa-map me-2"></i>GeoJSON
+                                <i class="fas fa-layer-group me-2"></i>GeoJSON
                             </span>
                             @if($lokasi->geojson)
                                 <span class="badge bg-info rounded-pill">
@@ -316,22 +337,34 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group">
-                        <a href="{{ route('proyek.show', $lokasi->proyek_id) }}"
-                           class="list-group-item list-group-item-action">
-                            <i class="fas fa-project-diagram me-2"></i>
-                            Lihat Detail Proyek
-                        </a>
+                        @if($lokasi->proyek)
+                            <a href="{{ route('proyek.show', $lokasi->proyek->proyek_id) }}"
+                               class="list-group-item list-group-item-action">
+                                <i class="fas fa-project-diagram me-2"></i>
+                                Lihat Detail Proyek
+                            </a>
+                        @endif
                         <a href="{{ route('lokasi.index') }}"
                            class="list-group-item list-group-item-action">
                             <i class="fas fa-list me-2"></i>
                             Daftar Semua Lokasi
                         </a>
-                        <a href="https://maps.google.com/?q={{ $lokasi->lat }},{{ $lokasi->lng }}"
-                           target="_blank"
-                           class="list-group-item list-group-item-action">
-                            <i class="fas fa-map-marked-alt me-2"></i>
-                            Buka di Google Maps
-                        </a>
+                        @if($lokasi->lat && $lokasi->lng)
+                            <a href="https://maps.google.com/?q={{ $lokasi->lat }},{{ $lokasi->lng }}"
+                               target="_blank"
+                               class="list-group-item list-group-item-action">
+                                <i class="fas fa-map-marked-alt me-2"></i>
+                                Buka di Google Maps
+                            </a>
+                        @endif
+                        @if($lokasi->denah_gambar)
+                            <a href="{{ route('lokasi.denah.view', $lokasi->lokasi_id) }}"
+                               target="_blank"
+                               class="list-group-item list-group-item-action">
+                                <i class="fas fa-image me-2"></i>
+                                Lihat Denah Full Screen
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -355,12 +388,14 @@
                     <div class="mb-3">
                         <label class="form-label">Pilih File</label>
                         <input type="file" name="media_tambahan" class="form-control" required>
-                        <small class="text-muted">Format: Gambar, PDF, DOC, XLS. Maks: 5MB</small>
+                        <small class="text-muted">Format: Gambar (JPEG, PNG, GIF), PDF, DOC, DOCX, XLS, XLSX. Maks: 5MB</small>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload me-1"></i> Upload
+                    </button>
                 </div>
             </form>
         </div>
@@ -376,4 +411,17 @@
     transition: all 0.3s ease;
 }
 </style>
+
+<script>
+// Auto close alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
 @endsection

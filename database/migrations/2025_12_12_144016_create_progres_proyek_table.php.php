@@ -18,7 +18,7 @@ Schema::create('progres_proyek', function (Blueprint $table) {
     $table->unsignedBigInteger('proyek_id');
     $table->foreign('proyek_id')
           ->references('proyek_id')
-          ->on('proyek')
+          ->on('proyeks')
           ->onDelete('cascade');
 
     // TAHAPAN (FIX)

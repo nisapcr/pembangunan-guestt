@@ -1,4 +1,3 @@
-{{-- resources/views/pages/lokasi/index.blade.php --}}
 @extends('layouts.guest.app')
 @section('title', 'Daftar Lokasi Proyek')
 
@@ -245,7 +244,6 @@
                                             <i class="fas fa-edit text-warning me-2"></i>Edit
                                         </a>
                                     </li>
-                                    <!-- Tombol Upload Media Tambahan -->
                                     <li>
                                         <a class="dropdown-item text-success" href="#"
                                            data-bs-toggle="modal"
@@ -276,16 +274,20 @@
                             <small class="text-muted d-block mb-1">Koordinat:</small>
                             <div class="d-flex align-items-center">
                                 <div class="bg-light rounded-circle p-2 me-2">
-                                    <i class="fas fa-location-dot {{ $lokasi->memiliki_koordinat ? 'text-success' : 'text-secondary' }}"></i>
+                                    <i class="fas fa-location-dot {{ $lokasi->lat && $lokasi->lng ? 'text-success' : 'text-secondary' }}"></i>
                                 </div>
                                 <div>
                                     <div class="fw-bold">
-                                        {{ $lokasi->koordinat_string }}
+                                        @if($lokasi->lat && $lokasi->lng)
+                                            Lat: {{ number_format($lokasi->lat, 6) }}, Lng: {{ number_format($lokasi->lng, 6) }}
+                                        @else
+                                            <span class="text-muted">Belum ada koordinat</span>
+                                        @endif
                                     </div>
-                                    @if($lokasi->memiliki_koordinat)
+                                    @if($lokasi->lat && $lokasi->lng)
                                     <small>
-                                        <a href="{{ $lokasi->map_url }}" target="_blank" class="text-primary">
-                                            <i class="fas fa-external-link-alt me-1"></i>Lihat di Google Maps
+                                        <a href="https://maps.google.com/?q={{ $lokasi->lat }},{{ $lokasi->lng }}" target="_blank" class="text-primary">
+                                            <i class="fas fa-external-link-alt me-1"></i>Google Maps
                                         </a>
                                     </small>
                                     @endif
@@ -294,67 +296,108 @@
                         </div>
 
                         <!-- Alamat -->
-                        @if($lokasi->alamat)
                         <div class="mb-3">
                             <small class="text-muted d-block mb-1">Alamat:</small>
                             <p class="mb-0 text-truncate-2">
-                                {{ Str::limit($lokasi->alamat, 100) }}
+                                {{ $lokasi->alamat ? Str::limit($lokasi->alamat, 100) : 'Belum ada alamat' }}
                             </p>
                         </div>
-                        @endif
 
                         <!-- Denah Gambar -->
-                        @if($lokasi->denah_gambar)
                         <div class="mb-3">
                             <small class="text-muted d-block mb-2">Denah Gambar:</small>
                             <div class="position-relative">
-                                <img src="{{ $lokasi->denah_gambar_url }}"
+                                @php
+                                    $denahUrl = null;
+                                    if($lokasi->denah_gambar) {
+                                        // Cek apakah denah_gambar adalah path atau URL
+                                        if(filter_var($lokasi->denah_gambar, FILTER_VALIDATE_URL)) {
+                                            $denahUrl = $lokasi->denah_gambar;
+                                        } else {
+                                            $denahUrl = Storage::url($lokasi->denah_gambar);
+                                        }
+                                    }
+                                @endphp
+
+                                @if($denahUrl)
+                                <img src="{{ $denahUrl }}"
                                      alt="Denah {{ $lokasi->nama_lokasi }}"
-                                     class="img-fluid rounded shadow-sm cursor-pointer"
+                                     class="img-fluid rounded shadow-sm cursor-pointer denah-image"
                                      style="height: 120px; width: 100%; object-fit: cover;"
-                                     onclick="showImageModal('{{ $lokasi->denah_gambar_url }}', 'Denah {{ $lokasi->nama_lokasi }}')">
+                                     onerror="handleImageError(this, 'denah')"
+                                     onclick="showImageModal('{{ $denahUrl }}', 'Denah {{ $lokasi->nama_lokasi }}')">
                                 <div class="position-absolute top-0 end-0 m-2">
                                     <span class="badge bg-success">Denah</span>
                                 </div>
+                                @else
+                                <div class="bg-light rounded d-flex flex-column align-items-center justify-content-center p-3 placeholder-container"
+                                     style="height: 120px;">
+                                    <i class="fas fa-map fa-2x text-muted mb-2 opacity-25"></i>
+                                    <small class="text-muted text-center">Belum ada denah</small>
+                                    <a href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}" class="btn btn-sm btn-outline-primary mt-2">
+                                        <i class="fas fa-plus me-1"></i> Tambah Denah
+                                    </a>
+                                </div>
+                                @endif
                             </div>
                         </div>
-                        @endif
 
                         <!-- Media Tambahan Preview -->
-                        @if($lokasi->memiliki_media_tambahan)
+                        @php
+                            $mediaArray = $lokasi->media_tambahan_fixed ?? [];
+                            $mediaCount = count($mediaArray);
+                            $displayCount = min(3, $mediaCount);
+                        @endphp
+
+                        @if($mediaCount > 0)
                         <div class="mb-3">
-                            <small class="text-muted d-block mb-2">Media Tambahan ({{ $lokasi->jumlah_media_tambahan }}):</small>
+                            <small class="text-muted d-block mb-2">Media Tambahan ({{ $mediaCount }}):</small>
                             <div class="row g-2">
-                                @foreach($lokasi->media_tambahan_preview as $index => $media)
+                                @foreach(array_slice($mediaArray, 0, $displayCount) as $index => $media)
                                 <div class="col-4">
-                                    @if(str_starts_with($media['mime_type'] ?? '', 'image/'))
+                                    @php
+                                        $mimeType = $media['mime'] ?? 'application/octet-stream';
+                                        $isImage = str_starts_with($mimeType, 'image/');
+                                        $mediaUrl = null;
+
+                                        if(isset($media['path']) && $media['path']) {
+                                            if(filter_var($media['path'], FILTER_VALIDATE_URL)) {
+                                                $mediaUrl = $media['path'];
+                                            } else {
+                                                $mediaUrl = Storage::url($media['path']);
+                                            }
+                                        }
+                                    @endphp
+
+                                    @if($isImage && $mediaUrl)
                                     <div class="position-relative">
-                                        <img src="{{ $media['url'] ?? '' }}"
-                                             alt="{{ $media['original_name'] }}"
-                                             class="img-fluid rounded shadow-sm cursor-pointer"
+                                        <img src="{{ $mediaUrl }}"
+                                             alt="{{ $media['original_name'] ?? 'Media' }}"
+                                             class="img-fluid rounded shadow-sm cursor-pointer media-image"
                                              style="height: 80px; width: 100%; object-fit: cover;"
-                                             onclick="showImageModal('{{ $media['url'] ?? '' }}', '{{ $media['original_name'] }}')">
+                                             onerror="handleImageError(this, 'media')"
+                                             onclick="showImageModal('{{ $mediaUrl }}', '{{ $media['original_name'] ?? 'Media' }}')">
                                     </div>
                                     @else
                                     <div class="bg-light rounded d-flex flex-column align-items-center justify-content-center p-2"
                                          style="height: 80px;">
                                         <i class="fas fa-file text-primary mb-1"></i>
                                         <small class="text-muted text-center">
-                                            {{ pathinfo($media['original_name'], PATHINFO_EXTENSION) }}
+                                            {{ isset($media['original_name']) ? pathinfo($media['original_name'], PATHINFO_EXTENSION) : 'file' }}
                                         </small>
                                     </div>
                                     @endif
                                 </div>
                                 @endforeach
 
-                                @if($lokasi->jumlah_media_tambahan > 3)
+                                @if($mediaCount > 3)
                                 <div class="col-4">
                                     <div class="bg-light rounded d-flex flex-column align-items-center justify-content-center p-2 cursor-pointer"
                                          style="height: 80px;"
                                          onclick="showMediaModal({{ $lokasi->lokasi_id }})">
                                         <i class="fas fa-plus text-muted mb-1"></i>
                                         <small class="text-muted">
-                                            +{{ $lokasi->jumlah_media_tambahan - 3 }} lainnya
+                                            +{{ $mediaCount - 3 }} lainnya
                                         </small>
                                     </div>
                                 </div>
@@ -396,7 +439,7 @@
                                     <i class="fas fa-plus"></i>
                                 </button>
 
-                                @if($lokasi->memiliki_media_tambahan)
+                                @if($mediaCount > 0)
                                 <button class="btn btn-sm btn-outline-info"
                                         onclick="showMediaModal({{ $lokasi->lokasi_id }})"
                                         title="Lihat Media">
@@ -404,9 +447,9 @@
                                 </button>
                                 @endif
 
-                                @if($lokasi->denah_gambar)
+                                @if($denahUrl)
                                 <button class="btn btn-sm btn-outline-warning"
-                                        onclick="showImageModal('{{ $lokasi->denah_gambar_url }}', 'Denah {{ $lokasi->nama_lokasi }}')"
+                                        onclick="showImageModal('{{ $denahUrl }}', 'Denah {{ $lokasi->nama_lokasi }}')"
                                         title="Lihat Denah">
                                     <i class="fas fa-map"></i>
                                 </button>
@@ -448,7 +491,6 @@
                               id="uploadMediaForm{{ $lokasi->lokasi_id }}">
                             @csrf
                             <div class="modal-body">
-                                <!-- Input File -->
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-file me-1"></i>Pilih File
@@ -466,7 +508,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Preview -->
                                 <div class="mb-3 d-none" id="previewContainer{{ $lokasi->lokasi_id }}">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-image me-1"></i>Preview
@@ -475,7 +516,8 @@
                                         <img id="previewImg{{ $lokasi->lokasi_id }}"
                                              src=""
                                              class="img-fluid rounded"
-                                             style="max-height: 200px;">
+                                             style="max-height: 200px;"
+                                             onerror="handleImageError(this, 'preview')">
                                     </div>
                                 </div>
                             </div>
@@ -532,9 +574,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body py-3">
                     <div>
-                        <div>
-                            {{ $lokasis->links('pagination::bootstrap-5') }}
-                        </div>
+                        {{ $lokasis->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>
@@ -569,7 +609,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center">
-                <img id="imageModalImg" src="" class="img-fluid" alt="">
+                <img id="imageModalImg" src="" class="img-fluid modal-image" alt=""
+                     onerror="handleImageError(this, 'modal')">
             </div>
         </div>
     </div>
@@ -677,6 +718,52 @@ pre {
     word-wrap: break-word;
 }
 
+/* Placeholder Styles */
+.placeholder-img {
+    filter: grayscale(0.3);
+    opacity: 0.8;
+    background: linear-gradient(45deg, #f8f9fa 25%, #e9ecef 25%, #e9ecef 50%, #f8f9fa 50%, #f8f9fa 75%, #e9ecef 75%);
+    background-size: 20px 20px;
+    animation: placeholder-shimmer 2s infinite linear;
+}
+
+@keyframes placeholder-shimmer {
+    0% {
+        background-position: -40px 0;
+    }
+    100% {
+        background-position: 40px 0;
+    }
+}
+
+.placeholder-container {
+    border: 2px dashed #dee2e6;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.placeholder-container:hover {
+    border-color: #4e73df;
+    background-color: #e9ecef;
+}
+
+.placeholder-icon {
+    font-size: 48px;
+    color: #adb5bd;
+    margin-bottom: 10px;
+}
+
+/* Error handling for images */
+.image-error {
+    background: linear-gradient(45deg, #f8f9fa 25%, #e9ecef 25%, #e9ecef 50%, #f8f9fa 50%, #f8f9fa 75%, #e9ecef 75%);
+    background-size: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .lokasi-card {
@@ -696,33 +783,73 @@ pre {
     .modal-dialog {
         margin: 0.5rem;
     }
+
+    .img-fluid {
+        max-height: 200px;
+    }
+
+    .denah-image, .media-image {
+        height: 100px !important;
+    }
+
+    .placeholder-container {
+        height: 100px !important;
+        padding: 15px !important;
+    }
+
+    .placeholder-container i {
+        font-size: 24px !important;
+    }
 }
 </style>
 
 <script>
-// Variabel global untuk map dan markers
 let map;
 let geojsonMap;
 let markers = [];
 let geojsonLayers = [];
 
+// Function to handle image errors
+function handleImageError(imgElement, type = 'denah') {
+    console.log('Image error detected for:', imgElement.src);
+
+    // Create a container for the placeholder
+    const container = document.createElement('div');
+    container.className = 'image-error placeholder-img';
+    container.style.height = imgElement.style.height;
+    container.style.width = '100%';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.borderRadius = '8px';
+    container.style.padding = '20px';
+
+    // Add icon and text based on type
+    const icon = document.createElement('i');
+    icon.className = type === 'denah' ? 'fas fa-map-marker-alt placeholder-icon' : 'fas fa-image placeholder-icon';
+
+    const text = document.createElement('small');
+    text.className = 'text-muted mt-2';
+    text.textContent = type === 'denah' ? 'Denah tidak tersedia' : 'Gambar tidak tersedia';
+
+    container.appendChild(icon);
+    container.appendChild(text);
+
+    // Replace the broken image with the placeholder
+    imgElement.parentNode.replaceChild(container, imgElement);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize main map
     initMap();
-
-    // Initialize GeoJSON map
     initGeojsonMap();
-
-    // Load GeoJSON data
     loadGeojsonData();
 
-    // Setup preview untuk media upload
     document.querySelectorAll('[id^="mediaInput"]').forEach(input => {
         const lokasiId = input.id.replace('mediaInput', '');
         setupMediaPreview(lokasiId);
     });
 
-    // Setup form submission untuk upload media
     document.querySelectorAll('[id^="uploadMediaForm"]').forEach(form => {
         const lokasiId = form.id.replace('uploadMediaForm', '');
         form.addEventListener('submit', function(e) {
@@ -733,43 +860,33 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initMap() {
-    // Initialize map centered on Indonesia
     map = L.map('map').setView([-2.5489, 118.0149], 5);
 
-    // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Load markers
     loadMarkers();
 }
 
 function initGeojsonMap() {
-    // Initialize GeoJSON map
     geojsonMap = L.map('geojsonMap').setView([-2.5489, 118.0149], 5);
 
-    // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(geojsonMap);
 }
 
 function loadMarkers() {
-    // Clear existing markers
     markers.forEach(marker => marker.remove());
     markers = [];
 
-    // Fetch and add markers - PERBAIKI ROUTE INI
     fetch('{{ route("lokasi.api.map-data") }}')
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Network response was not ok');
             return response.json();
         })
         .then(data => {
-            // Jika response berupa object dengan property data
             const lokasiData = Array.isArray(data) ? data : (data.data || []);
 
             lokasiData.forEach(lokasi => {
@@ -791,7 +908,7 @@ function loadMarkers() {
                                 <h6 class="fw-bold mb-1">${lokasi.nama_lokasi}</h6>
                                 <p class="mb-1"><strong>Proyek:</strong> ${lokasi.proyek}</p>
                                 <p class="mb-2"><strong>Alamat:</strong> ${lokasi.alamat || '-'}</p>
-                                ${lokasi.denah_url ? `<p class="mb-2"><img src="${lokasi.denah_url}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px;"></p>` : ''}
+                                ${lokasi.denah_url ? `<p class="mb-2"><img src="${lokasi.denah_url}" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\\'image-error\\'><i class=\\"fas fa-map\\"></i><small class=\\"text-muted\\">Denah tidak tersedia</small></div>';" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px;"></p>` : ''}
                                 <div class="d-flex gap-2">
                                     <a href="${lokasi.url}" class="btn btn-sm btn-primary flex-fill" target="_blank">
                                         <i class="fas fa-info-circle me-1"></i> Detail
@@ -807,15 +924,12 @@ function loadMarkers() {
                 }
             });
 
-            // Fit bounds if there are markers
             if (markers.length > 0) {
                 const group = new L.featureGroup(markers);
                 map.fitBounds(group.getBounds(), {
                     padding: [50, 50],
                     maxZoom: 15
                 });
-            } else {
-                console.log('Tidak ada data lokasi dengan koordinat');
             }
         })
         .catch(error => {
@@ -825,23 +939,18 @@ function loadMarkers() {
 }
 
 function loadGeojsonData() {
-    // Clear existing GeoJSON layers
     geojsonLayers.forEach(layer => geojsonMap.removeLayer(layer));
     geojsonLayers = [];
 
-    // Fetch and add GeoJSON data - PERBAIKI ROUTE INI
     fetch('{{ route("lokasi.api.geojson-data") }}')
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Network response was not ok');
             return response.json();
         })
         .then(data => {
             const geojsonContainer = document.getElementById('geojsonData');
             geojsonContainer.innerHTML = '';
 
-            // Jika response berupa object dengan property data
             const geojsonData = Array.isArray(data) ? data : (data.data || []);
 
             if (geojsonData.length === 0) {
@@ -849,7 +958,6 @@ function loadGeojsonData() {
                 return;
             }
 
-            // Create summary list
             const ul = document.createElement('ul');
             ul.className = 'list-unstyled mb-0';
 
@@ -869,7 +977,6 @@ function loadGeojsonData() {
                 `;
                 ul.appendChild(li);
 
-                // Add GeoJSON to map
                 if (item.geojson) {
                     try {
                         const geojsonLayer = L.geoJSON(item.geojson, {
@@ -903,7 +1010,6 @@ function loadGeojsonData() {
 
             geojsonContainer.appendChild(ul);
 
-            // Fit bounds if there are GeoJSON layers
             if (geojsonLayers.length > 0) {
                 const group = new L.featureGroup(geojsonLayers);
                 geojsonMap.fitBounds(group.getBounds(), {
@@ -931,8 +1037,6 @@ function setupMediaPreview(lokasiId) {
         input.addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
-
-                // Validasi ukuran file (5MB)
                 const maxSize = 5 * 1024 * 1024;
                 if (file.size > maxSize) {
                     alert('File melebihi batas ukuran 5MB');
@@ -941,7 +1045,6 @@ function setupMediaPreview(lokasiId) {
                     return;
                 }
 
-                // Validasi tipe file
                 const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
                 if (!allowedTypes.includes(file.type)) {
                     alert('Tipe file tidak didukung');
@@ -958,7 +1061,6 @@ function setupMediaPreview(lokasiId) {
                     }
                     reader.readAsDataURL(file);
                 } else {
-                    // Untuk file non-gambar, sembunyikan preview
                     previewContainer.classList.add('d-none');
                 }
             } else {
@@ -977,7 +1079,6 @@ async function uploadMedia(lokasiId, form) {
         uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Mengupload...';
 
         const formData = new FormData(form);
-
         const response = await fetch(form.action, {
             method: 'POST',
             body: formData,
@@ -991,14 +1092,9 @@ async function uploadMedia(lokasiId, form) {
 
         if (data.success) {
             showAlert('success', data.message);
-            // Close modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('uploadMediaModal' + lokasiId));
             if (modal) modal.hide();
-
-            // Reload page after 1 second
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            setTimeout(() => location.reload(), 1000);
         } else {
             showAlert('danger', data.message || 'Gagal mengupload media');
         }
@@ -1012,33 +1108,15 @@ async function uploadMedia(lokasiId, form) {
 }
 
 function showMediaModal(lokasiId) {
-    fetch(`/lokasi/${lokasiId}`)
-        .then(response => response.text())
-        .then(html => {
-            // Parse HTML untuk mendapatkan media content
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const mediaContent = doc.querySelector('#mediaGallery')?.innerHTML;
-
-            if (mediaContent) {
-                document.getElementById('mediaModalTitle').innerHTML = `<i class="fas fa-images me-2"></i>Media Tambahan`;
-                document.getElementById('mediaModalContent').innerHTML = mediaContent;
-
-                const modal = new bootstrap.Modal(document.getElementById('mediaViewerModal'));
-                modal.show();
-            } else {
-                showAlert('info', 'Tidak ada media tambahan untuk lokasi ini');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('danger', 'Gagal memuat data media');
-        });
+    window.location.href = `/lokasi/${lokasiId}#mediaGallery`;
 }
 
 function showImageModal(imageUrl, title) {
-    document.getElementById('imageModalTitle').textContent = title;
-    document.getElementById('imageModalImg').src = imageUrl;
+    const modalImg = document.getElementById('imageModalImg');
+    const modalTitle = document.getElementById('imageModalTitle');
+
+    modalTitle.textContent = title;
+    modalImg.src = imageUrl;
 
     const modal = new bootstrap.Modal(document.getElementById('imageViewerModal'));
     modal.show();
@@ -1053,7 +1131,6 @@ function showGeojsonModal(lokasiId) {
 }
 
 function showAlert(type, message) {
-    // Hapus alert sebelumnya jika ada
     const existingAlert = document.querySelector('.alert-fixed');
     if (existingAlert) existingAlert.remove();
 
@@ -1069,9 +1146,7 @@ function showAlert(type, message) {
     document.body.appendChild(alertDiv);
 
     setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
+        if (alertDiv.parentNode) alertDiv.remove();
     }, 5000);
 }
 </script>
