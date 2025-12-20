@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Kontraktor;
-use App\Models\Proyek;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -17,24 +15,34 @@ class KontraktorSeeder extends Seeder
     {
         // Nonaktifkan foreign key check untuk memudahkan seeding
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Kontraktor::truncate();
+
+        // GUNAKAN DB FACADE dengan nama tabel yang BENAR: 'kontraktor'
+        DB::table('kontraktor')->truncate();
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Ambil data proyek - FIX: cek apakah model Proyek ada
-        $proyeks = [];
+        // Ambil data proyek - GUNAKAN TABEL proyeks (plural)
         $proyekIds = [];
 
         try {
-            if (class_exists('App\Models\Proyek')) {
-                $proyeks = Proyek::all();
-                $proyekIds = $proyeks->pluck('proyek_id')->toArray();
-            } else {
-                // Fallback: ambil langsung dari tabel
-                if (DB::getSchemaBuilder()->hasTable('proyeks')) {
+            // Coba ambil dari tabel proyeks
+            if (DB::getSchemaBuilder()->hasTable('proyeks')) {
+                // Periksa kolom primary key yang ada
+                $columns = DB::getSchemaBuilder()->getColumnListing('proyeks');
+
+                if (in_array('proyek_id', $columns)) {
                     $proyekIds = DB::table('proyeks')->pluck('proyek_id')->toArray();
-                } elseif (DB::getSchemaBuilder()->hasTable('proyek')) {
-                    $proyekIds = DB::table('proyek')->pluck('proyek_id')->toArray();
+                } elseif (in_array('id', $columns)) {
+                    $proyekIds = DB::table('proyeks')->pluck('id')->toArray();
+                } else {
+                    // Ambil ID apapun yang ada
+                    $proyekIds = DB::table('proyeks')->pluck(DB::raw('id'))->toArray();
                 }
+
+                $this->command->info('✅ Berhasil mengambil data dari tabel proyeks: ' . count($proyekIds) . ' data ditemukan');
+            } else {
+                $this->command->error('❌ Tabel proyeks tidak ditemukan di database!');
+                $this->command->info('Jalankan migration terlebih dahulu: php artisan migrate');
             }
         } catch (\Exception $e) {
             $this->command->error('❌ Error mengambil data proyek: ' . $e->getMessage());
@@ -187,22 +195,13 @@ class KontraktorSeeder extends Seeder
             $stats['total']++;
         }
 
-        // Insert data ke database
+        // Insert data ke database - GUNAKAN DB FACADE dengan nama tabel 'kontraktor'
         try {
-            Kontraktor::insert($kontraktors);
+            DB::table('kontraktor')->insert($kontraktors);
             $this->command->info('✅ Seeder Kontraktor berhasil dijalankan! ' . $stats['total'] . ' data kontraktor telah dibuat.');
         } catch (\Exception $e) {
             $this->command->error('❌ Error insert data: ' . $e->getMessage());
-            $this->command->info('Mencoba insert dengan DB facade...');
-
-            // Coba dengan DB facade
-            try {
-                DB::table('kontraktor')->insert($kontraktors);
-                $this->command->info('✅ Data berhasil diinsert menggunakan DB facade!');
-            } catch (\Exception $e2) {
-                $this->command->error('❌ Error insert dengan DB facade: ' . $e2->getMessage());
-                return;
-            }
+            return;
         }
 
         // Tampilkan statistik
