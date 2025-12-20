@@ -14,8 +14,7 @@ class LokasiProyekSeeder extends Seeder
     public function run()
     {
         // Ambil data proyek
-        $proyeks = Proyek::all();
-
+$proyeks = DB::table('proyeks')->get();
         if ($proyeks->isEmpty()) {
             $this->command->info('⚠️  Tidak ada data proyek. Skipping seeder lokasi proyek.');
             return;
