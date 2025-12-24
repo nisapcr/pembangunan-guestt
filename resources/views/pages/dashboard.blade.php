@@ -26,7 +26,7 @@
                             <i class="fas fa-user-circle fa-2x"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-0">Selamat datang, {{ Auth::user()->name }}!</h5>
+                            <h5 class="mb-0">Selamat datang, {{ $user->name }}!</h5>
                             <p class="mb-0 opacity-75">
                                 <i class="fas fa-clock me-1"></i>
                                 {{ now()->format('H:i') }} • Sistem Manajemen Proyek
@@ -35,45 +35,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- Display User Role Correctly -->
-                    @php
-                        // Map role ke nama yang lebih user-friendly
-                        $roleDisplay = [
-                            'admin' => 'Administrator',
-                            'petugas' => 'Petugas',
-                            'user' => 'Pengguna'
-                        ];
-
-                        $currentRole = Auth::user()->role;
-                        $roleName = $roleDisplay[$currentRole] ?? ucfirst($currentRole);
-
-                        // Warna badge berdasarkan role
-                        $roleColors = [
-
-                            'admin' => 'danger',
-                            'petugas' => 'warning',
-                            'user' => 'primary'
-                        ];
-                        $roleColor = $roleColors[$currentRole] ?? 'secondary';
-
-                        // Hitung statistik proyek
-                        $totalProyek = \App\Models\Proyek::count();
-
-                        // Untuk petugas, hanya hitung proyek yang mereka tangani
-                        if($currentRole === 'petugas') {
-                            $proyekPetugas = \App\Models\Proyek::where('petugas_id', Auth::id())->count();
-                            $proyekAktif = \App\Models\Proyek::where('petugas_id', Auth::id())
-                                ->where('tahun', '>=', date('Y') - 1)->count();
-                            $proyekSelesai = \App\Models\Proyek::where('petugas_id', Auth::id())
-                                ->where('tahun', '<', date('Y') - 1)->count();
-                            $totalAnggaran = \App\Models\Proyek::where('petugas_id', Auth::id())->sum('anggaran');
-                        } else {
-                            $proyekAktif = \App\Models\Proyek::where('tahun', '>=', date('Y') - 1)->count();
-                            $proyekSelesai = \App\Models\Proyek::where('tahun', '<', date('Y') - 1)->count();
-                            $totalAnggaran = \App\Models\Proyek::sum('anggaran');
-                        }
-                    @endphp
-
+                    <!-- Status Login -->
                     <div class="row align-items-center mb-4">
                         <div class="col-md-6">
                             <div class="d-flex align-items-center">
@@ -89,13 +51,13 @@
                         <div class="col-md-6 text-end">
                             <span class="badge bg-{{ $roleColor }} fs-5 px-4 py-2">
                                 <i class="fas fa-user-shield me-2"></i>
-                                {{ $roleName }}
+                                {{ $roleDisplay }}
                             </span>
                         </div>
                     </div>
 
                     <!-- Role-specific Messages -->
-                    @if(in_array($currentRole, ['superadmin', 'admin']))
+                    @if(in_array($role, ['admin']))
                     <div class="alert alert-danger border-0 bg-danger bg-opacity-10">
                         <div class="d-flex">
                             <div class="flex-shrink-0">
@@ -108,7 +70,7 @@
                                 </h5>
                                 <p class="mb-2">Anda memiliki hak akses penuh ke semua modul sistem:</p>
                                 <ul class="mb-0">
-                                    <li><i class="fas fa-check-circle text-danger me-2"></i> Manajemen Pengguna (User Management)</li>
+                                    <li><i class="fas fa-check-circle text-danger me-2"></i> Manajemen Pengguna</li>
                                     <li><i class="fas fa-check-circle text-danger me-2"></i> Manajemen Data Warga</li>
                                     <li><i class="fas fa-check-circle text-danger me-2"></i> Monitoring Seluruh Proyek</li>
                                     <li><i class="fas fa-check-circle text-danger me-2"></i> Laporan dan Analisis</li>
@@ -116,7 +78,7 @@
                             </div>
                         </div>
                     </div>
-                    @elseif($currentRole === 'petugas')
+                    @elseif($role === 'petugas')
                     <div class="alert alert-warning border-0 bg-warning bg-opacity-10">
                         <div class="d-flex">
                             <div class="flex-shrink-0">
@@ -161,7 +123,7 @@
 
                     <!-- Quick Stats -->
                     <div class="row mt-4">
-                        @if(in_array($currentRole, ['superadmin', 'admin']))
+                        @if(in_array($role, ['admin']))
                         <div class="col-md-3 col-sm-6 mb-3">
                             <div class="card border-start border-3 border-danger h-100">
                                 <div class="card-body">
@@ -171,13 +133,8 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h6 class="mb-0">Total Pengguna</h6>
-                                            <h3 class="mb-0">{{ \App\Models\User::count() }}</h3>
+                                            <h3 class="mb-0">{{ $totalUsers }}</h3>
                                             <small class="text-muted">
-                                                @php
-                                                    $adminCount = \App\Models\User::whereIn('role', ['admin', 'superadmin'])->count();
-                                                    $petugasCount = \App\Models\User::where('role', 'petugas')->count();
-                                                    $userCount = \App\Models\User::where('role', 'user')->count();
-                                                @endphp
                                                 <i class="fas fa-user-shield me-1"></i>{{ $adminCount }} Admin •
                                                 <i class="fas fa-user-tie me-1"></i>{{ $petugasCount }} Petugas
                                             </small>
@@ -196,13 +153,8 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h6 class="mb-0">Total Warga</h6>
-                                            <h3 class="mb-0">{{ \App\Models\Warga::count() ?? 0 }}</h3>
+                                            <h3 class="mb-0">{{ $totalWarga }}</h3>
                                             <small class="text-muted">
-                                                @php
-                                                    // Asumsi ada kolom 'status' atau 'jenis_kelamin' di model Warga
-                                                    $wargaLaki = \App\Models\Warga::where('jenis_kelamin', 'L')->count() ?? 0;
-                                                    $wargaPerempuan = \App\Models\Warga::where('jenis_kelamin', 'P')->count() ?? 0;
-                                                @endphp
                                                 <i class="fas fa-male me-1"></i>{{ $wargaLaki }} L •
                                                 <i class="fas fa-female me-1"></i>{{ $wargaPerempuan }} P
                                             </small>
@@ -222,15 +174,15 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h6 class="mb-0">
-                                                @if($currentRole === 'petugas')
+                                                @if($role === 'petugas')
                                                     Proyek Saya
                                                 @else
                                                     Total Proyek
                                                 @endif
                                             </h6>
                                             <h3 class="mb-0">
-                                                @if($currentRole === 'petugas')
-                                                    {{ $proyekPetugas ?? 0 }}
+                                                @if($role === 'petugas')
+                                                    {{ $proyekPetugas }}
                                                 @else
                                                     {{ $totalProyek }}
                                                 @endif
@@ -239,7 +191,7 @@
                                                 <small class="text-muted">
                                                     <i class="fas fa-chart-line me-1"></i>
                                                     {{ $proyekAktif }} Aktif
-                                                    @if($currentRole === 'petugas' && isset($proyekPetugas) && $proyekPetugas > 0)
+                                                    @if($role === 'petugas' && $proyekPetugas > 0)
                                                         • {{ $proyekSelesai }} Selesai
                                                     @endif
                                                 </small>
@@ -259,18 +211,18 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h6 class="mb-0">
-                                                @if($currentRole === 'petugas')
+                                                @if($role === 'petugas')
                                                     Anggaran Proyek Saya
                                                 @else
                                                     Total Anggaran
                                                 @endif
                                             </h6>
                                             <h4 class="mb-0">Rp {{ number_format($totalAnggaran, 0, ',', '.') }}</h4>
-                                            @if(($currentRole === 'petugas' && $proyekPetugas > 0) || ($currentRole !== 'petugas' && $totalProyek > 0))
+                                            @if(($role === 'petugas' && $proyekPetugas > 0) || ($role !== 'petugas' && $totalProyek > 0))
                                                 <small class="text-muted">
                                                     Rata-rata: Rp {{
                                                         number_format(
-                                                            $currentRole === 'petugas' ?
+                                                            $role === 'petugas' ?
                                                             ($proyekPetugas > 0 ? $totalAnggaran / $proyekPetugas : 0) :
                                                             ($totalProyek > 0 ? $totalAnggaran / $totalProyek : 0),
                                                             0, ',', '.')
@@ -293,15 +245,15 @@
                                         <div class="flex-grow-1 ms-3">
                                             <h6 class="mb-0">Login Terakhir</h6>
                                             <h5 class="mb-0">
-                                                @if(Auth::user()->last_login_at)
-                                                    {{ Auth::user()->last_login_at->diffForHumans() }}
+                                                @if($user->last_login_at)
+                                                    {{ $user->last_login_at->diffForHumans() }}
                                                 @else
                                                     Pertama kali
                                                 @endif
                                             </h5>
                                             <small class="text-muted">
                                                 <i class="fas fa-sign-in-alt me-1"></i>
-                                                Bergabung {{ Auth::user()->created_at->format('d/m/Y') }}
+                                                Bergabung {{ $user->created_at->format('d/m/Y') }}
                                             </small>
                                         </div>
                                     </div>
@@ -311,14 +263,14 @@
                     </div>
 
                     <!-- Recent Proyek -->
-                    @if($totalProyek > 0)
+                    @if($totalProyek > 0 && $recentProyek->count() > 0)
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="card border-0 shadow-sm">
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-history me-2"></i>
-                                        @if($currentRole === 'petugas')
+                                        @if($role === 'petugas')
                                             Proyek Terbaru Saya
                                         @else
                                             Proyek Terbaru
@@ -340,17 +292,6 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @php
-                                                    // Query berdasarkan role
-                                                    $recentProyekQuery = \App\Models\Proyek::query();
-
-                                                    if($currentRole === 'petugas') {
-                                                        $recentProyekQuery->where('petugas_id', Auth::id());
-                                                    }
-
-                                                    $recentProyek = $recentProyekQuery->latest()->take(5)->get();
-                                                @endphp
-
                                                 @foreach($recentProyek as $proyek)
                                                 <tr>
                                                     <td>
@@ -375,14 +316,14 @@
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
 
-                                                            @if(in_array($currentRole, ['superadmin', 'admin', 'petugas']))
+                                                            @if(in_array($role, ['admin', 'petugas']))
                                                             <a href="{{ route('proyek.edit', $proyek->proyek_id) }}"
                                                                class="btn btn-sm btn-warning" title="Edit">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                             @endif
 
-                                                            @if(in_array($currentRole, ['superadmin', 'admin']))
+                                                            @if(in_array($role, ['admin']))
                                                             <form action="{{ route('proyek.destroy', $proyek->proyek_id) }}"
                                                                   method="POST" class="d-inline">
                                                                 @csrf
@@ -403,7 +344,7 @@
                                         </table>
                                     </div>
                                     @php
-                                        $totalToShow = $currentRole === 'petugas' ? ($proyekPetugas ?? 0) : $totalProyek;
+                                        $totalToShow = $role === 'petugas' ? $proyekPetugas : $totalProyek;
                                     @endphp
 
                                     @if($totalToShow > 5)
@@ -432,7 +373,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-2">
-                                        @if(in_array($currentRole, ['superadmin', 'admin']))
+                                        @if(in_array($role, ['admin']))
                                         <div class="col-md-3 col-sm-6">
                                             <a href="{{ route('users.index') }}" class="btn btn-danger w-100">
                                                 <i class="fas fa-users-cog me-2"></i> Kelola User
@@ -445,7 +386,7 @@
                                         </div>
                                         @endif
 
-                                        @if(in_array($currentRole, ['superadmin', 'admin', 'petugas']))
+                                        @if(in_array($role, ['admin', 'petugas']))
                                         <div class="col-md-3 col-sm-6">
                                             <a href="{{ route('proyek.create') }}" class="btn btn-success w-100">
                                                 <i class="fas fa-plus-circle me-2"></i> Tambah Proyek
@@ -456,7 +397,7 @@
                                         <div class="col-md-3 col-sm-6">
                                             <a href="{{ route('proyek.index') }}" class="btn btn-primary w-100">
                                                 <i class="fas fa-list me-2"></i>
-                                                @if($currentRole === 'petugas')
+                                                @if($role === 'petugas')
                                                     Proyek Saya
                                                 @else
                                                     Daftar Proyek
@@ -464,7 +405,7 @@
                                             </a>
                                         </div>
 
-                                        @if(in_array($currentRole, ['superadmin', 'admin']))
+                                        @if(in_array($role, ['admin']))
                                         <div class="col-md-3 col-sm-6">
                                             <a href="#" class="btn btn-warning w-100">
                                                 <i class="fas fa-chart-bar me-2"></i> Laporan
@@ -521,7 +462,6 @@
 
 @section('scripts')
 <script>
-    // Konfirmasi sebelum menghapus
     document.addEventListener('DOMContentLoaded', function() {
         const deleteForms = document.querySelectorAll('form[action*="destroy"]');
 
