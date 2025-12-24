@@ -192,5 +192,14 @@
 
         // ==================== SHOW (PALING BAWAH) ====================
         Route::get('/{lokasi}', [LokasiProyekController::class, 'show'])->name('lokasi.show');
+
+        Route::get('/cek-proyek', function () {
+    $p = new \App\Models\Proyek;
+    return [
+        'class' => get_class($p),
+        'table' => $p->getTable(),
+        'file'  => (new ReflectionClass($p))->getFileName(),
+    ];
+});
     });
         });
