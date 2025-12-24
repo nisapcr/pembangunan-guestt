@@ -9,9 +9,11 @@
                 <h5 class="mb-0">
                     <i class="fas fa-list-alt me-2"></i>Data Tahapan Proyek
                 </h5>
-                <a href="{{ route('tahapan.create') }}" class="btn btn-light btn-sm">
-                    <i class="fas fa-plus me-1"></i> Tambah Tahapan
-                </a>
+                @if(in_array(auth()->user()->role, ['admin', 'petugas',]))
+                    <a href="{{ route('tahapan.create') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i> Tambah Tahapan
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -372,48 +374,39 @@
 
                         <!-- Card Footer - Actions -->
                         <div class="card-footer bg-transparent">
-    <div class="btn-group w-100" role="group">
+                            <div class="btn-group w-100" role="group">
+                                <a href="{{ route('tahapan.show', $item->id) }}"
+                                   class="btn btn-outline-info btn-sm" title="Lihat Detail">
+                                    <i class="fas fa-eye"></i>
+                                </a>
 
-        <a href="{{ route('tahapan.show', $item->id) }}"
-           class="btn btn-outline-info btn-sm" title="Lihat Detail">
-            <i class="fas fa-eye"></i>
-        </a>
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                    <a href="{{ route('tahapan.edit', $item->id) }}"
+                                       class="btn btn-outline-warning btn-sm" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
-        <a href="{{ route('tahapan.edit', $item->id) }}"
-           class="btn btn-outline-warning btn-sm" title="Edit">
-            <i class="fas fa-edit"></i>
-        </a>
-
-        <form action="{{ route('tahapan.destroy', $item->id) }}"
-              method="POST" class="d-inline"
-              onsubmit="return confirm('Apakah Anda yakin ingin menghapus tahapan {{ $item->nama_tahapan }}?')">
-
-            @csrf
-            @method('DELETE')
-
-            <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus">
-                <i class="fas fa-trash"></i>
-            </button>
-        </form>
-
-    </div>
-</div>
-
+                                    <form action="{{ route('tahapan.destroy', $item->id) }}"
+                                          method="POST" class="d-inline"
+                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus tahapan {{ $item->nama_tahapan }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
                 @endforeach
             </div>
 
-
-                    <!-- Pagination Links -->
-                    @if($tahapans->hasPages())
-                        <div>
-                            {{ $tahapans->links('pagination::bootstrap-5') }}
-                        </div>
-
-
-                    <!-- Empty space for alignment -->
-                    <div style="width: 100px;"></div>
+            <!-- Pagination Links -->
+            @if($tahapans->hasPages())
+                <div>
+                    {{ $tahapans->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         @endif

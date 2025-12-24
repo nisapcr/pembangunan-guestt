@@ -27,7 +27,7 @@ class LokasiProyekController extends Controller
                         ->filter($request, $filterableColumns)
                         ->search($request, $searchableColumns)
                         ->orderBy('created_at', 'desc')
-                        ->paginate(12)
+                        ->paginate(10)
                         ->withQueryString()
                         ->onEachSide(2);
 
@@ -466,9 +466,6 @@ class LokasiProyekController extends Controller
             abort(500, 'Gagal mendownload file');
         }
     }
-
-    // ========== VIEW DENAH ==========
-  // ========== VIEW DENAH ==========
 // ========== VIEW DENAH ==========
 public function viewDenah($id)
 {

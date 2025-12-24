@@ -3,7 +3,7 @@
 @section('title', 'Daftar Data Pengguna')
 
 @section('content')
-    @if(session('success'))
+    @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle me-2"></i>
             {{ session('success') }}
@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    @if(session('error'))
+    @if (session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="fas fa-exclamation-circle me-2"></i>
             {{ session('error') }}
@@ -42,17 +42,18 @@
                                 <i class="fas fa-search text-muted"></i>
                             </span>
                             <input type="text" name="search" class="form-control border-start-0"
-                                   value="{{ request('search') }}" placeholder="Cari nama atau email...">
+                                value="{{ request('search') }}" placeholder="Cari nama atau email...">
                         </div>
                     </div>
 
                     <!-- Filter Role -->
+                    <!-- Di bagian filter role, ganti dengan: -->
                     <div class="col-md-4">
                         <select name="role" class="form-select">
                             <option value="">Semua Role</option>
-                            <option value="pelanggan" {{ request('role') == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
-                            <option value="mitra" {{ request('role') == 'mitra' ? 'selected' : '' }}>Mitra</option>
-                            <option value="superadmin" {{ request('role') == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
+                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="petugas" {{ request('role') == 'petugas' ? 'selected' : '' }}>Petugas</option>
+                            <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
                         </select>
                     </div>
 
@@ -62,7 +63,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-filter me-1"></i> Filter
                             </button>
-                            @if(request('search') || request('role'))
+                            @if (request('search') || request('role'))
                                 <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
                                     <i class="fas fa-refresh"></i>
                                 </a>
@@ -73,14 +74,16 @@
             </form>
 
             <!-- Info Hasil Pencarian -->
-            @if(request('search') || request('role'))
+            @if (request('search') || request('role'))
                 <div class="alert alert-info mb-3">
                     <i class="fas fa-info-circle me-2"></i>
-                    @if(request('search'))
+                    @if (request('search'))
                         Hasil pencarian untuk: "<strong>{{ request('search') }}</strong>"
                     @endif
-                    @if(request('role'))
-                        @if(request('search')) <br> @endif
+                    @if (request('role'))
+                        @if (request('search'))
+                            <br>
+                        @endif
                         Filter role: <span class="badge bg-primary">{{ ucfirst(request('role')) }}</span>
                     @endif
                     <span class="badge bg-dark ms-2">{{ $users->total() }} hasil</span>
@@ -88,7 +91,7 @@
             @endif
 
             <!-- Card Users -->
-            @if($users->count() > 0)
+            @if ($users->count() > 0)
                 <div class="row g-3">
                     @foreach ($users as $user)
                         <div class="col-md-6 col-lg-4">
@@ -97,18 +100,16 @@
                                     <div class="d-flex align-items-start mb-3">
                                         <!-- Avatar/Profile Picture -->
                                         <div class="me-3">
-                                            @if($user->profile_picture)
+                                            @if ($user->profile_picture)
                                                 <img src="{{ asset('storage/profile_pictures/' . $user->profile_picture) }}"
-                                                     alt="{{ $user->name }}"
-                                                     class="rounded-circle"
-                                                     style="width: 50px; height: 50px; object-fit: cover;"
-                                                     onerror="this.onerror=null; this.src='{{ asset('img/placeholderuser.png') }}'">
+                                                    alt="{{ $user->name }}" class="rounded-circle"
+                                                    style="width: 50px; height: 50px; object-fit: cover;"
+                                                    onerror="this.onerror=null; this.src='{{ asset('img/placeholderuser.png') }}'">
                                             @else
                                                 <!-- Tambah placeholder.png di sini -->
                                                 <img src="{{ asset('img/placeholderuser.png') }}"
-                                                     alt="{{ $user->name }}"
-                                                     class="rounded-circle"
-                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                    alt="{{ $user->name }}" class="rounded-circle"
+                                                    style="width: 50px; height: 50px; object-fit: cover;">
                                             @endif
                                         </div>
                                         <!-- User Info -->
@@ -124,9 +125,9 @@
                                     <div class="mb-2">
                                         @php
                                             $roleColors = [
-                                                'superadmin' => 'bg-danger',
-                                                'mitra' => 'bg-warning text-dark',
-                                                'pelanggan' => 'bg-primary'
+                                                'admin' => 'bg-danger',
+                                                'petugas' => 'bg-warning text-dark',
+                                                'user' => 'bg-primary',
                                             ];
                                             $roleColor = $roleColors[$user->role] ?? 'bg-secondary';
                                         @endphp
@@ -152,26 +153,27 @@
                                         </small>
                                         <div class="btn-group">
                                             <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm"
-                                               data-bs-toggle="tooltip" title="Lihat Detail">
+                                                data-bs-toggle="tooltip" title="Lihat Detail">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm"
-                                               data-bs-toggle="tooltip" title="Edit Data">
+                                                data-bs-toggle="tooltip" title="Edit Data">
                                                 <i class="fas fa-edit"></i>
                                             </a>
 
-                                            @if(auth()->check() && auth()->id() == $user->id)
-                                                <button class="btn btn-danger btn-sm" disabled
-                                                        data-bs-toggle="tooltip" title="Tidak dapat menghapus akun sendiri">
+                                            @if (auth()->check() && auth()->id() == $user->id)
+                                                <button class="btn btn-danger btn-sm" disabled data-bs-toggle="tooltip"
+                                                    title="Tidak dapat menghapus akun sendiri">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             @else
-                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline delete-form">
+                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST"
+                                                    class="d-inline delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm"
-                                                            onclick="return confirm('Yakin ingin menghapus user {{ $user->name }}?')"
-                                                            data-bs-toggle="tooltip" title="Hapus User">
+                                                        onclick="return confirm('Yakin ingin menghapus user {{ $user->name }}?')"
+                                                        data-bs-toggle="tooltip" title="Hapus User">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -185,7 +187,7 @@
                 </div>
 
                 <!-- Pagination -->
-                @if($users->hasPages())
+                @if ($users->hasPages())
                     <div class="mt-4">
                         {{ $users->withQueryString()->links('pagination::bootstrap-5') }}
                     </div>
@@ -194,14 +196,16 @@
                 <!-- Empty State -->
                 <div class="empty-state text-center py-5">
                     <i class="fas fa-users fa-4x text-muted mb-3"></i>
-                    @if(request('search') || request('role'))
+                    @if (request('search') || request('role'))
                         <h5 class="fw-bold text-muted">Tidak ditemukan pengguna</h5>
                         <p class="text-muted">
-                            @if(request('search'))
+                            @if (request('search'))
                                 Tidak ada pengguna yang sesuai dengan pencarian "<strong>{{ request('search') }}</strong>"
                             @endif
-                            @if(request('role'))
-                                @if(request('search')) <br> @endif
+                            @if (request('role'))
+                                @if (request('search'))
+                                    <br>
+                                @endif
                                 dengan role: <span class="badge bg-primary">{{ ucfirst(request('role')) }}</span>
                             @endif
                         </p>
@@ -222,38 +226,43 @@
 @endsection
 
 @section('scripts')
-<script>
-    // Initialize tooltips
-    document.addEventListener('DOMContentLoaded', function() {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
         });
-    });
-</script>
+    </script>
 @endsection
 
 @section('styles')
-<style>
-    .user-card {
-        border-left: 4px solid #0d6efd;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .user-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
-    }
-    .empty-state {
-        padding: 3rem 1rem;
-    }
-    .empty-state i {
-        opacity: 0.3;
-    }
-    .card-title {
-        font-size: 1rem;
-    }
-    .btn-group .btn {
-        padding: 0.25rem 0.5rem;
-    }
-</style>
+    <style>
+        .user-card {
+            border-left: 4px solid #0d6efd;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .empty-state {
+            padding: 3rem 1rem;
+        }
+
+        .empty-state i {
+            opacity: 0.3;
+        }
+
+        .card-title {
+            font-size: 1rem;
+        }
+
+        .btn-group .btn {
+            padding: 0.25rem 0.5rem;
+        }
+    </style>
 @endsection

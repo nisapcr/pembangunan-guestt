@@ -82,7 +82,7 @@
         }
 
         .login-header p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             opacity: 0.9;
             margin-top: 3px;
             position: relative;
@@ -303,7 +303,7 @@
                         </button>
                     </div>
                     <small class="form-text text-muted mt-1 d-block">
-                        Password minimal 3 karakter
+                        Password minimal 8 karakter
                     </small>
                 </div>
 

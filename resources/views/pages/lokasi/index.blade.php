@@ -9,9 +9,11 @@
             <h5 class="mb-0">
                 <i class="fas fa-map-marker-alt me-2"></i>Data Lokasi Proyek
             </h5>
-            <a href="{{ route('lokasi.create') }}" class="btn btn-light">
-                <i class="fas fa-plus me-1"></i> Tambah Lokasi
-            </a>
+            @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                <a href="{{ route('lokasi.create') }}" class="btn btn-light">
+                    <i class="fas fa-plus me-1"></i> Tambah Lokasi
+                </a>
+            @endif
         </div>
 
         <!-- Filter Section -->
@@ -206,9 +208,11 @@
                     <h5 class="fw-bold text-muted">Belum ada data lokasi proyek</h5>
                     <p class="text-muted">Silakan tambah lokasi proyek baru dengan mengklik tombol "Tambah Lokasi"</p>
                     @endif
-                    <a href="{{ route('lokasi.create') }}" class="btn btn-primary mt-3">
-                        <i class="fas fa-plus me-1"></i> Tambah Lokasi Pertama
-                    </a>
+                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                        <a href="{{ route('lokasi.create') }}" class="btn btn-primary mt-3">
+                            <i class="fas fa-plus me-1"></i> Tambah Lokasi Pertama
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -239,29 +243,33 @@
                                             <i class="fas fa-eye text-info me-2"></i>Detail
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}">
-                                            <i class="fas fa-edit text-warning me-2"></i>Edit
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item text-success" href="#"
-                                           data-bs-toggle="modal"
-                                           data-bs-target="#uploadMediaModal{{ $lokasi->lokasi_id }}">
-                                            <i class="fas fa-plus-circle me-2"></i>Tambah Media
-                                        </a>
-                                    </li>
+                                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}">
+                                                <i class="fas fa-edit text-warning me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-success" href="#"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#uploadMediaModal{{ $lokasi->lokasi_id }}">
+                                                <i class="fas fa-plus-circle me-2"></i>Tambah Media
+                                            </a>
+                                        </li>
+                                    @endif
                                     <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form action="{{ route('lokasi.destroy', $lokasi->lokasi_id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="dropdown-item text-danger"
-                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?')">
-                                                <i class="fas fa-trash me-2"></i>Hapus
-                                            </button>
-                                        </form>
-                                    </li>
+                                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                        <li>
+                                            <form action="{{ route('lokasi.destroy', $lokasi->lokasi_id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dropdown-item text-danger"
+                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?')">
+                                                    <i class="fas fa-trash me-2"></i>Hapus
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -310,7 +318,6 @@
                                 @php
                                     $denahUrl = null;
                                     if($lokasi->denah_gambar) {
-                                        // Cek apakah denah_gambar adalah path atau URL
                                         if(filter_var($lokasi->denah_gambar, FILTER_VALIDATE_URL)) {
                                             $denahUrl = $lokasi->denah_gambar;
                                         } else {
@@ -334,9 +341,11 @@
                                      style="height: 120px;">
                                     <i class="fas fa-map fa-2x text-muted mb-2 opacity-25"></i>
                                     <small class="text-muted text-center">Belum ada denah</small>
-                                    <a href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}" class="btn btn-sm btn-outline-primary mt-2">
-                                        <i class="fas fa-plus me-1"></i> Tambah Denah
-                                    </a>
+                                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                        <a href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}" class="btn btn-sm btn-outline-primary mt-2">
+                                            <i class="fas fa-plus me-1"></i> Tambah Denah
+                                        </a>
+                                    @endif
                                 </div>
                                 @endif
                             </div>
@@ -431,13 +440,14 @@
                                 {{ $lokasi->created_at->diffForHumans() }}
                             </small>
                             <div class="btn-group">
-                                <!-- Tombol Upload Media -->
-                                <button class="btn btn-sm btn-success"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#uploadMediaModal{{ $lokasi->lokasi_id }}"
-                                        title="Tambah Media">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                    <button class="btn btn-sm btn-success"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#uploadMediaModal{{ $lokasi->lokasi_id }}"
+                                            title="Tambah Media">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                @endif
 
                                 @if($mediaCount > 0)
                                 <button class="btn btn-sm btn-outline-info"
@@ -468,6 +478,14 @@
                                    title="Detail">
                                     <i class="fas fa-eye"></i>
                                 </a>
+
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                    <a href="{{ route('lokasi.edit', $lokasi->lokasi_id) }}"
+                                       class="btn btn-sm btn-outline-warning"
+                                       title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -475,64 +493,66 @@
             </div>
 
             <!-- Modal untuk Upload Media -->
-            <div class="modal fade" id="uploadMediaModal{{ $lokasi->lokasi_id }}" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header bg-success text-white">
-                            <h5 class="modal-title">
-                                <i class="fas fa-cloud-upload-alt me-2"></i>
-                                Upload Media - {{ $lokasi->nama_lokasi }}
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <form action="{{ route('lokasi.tambah-media', $lokasi->lokasi_id) }}"
-                              method="POST"
-                              enctype="multipart/form-data"
-                              id="uploadMediaForm{{ $lokasi->lokasi_id }}">
-                            @csrf
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">
-                                        <i class="fas fa-file me-1"></i>Pilih File
-                                    </label>
-                                    <input type="file"
-                                           class="form-control"
-                                           name="media_tambahan"
-                                           id="mediaInput{{ $lokasi->lokasi_id }}"
-                                           required
-                                           accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.pdf,.doc,.docx">
-                                    <div class="form-text">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Ukuran maksimal 5MB per file.
-                                        Format: Gambar, PDF, Dokumen
+            @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                <div class="modal fade" id="uploadMediaModal{{ $lokasi->lokasi_id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-cloud-upload-alt me-2"></i>
+                                    Upload Media - {{ $lokasi->nama_lokasi }}
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="{{ route('lokasi.tambah-media', $lokasi->lokasi_id) }}"
+                                  method="POST"
+                                  enctype="multipart/form-data"
+                                  id="uploadMediaForm{{ $lokasi->lokasi_id }}">
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">
+                                            <i class="fas fa-file me-1"></i>Pilih File
+                                        </label>
+                                        <input type="file"
+                                               class="form-control"
+                                               name="media_tambahan"
+                                               id="mediaInput{{ $lokasi->lokasi_id }}"
+                                               required
+                                               accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.pdf,.doc,.docx">
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Ukuran maksimal 5MB per file.
+                                            Format: Gambar, PDF, Dokumen
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="mb-3 d-none" id="previewContainer{{ $lokasi->lokasi_id }}">
-                                    <label class="form-label fw-bold">
-                                        <i class="fas fa-image me-1"></i>Preview
-                                    </label>
-                                    <div id="preview{{ $lokasi->lokasi_id }}" class="text-center">
-                                        <img id="previewImg{{ $lokasi->lokasi_id }}"
-                                             src=""
-                                             class="img-fluid rounded"
-                                             style="max-height: 200px;"
-                                             onerror="handleImageError(this, 'preview')">
+                                    <div class="mb-3 d-none" id="previewContainer{{ $lokasi->lokasi_id }}">
+                                        <label class="form-label fw-bold">
+                                            <i class="fas fa-image me-1"></i>Preview
+                                        </label>
+                                        <div id="preview{{ $lokasi->lokasi_id }}" class="text-center">
+                                            <img id="previewImg{{ $lokasi->lokasi_id }}"
+                                                 src=""
+                                                 class="img-fluid rounded"
+                                                 style="max-height: 200px;"
+                                                 onerror="handleImageError(this, 'preview')">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    <i class="fas fa-times me-1"></i>Batal
-                                </button>
-                                <button type="submit" class="btn btn-success" id="uploadBtn{{ $lokasi->lokasi_id }}">
-                                    <i class="fas fa-upload me-1"></i>Upload
-                                </button>
-                            </div>
-                        </form>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-1"></i>Batal
+                                    </button>
+                                    <button type="submit" class="btn btn-success" id="uploadBtn{{ $lokasi->lokasi_id }}">
+                                        <i class="fas fa-upload me-1"></i>Upload
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
 
             <!-- Modal untuk GeoJSON -->
             <div class="modal fade" id="geojsonModal{{ $lokasi->lokasi_id }}" tabindex="-1">

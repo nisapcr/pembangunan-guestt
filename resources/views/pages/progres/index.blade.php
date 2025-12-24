@@ -9,9 +9,11 @@
             <h5 class="mb-0">
                 <i class="fas fa-chart-line me-2"></i>Data Progress Proyek
             </h5>
-            <a href="{{ route('progres.create') }}" class="btn btn-light">
-                <i class="fas fa-plus me-1"></i> Tambah Progress
-            </a>
+            @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                <a href="{{ route('progres.create') }}" class="btn btn-light">
+                    <i class="fas fa-plus me-1"></i> Tambah Progress
+                </a>
+            @endif
         </div>
 
         <!-- Filter Section -->
@@ -205,9 +207,11 @@
                     <h5 class="fw-bold text-muted">Belum ada data progress proyek</h5>
                     <p class="text-muted">Silakan tambah progress proyek baru dengan mengklik tombol "Tambah Progress"</p>
                     @endif
-                    <a href="{{ route('progres.create') }}" class="btn btn-primary mt-3">
-                        <i class="fas fa-plus me-1"></i> Tambah Progress Pertama
-                    </a>
+                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                        <a href="{{ route('progres.create') }}" class="btn btn-primary mt-3">
+                            <i class="fas fa-plus me-1"></i> Tambah Progress Pertama
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -238,22 +242,26 @@
                                             <i class="fas fa-eye text-info me-2"></i>Detail
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('progres.edit', $item->progres_id) }}">
-                                            <i class="fas fa-edit text-warning me-2"></i>Edit
-                                        </a>
-                                    </li>
+                                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('progres.edit', $item->progres_id) }}">
+                                                <i class="fas fa-edit text-warning me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                    @endif
                                     <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form action="{{ route('progres.destroy', $item->progres_id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="dropdown-item text-danger"
-                                                    onclick="return confirm('Hapus progress ini?')">
-                                                <i class="fas fa-trash me-2"></i>Hapus
-                                            </button>
-                                        </form>
-                                    </li>
+                                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                        <li>
+                                            <form action="{{ route('progres.destroy', $item->progres_id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dropdown-item text-danger"
+                                                        onclick="return confirm('Hapus progress ini?')">
+                                                    <i class="fas fa-trash me-2"></i>Hapus
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -474,10 +482,12 @@
                                    class="btn btn-sm btn-outline-info">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('progres.edit', $item->progres_id) }}"
-                                   class="btn btn-sm btn-outline-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                    <a href="{{ route('progres.edit', $item->progres_id) }}"
+                                       class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>

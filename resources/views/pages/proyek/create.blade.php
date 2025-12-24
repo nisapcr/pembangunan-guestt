@@ -1,4 +1,3 @@
-{{-- resources/views/proyek/create.blade.php --}}
 @extends('layouts.guest.app')
 @section('title', 'Tambah Proyek Baru')
 

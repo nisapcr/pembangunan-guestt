@@ -9,58 +9,41 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('auth.index')
-                ->withErrors('Silahkan login terlebih dahulu!');
+            return redirect()->route('login');
         }
 
         $user = Auth::user();
 
-        // Hanya set default jika role benar-benar NULL atau empty
+        // Debug logging
+        \Log::info('CheckRole middleware', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'current_role' => $user->role,
+            'required_roles' => $roles
+        ]);
+
+        // Jika user tidak punya role, set default ke 'user'
         if (empty($user->role) || trim($user->role) === '') {
-            $user->role = 'pelanggan';
+            $user->role = 'user';
             $user->save();
-
-            // Set session untuk menampilkan role yang benar
-            session(['user_role' => 'pelanggan']);
-        } else {
-            // Simpan role ke session untuk tampilan
-            session(['user_role' => $user->role]);
         }
 
-        // Debug: Pastikan role yang terbaca benar
-        // \Log::info('User Role: ' . $user->role . ', Required Role: ' . $role);
-
-        // OPSI 1: IZINKAN SEMUA UNTUK TESTING (HAPUS BARIS INI SETELAH TESTING!)
-        // return $next($request);
-
-        // OPSI 2: FORCE JADI SUPERADMIN UNTUK USER TERTENTU
-        if ($user->email === 'harnisa@gmail.com' && $user->role !== 'superadmin') {
-            $user->role = 'superadmin';
+        // Special case: force admin@gmail.com to be admin
+        if ($user->email === 'admin@gmail.com' && $user->role !== 'admin') {
+            $user->role = 'admin';
             $user->save();
-            session(['user_role' => 'superadmin']);
         }
 
-        // Cek apakah role sesuai
-        if ($user->role === $role) {
+        // Cek apakah user memiliki salah satu role yang dibutuhkan
+        if (in_array($user->role, $roles)) {
             return $next($request);
         }
 
-        // Fallback: Jika role tidak cocok, coba cek berdasarkan email
-        if ($user->email === 'admin@gmail.com' && $role === 'superadmin') {
-            // Update role jika ternyata admin
-            $user->role = 'superadmin';
-            $user->save();
-            session(['user_role' => 'superadmin']);
-            return $next($request);
-        }
-
-        // Kembalikan 403 tanpa view khusus
-        return abort(403, 'Akses ditolak. Role Anda: ' . ($user->role ?: 'TIDAK DIKETAHUI') . '. Diperlukan role: ' . $role);
+        // User tidak memiliki role yang dibutuhkan
+        abort(403, 'Akses ditolak. Role Anda: ' . $user->role .
+            '. Diperlukan salah satu role: ' . implode(', ', $roles));
     }
 }

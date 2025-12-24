@@ -11,9 +11,11 @@
                 </h1>
             </div>
             <div>
-                <a href="{{ route('kontraktor.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Tambah Kontraktor
-                </a>
+                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                    <a href="{{ route('kontraktor.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Tambah Kontraktor
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -258,20 +260,26 @@
                                     class="btn btn-sm btn-outline-primary" title="Detail">
                                     <i class="fas fa-eye me-1"></i>Detail
                                 </a>
-                                <a href="{{ route('kontraktor.edit', $kontraktor->kontraktor_id) }}"
-                                    class="btn btn-sm btn-outline-warning" title="Edit">
-                                    <i class="fas fa-edit me-1"></i>Edit
-                                </a>
-                                <form action="{{ route('kontraktor.destroy', $kontraktor->kontraktor_id) }}"
-                                    method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Hapus kontraktor {{ $kontraktor->nama }}?')"
-                                        title="Hapus">
-                                        <i class="fas fa-trash me-1"></i>Hapus
-                                    </button>
-                                </form>
+
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                    <a href="{{ route('kontraktor.edit', $kontraktor->kontraktor_id) }}"
+                                        class="btn btn-sm btn-outline-warning" title="Edit">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                @endif
+
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                    <form action="{{ route('kontraktor.destroy', $kontraktor->kontraktor_id) }}"
+                                        method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Hapus kontraktor {{ $kontraktor->nama }}?')"
+                                            title="Hapus">
+                                            <i class="fas fa-trash me-1"></i>Hapus
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -285,9 +293,11 @@
                             </div>
                             <h3 class="text-muted">Belum Ada Data Kontraktor</h3>
                             <p class="text-muted mb-4">Mulai dengan menambahkan kontraktor baru untuk proyek Anda</p>
-                            <a href="{{ route('kontraktor.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Tambah Kontraktor Pertama
-                            </a>
+                            @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                <a href="{{ route('kontraktor.create') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Tambah Kontraktor Pertama
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -4,9 +4,7 @@
         <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
             <!-- Logo bulat -->
             <div class="logo-container me-3">
-                <img src="{{ asset('img/logo.png') }}"
-                     alt="Logo Pembangunan Proyek"
-                     class="rounded-circle logo-image">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo Pembangunan Proyek" class="rounded-circle logo-image">
             </div>
 
             <!-- Teks brand -->
@@ -16,8 +14,7 @@
             </div>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarCollapse">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="fa fa-bars text-dark"></span>
         </button>
 
@@ -25,24 +22,21 @@
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                 <!-- HOME/BERANDA - Always Public -->
                 <li class="nav-item">
-                    <a href="{{ route('home') }}"
-                        class="nav-link {{ Request::is('/') ? 'active' : '' }}">
+                    <a href="{{ route('home') }}" class="nav-link {{ Request::is('/') ? 'active' : '' }}">
                         <i class="fas fa-home me-1"></i>Beranda
                     </a>
                 </li>
 
                 <!-- TENTANG - Always Public -->
                 <li class="nav-item">
-                    <a href="{{ route('tentang') }}"
-                        class="nav-link {{ Request::is('tentang*') ? 'active' : '' }}">
+                    <a href="{{ route('tentang') }}" class="nav-link {{ Request::is('tentang*') ? 'active' : '' }}">
                         <i class="fas fa-info-circle me-1"></i>Tentang
                     </a>
                 </li>
 
-                <!-- IDENTITAS - Always Public (Pindahkan ke sini) -->
+                <!-- IDENTITAS - Always Public -->
                 <li class="nav-item">
-                    <a href="{{ route('identitas') }}"
-                        class="nav-link {{ Request::is('identitas*') ? 'active' : '' }}">
+                    <a href="{{ route('identitas') }}" class="nav-link {{ Request::is('identitas*') ? 'active' : '' }}">
                         <i class="fas fa-user-circle me-1"></i>Identitas
                     </a>
                 </li>
@@ -89,7 +83,7 @@
                         </a>
                     </li>
 
-                    <!-- DROPDOWN DATA WARGA & USER (Hanya untuk admin/superadmin) -->
+                    <!-- DROPDOWN DATA WARGA & USER (Hanya untuk admin) -->
                     @if (in_array(Auth::user()->role, ['superadmin', 'admin']))
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle {{ Request::is('warga*') || Request::is('users*') ? 'active' : '' }}"
@@ -122,8 +116,7 @@
                                     <img src="{{ asset('storage/profile_pictures/' . Auth::user()->profile_picture) }}"
                                         alt="{{ Auth::user()->name }}" class="rounded-circle">
                                 @else
-                                    <div
-                                        class="rounded-circle bg-primary d-flex align-items-center justify-content-center">
+                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center">
                                         <span
                                             class="text-white fw-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                                     </div>
@@ -142,37 +135,26 @@
                                     <i class="fas fa-user-edit me-2"></i>Edit Profil
                                 </a>
                             </li>
-                            @if (in_array(Auth::user()->role, ['superadmin', 'admin']))
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                            @endif
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                    style="display: none;">
-                                    @csrf
-                                </form>
-                                <a class="dropdown-item text-danger" href="#"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                                    onclick="return confirm('Apakah Anda yakin ingin logout?')">
                                     <i class="fas fa-sign-out-alt me-2"></i>Logout
                                 </a>
                             </li>
                         </ul>
                     </li>
                 @else
-                    <!-- Untuk non-login user: Hanya tampilkan Beranda, Tentang, dan Login -->
-
-                    <!-- Login menu -->
+                    <!-- Untuk non-login user -->
                     <li class="nav-item">
                         <a href="{{ route('login') }}" class="nav-link {{ Request::is('login') ? 'active' : '' }}">
                             <i class="fas fa-sign-in-alt me-1"></i>Login
                         </a>
                     </li>
 
-                    <!-- Register menu (optional) -->
+                    <!-- Register menu -->
                     @if (Route::has('register'))
                         <li class="nav-item">
                             <a href="{{ route('register') }}"
@@ -193,9 +175,9 @@
     .main-navbar {
         background-color: #ffffff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 8px 0;
+        padding: 4px 0;
         z-index: 1030;
-        font-size: 0.875rem;
+        font-size: 0.68rem;
     }
 
     /* LOGO CONTAINER */
@@ -228,25 +210,6 @@
         box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
     }
 
-    /* Efek glow saat hover */
-    .logo-container::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,123,255,0.2) 0%, transparent 70%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .navbar-brand:hover .logo-container::after {
-        opacity: 1;
-    }
-
     /* BRAND TEXT */
     .brand-text {
         display: flex;
@@ -254,27 +217,13 @@
         justify-content: center;
     }
 
-    .brand-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #1E3A5F;
-        margin: 0;
-        line-height: 1.2;
-        letter-spacing: 0.5px;
-    }
-
     .brand-subtitle {
-        font-size: 0.95rem;
+        font-size: 0.8rem;
         font-weight: 600;
         color: #2c3e50;
         margin: 0;
         line-height: 1.2;
         opacity: 0.9;
-    }
-
-    /* Efek hover pada teks */
-    .navbar-brand:hover .brand-title {
-        color: #007bff;
     }
 
     .navbar-brand:hover .brand-subtitle {
@@ -290,7 +239,7 @@
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
-        font-size: 0.85rem;
+        font-size: 0.7rem;
         margin: 0 2px;
     }
 
@@ -303,7 +252,7 @@
     .nav-link i {
         width: 16px;
         text-align: center;
-        font-size: 0.9rem;
+        font-size: 0.6rem;
     }
 
     /* DROPDOWN MENU */
@@ -312,19 +261,20 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         padding: 6px 0;
-        min-width: 180px;
+        min-width: 200px;
         margin-top: 8px;
         z-index: 1050;
         font-size: 0.85rem;
     }
 
     .dropdown-item {
-        padding: 8px 14px;
+        padding: 8px 16px;
         color: #555;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         font-size: 0.85rem;
+        cursor: pointer;
     }
 
     .dropdown-item:hover {
@@ -337,33 +287,41 @@
         color: white;
     }
 
-    .dropdown-divider {
-        margin: 5px 0;
+    /* LOGOUT BUTTON STYLING */
+    .dropdown-item.text-danger {
+        color: #dc3545 !important;
+    }
+
+    .dropdown-item.text-danger:hover {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545 !important;
+    }
+
+    /* Hapus border dan background dari button logout */
+    .dropdown-item.border-0.bg-transparent {
+        padding: 8px 16px;
+        border-radius: 0;
+        text-align: left;
+    }
+
+    .dropdown-item.border-0.bg-transparent:hover {
+        background-color: #f8f9fa !important;
     }
 
     /* USER DROPDOWN */
-    .nav-link.dropdown-toggle {
-        padding: 6px 10px !important;
-    }
-
     .user-name {
         font-weight: 500;
         max-width: 130px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
 
-    .avatar-sm {
-        flex-shrink: 0;
-    }
-
-    /* AVATAR STYLING */
     .avatar-sm img,
     .avatar-sm div {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         object-fit: cover;
     }
 
@@ -371,59 +329,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.85rem;
-    }
-
-    /* HIGHLIGHT MENU AKTIF */
-    .nav-link.active {
-        position: relative;
-    }
-
-    .nav-link.active::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 12px;
-        right: 12px;
-        height: 2px;
-        background-color: #007bff;
-        border-radius: 1px;
-    }
-
-    /* NAVBAR TOGGLER */
-    .navbar-toggler {
-        border: none;
-        padding: 0;
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .navbar-toggler:focus {
-        box-shadow: none;
-        outline: none;
-    }
-
-    .navbar-toggler .fa-bars {
-        font-size: 1.1rem;
-    }
-
-    /* ANIMASI DROPDOWN */
-    .dropdown-menu {
-        animation: fadeIn 0.2s ease;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-5px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        font-size: 0.9rem;
     }
 
     /* RESPONSIVE */
@@ -440,109 +346,42 @@
             padding: 10px 0 !important;
             border-bottom: 1px solid #f1f1f1;
             justify-content: flex-start;
-            font-size: 0.85rem;
         }
 
         .nav-link:last-child {
             border-bottom: none;
         }
 
-        .nav-link.dropdown-toggle {
-            justify-content: space-between;
-        }
-
         .dropdown-menu {
             border: 1px solid #f1f1f1;
             box-shadow: none;
-            margin-left: 0;
+            margin-left: 15px;
             margin-top: 5px;
-            position: static !important;
-            transform: none !important;
         }
 
-        .user-name {
-            max-width: 100px;
+        /* Pastikan form logout responsive */
+        .dropdown-item.border-0.bg-transparent {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .brand-text {
+            display: none;
         }
 
-        /* Responsive untuk logo dan teks */
         .logo-container {
-            width: 50px;
-            height: 50px;
-        }
-
-        .brand-title {
-            font-size: 1rem;
-        }
-
-        .brand-subtitle {
-            font-size: 0.85rem;
+            margin-right: 0;
         }
     }
 
-    @media (max-width: 768px) {
-        .logo-container {
-            width: 45px;
-            height: 45px;
-        }
-
-        .brand-title {
-            font-size: 0.9rem;
-        }
-
-        .brand-subtitle {
-            font-size: 0.8rem;
-        }
-
-        /* Sembunyikan teks brand di mobile yang sangat kecil */
-        @media (max-width: 576px) {
-            .brand-text {
-                display: none;
-            }
-
-            .logo-container {
-                margin-right: 0;
-            }
-        }
-    }
-
-    /* Efek hover yang lebih smooth */
-    .nav-link {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .dropdown-item {
-        transition: all 0.15s ease;
-    }
-
-    /* Dropdown arrow styling */
-    .dropdown-toggle::after {
-        font-size: 0.75rem;
-        vertical-align: middle;
-        margin-left: 4px;
-    }
-
-    /* Ikon dropdown di dalam menu */
-    .dropdown-item i {
-        font-size: 0.9rem;
-        width: 18px;
-    }
-
-    /* Text truncation untuk nama panjang */
-    .text-truncate-custom {
-        max-width: 180px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    /* Animasi untuk logo saat page load */
+    /* Animasi untuk logo */
     @keyframes logoAppear {
         from {
             transform: scale(0.8);
             opacity: 0;
         }
+
         to {
             transform: scale(1);
             opacity: 1;
@@ -558,59 +397,15 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Logout dengan konfirmasi
-        const logoutLinks = document.querySelectorAll('.dropdown-item.text-danger');
-        logoutLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
+        const logoutForms = document.querySelectorAll('form[action="{{ route('logout') }}"]');
+        logoutForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
                 if (!confirm('Apakah Anda yakin ingin logout?')) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
             });
-        });
-
-        // Aktifkan dropdown hover di desktop
-        if (window.innerWidth >= 992) {
-            const dropdowns = document.querySelectorAll('.nav-item.dropdown');
-            dropdowns.forEach(dropdown => {
-                let hideTimeout;
-
-                dropdown.addEventListener('mouseenter', function() {
-                    clearTimeout(hideTimeout);
-                    const toggle = this.querySelector('.dropdown-toggle');
-                    if (toggle) {
-                        const bsDropdown = bootstrap.Dropdown.getInstance(toggle) ||
-                            new bootstrap.Dropdown(toggle);
-                        bsDropdown.show();
-                    }
-                });
-
-                dropdown.addEventListener('mouseleave', function() {
-                    const toggle = this.querySelector('.dropdown-toggle');
-                    if (toggle) {
-                        hideTimeout = setTimeout(() => {
-                            const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                            if (bsDropdown) {
-                                bsDropdown.hide();
-                            }
-                        }, 200);
-                    }
-                });
-            });
-        }
-
-        // Close dropdown ketika klik di luar
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.nav-item.dropdown')) {
-                const openDropdowns = document.querySelectorAll(
-                    '.nav-item.dropdown .dropdown-toggle[aria-expanded="true"]');
-                openDropdowns.forEach(toggle => {
-                    const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                    if (bsDropdown) {
-                        bsDropdown.hide();
-                    }
-                });
-            }
         });
 
         // Mobile menu close ketika pilih item
@@ -627,23 +422,22 @@
             });
         });
 
-        // Tambahkan kelas active untuk dropdown parent
-        const activeDropdownItems = document.querySelectorAll('.dropdown-item.active');
-        activeDropdownItems.forEach(item => {
-            const parentDropdown = item.closest('.nav-item.dropdown');
-            if (parentDropdown) {
-                const dropdownToggle = parentDropdown.querySelector('.dropdown-toggle');
-                if (dropdownToggle) {
-                    dropdownToggle.classList.add('active');
+        // Close dropdown ketika klik di luar di mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth < 992) {
+                if (!e.target.closest('.nav-item.dropdown')) {
+                    const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
+                    openDropdowns.forEach(menu => {
+                        menu.classList.remove('show');
+                    });
                 }
             }
         });
 
-        // Efek klik pada logo
+        // Efek klik pada logo (opsional)
         const logoContainer = document.querySelector('.logo-container');
         if (logoContainer) {
             logoContainer.addEventListener('click', function(e) {
-                // Tambahkan efek ripple
                 const ripple = document.createElement('div');
                 ripple.style.position = 'absolute';
                 ripple.style.borderRadius = '50%';
@@ -658,7 +452,6 @@
 
                 this.appendChild(ripple);
 
-                // Hapus elemen ripple setelah animasi selesai
                 setTimeout(() => {
                     ripple.remove();
                 }, 600);

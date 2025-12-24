@@ -10,9 +10,11 @@
                 <h5 class="mb-0">
                     <i class="fas fa-project-diagram me-2"></i>Data Proyek
                 </h5>
-                <a href="{{ route('proyek.create') }}" class="btn btn-light btn-sm">
-                    <i class="fas fa-plus me-1"></i> Tambah Proyek
-                </a>
+                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                    <a href="{{ route('proyek.create') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i> Tambah Proyek
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -404,30 +406,32 @@
                         <a href="{{ route('proyek.show', $item->proyek_id) }}" class="btn btn-outline-info btn-sm" title="Lihat Detail">
                             <i class="fas fa-eye"></i>
                         </a>
-                        <a href="{{ route('proyek.edit', $item->proyek_id) }}" class="btn btn-outline-warning btn-sm" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <form action="{{ route('proyek.destroy', $item->proyek_id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus"
-                                    onclick="return confirm('Apakah Anda yakin ingin menghapus proyek {{ $item->nama_proyek }}?')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
+                        @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                            <a href="{{ route('proyek.edit', $item->proyek_id) }}" class="btn btn-outline-warning btn-sm" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{{ route('proyek.destroy', $item->proyek_id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus"
+                                        onclick="return confirm('Apakah Anda yakin ingin menghapus proyek {{ $item->nama_proyek }}?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        @endif
                     </div>
 
                     <!-- Quick Action untuk Upload File -->
-                    @auth
-                    <div class="mt-2 text-center">
-                        <small>
-                            <a href="{{ route('proyek.show', $item->proyek_id) }}#uploadForm"
-                               class="text-primary text-decoration-none">
-                                <i class="fas fa-plus-circle me-1"></i>Tambah File
-                            </a>
-                        </small>
-                    </div>
-                    @endauth
+                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                        <div class="mt-2 text-center">
+                            <small>
+                                <a href="{{ route('proyek.show', $item->proyek_id) }}#uploadForm"
+                                   class="text-primary text-decoration-none">
+                                    <i class="fas fa-plus-circle me-1"></i>Tambah File
+                                </a>
+                            </small>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -436,10 +440,8 @@
 
     <!-- Pagination Links -->
     @if($proyek->hasPages())
-
-            <div>
-                {{ $proyek->links('pagination::bootstrap-5') }}
-            </div>
+        <div>
+            {{ $proyek->links('pagination::bootstrap-5') }}
         </div>
     @endif
     @endif

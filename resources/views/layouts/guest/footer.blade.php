@@ -6,7 +6,7 @@
 
             <!-- Contact Us -->
             <div class="col-md-4 mb-4 text-center text-md-start">
-                <h5 class="footer-title">Kontak Kami</h5>
+                <h5 class="footer-title">Contact Us</h5>
                 <ul class="footer-list">
                     <li>
                         <i class="fas fa-map-marker-alt"></i>
@@ -27,8 +27,9 @@
             <div class="col-md-4 mb-4 text-center">
                 <h5 class="footer-title">Proyek Kami</h5>
                 <p class="footer-text">
-                    Kami adalah mitra bagi para pelaku usaha dan pembangunan
-                    desa dalam mewujudkan kemandirian ekonomi berkelanjutan.
+                    Kami adalah mitra terpercaya dalam perencanaan dan pelaksanaan proyek pembangunan.
+                    Berpengalaman dalam manajemen proyek konstruksi, infrastruktur, dan pengembangan
+                    properti dengan pendekatan berbasis tahapan yang terstruktur dan terukur.
                 </p>
 
                 <div class="social-icons">
