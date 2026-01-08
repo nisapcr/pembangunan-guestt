@@ -41,7 +41,7 @@ class UserController extends Controller
                       ->withQueryString()
                       ->onEachSide(2);
 
-        return view('pages.user.index', compact('users'));
+        return view('pages.User.index', compact('users'));
     }
 
     /**
