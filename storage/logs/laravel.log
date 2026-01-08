@@ -70896,3 +70896,4 @@ Stack trace:
 #58 D:\\Nisa-2SIC\\laragon-6.0-minimal\\www\\Pembangunan-guestt\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('D:\\\\Nisa-2SIC\\\\la...')
 #59 {main}
 "} 
+[2026-01-08 12:38:27] local.INFO: CheckRole middleware {"user_id":1,"email":"admin@gmail.com","current_role":"admin","required_roles":["admin"]} 
